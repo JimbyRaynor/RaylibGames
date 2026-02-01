@@ -12,8 +12,11 @@
 // raylib uses float for most numbers, and so use 2.0f to convert int to float. Note that 2.0 will be a double
 
 
-
-// Draw eraser with this program!!! store as charEraser
+// Make level editor
+//  dig holes like loderunner? --  Cannot pass through, blocks passage until baddie falls in and dies
+// points for tetris shapes? Then remove? and continue ... Different coloured blocks for shapes? Goals to make space invaders,  coloured blocks, etc
+// Enemy ... use full objects!!!
+// Draw love heart
 
 
 using namespace std;
@@ -74,16 +77,40 @@ Color rbgray3 = HexToColour(0xEEEEEE);
 Color AllColours[60] = {rblightblue, rbblue, rbdarkblue, rblightred, rbred, rbdarkred, rblightorange, rborange, rbdarkorange,
                        rblightgreen, rbgreen, rbdarkgreen, rblightpink, rbpink, rbdarkpink, rblightyellow, rbyellow, rbdarkyellow,
                        rblightgrey, rbgrey, rbdarkgrey, rblightbrown, rbbrown, rbdarkbrown, rblightaqua, rbaqua, rbdarkaqua,
-                       rblightpurple, rbpurple, rbdarkpurple, rbblack, rberaser, rbwhite};
-
-string AllColourwords[60] = {"light blue", "blue", "dark blue", "light red", "red", "dark red", "light orange", "orange", 
-                       "dark orange","light green", "green", "dark green", "light pink", "pink", "dark pink", "light yellow", 
-                       "yellow", "dark yellow", "light grey", "grey", "dark grey", "light brown", "brown", "dark brown", 
-                       "light aqua", "aqua", "dark aqua", "light purple", "purple", "dark purple", "black", "eraser", "white"};                       
+                       rblightpurple, rbpurple, rbdarkpurple, rbblack, rberaser, rbwhite};                    
 
 
 int Char1[64] = {1,18,23,23,23,23,18,18,1,18,18,23,23,23,18,18,14,16,16,16,16,16,16,16,17,16,0,0,16,0,0,16,0,16,0,0,16,0,0,16,0,16,16,16,16,16,16,16,0,18,1,1,1,1,17,17,23,23,23,18,18,18,23,23};
+int CharBlock[576] = {19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19};
+int CharEnemy1[64] = {5,0,0,17,0,0,0,5,0,5,0,0,17,0,5,0,5,0,11,17,0,11,0,5,0,5,5,5,5,5,5,0,5,5,5,5,5,5,5,5,5,5,24,33,24,33,5,5,5,5,5,5,5,5,5,5,0,5,5,5,5,5,5,0};
 
+int Grid[100][100];
+int gridsize = 10;
+int gridwidth = 50;
+float griddensity = 0.35f;
+
+int   gridherox = gridsize-1;
+int   gridheroy = gridsize-1;
+
+int gridtoxy(int gridloc)
+{
+     return gridloc*gridwidth+(gridwidth-24)/2;
+}
+
+int herox = gridtoxy(gridsize-1);
+int heroy = gridtoxy(gridsize-1);
+
+void fillgrid(float density)
+{
+     for (int i = 0; i < gridsize; i++)
+       for (int j = 0; j < gridsize; j++)
+       {
+          if (GetRandomValue(0,100)/100.0f < density  and i+j != 2*gridsize-2) 
+          {
+              Grid[j][i] = 1;
+          }
+       }
+}
 
 Color getColour(int myindex)
 {
@@ -100,37 +127,54 @@ void drawCharfromArray(int previewx, int previewy, int psize, int bitwidth, int 
        for (int i=0;i < bitwidth; i++ )
          for (int j=0; j < bitwidth; j++)
             {
-              Mycolour = getColour(myarray[loc]);
-              DrawRectangle(previewx+j*psize,previewy+i*psize,psize,psize,Mycolour);
+              if (myarray[loc] != 0)
+              {
+               Mycolour = getColour(myarray[loc]);
+               DrawRectangle(previewx+j*psize,previewy+i*psize,psize,psize,Mycolour);    
+              }
               loc++;
             }        
      }
 
-
-string byteToHex(unsigned char b) 
+void drawgrid()
 {
-    const char* hex = "0123456789ABCDEF";
-    std::string out;
-    out += hex[(b >> 4) & 0xF];
-    out += hex[b & 0xF];
-    return out;
+     for (int i = 0; i < gridsize; i++)
+       for (int j = 0; j < gridsize; j++)
+       {
+            if ( Grid[j][i] == 1 )
+            {
+               drawCharfromArray(i*gridwidth, j*gridwidth, 2,24, CharBlock);
+            }
+       }
 }
 
-string ColorToHex(Color c) 
+int pushblock(int x, int y, int dx, int dy)
 {
-    string s = "#";
-    s += byteToHex(c.r);
-    s += byteToHex(c.g);
-    s += byteToHex(c.b);
-    return s;
+   if (x+2*dx >= 0 and y+2*dy >=0 and x+2*dx < gridsize and  y+2*dy < gridsize) 
+    if (Grid[y+dy][x+dx] == 1)
+    {
+      if  (Grid[y+2*dy][x+2*dx] == 0 )
+      {
+       Grid[y+2*dy][x+2*dx]  = 1;
+       Grid[y+dy][x+dx]  = 0; 
+       return 0;
+      }
+      else return -1;
+    }
+   if (x+dx >= 0 and y+dy >=0 and x+dx < gridsize and  y+dy < gridsize)
+    {
+     if (Grid[y+dy][x+dx] == 1) return -1;
+         else return 0;
+    } 
+   return 0;
 }
 
-   
 int main() {
     int c = 0;
     InitWindow(screenWidth, screenHeight, "Blocks");
     Vector2 MousePos;
     SetTargetFPS(60);
+    fillgrid(griddensity);
     while (!WindowShouldClose()) 
     {
         if (IsKeyPressed(KEY_SPACE))
@@ -138,20 +182,36 @@ int main() {
              c++;
         }
         if (IsKeyPressed(KEY_RIGHT))
-        {
-             c++;
+        {    
+             if (pushblock(gridherox, gridheroy, 1, 0) >= 0 and gridherox < gridsize -1)
+             {
+              herox += gridwidth;
+              gridherox++;
+             }
         }
         if (IsKeyPressed(KEY_UP))
         {
-             c++;
+             if (pushblock(gridherox, gridheroy, 0, -1) >= 0 and gridheroy > 0)
+             { 
+              heroy -= gridwidth;
+              gridheroy--;
+             }
         }
         if (IsKeyPressed(KEY_LEFT))
         {
-             c++;
+             if (pushblock(gridherox, gridheroy, -1, 0) >= 0 and gridherox > 0)
+             {           
+              herox -= gridwidth;
+              gridherox--;
+             }
         }
         if (IsKeyPressed(KEY_DOWN))
         {
-             c++;
+             if (pushblock(gridherox, gridheroy, 0, 1) >= 0 and gridheroy < gridsize -1)
+             {
+              heroy += gridwidth;
+              gridheroy++;
+             }
         }
         if (IsKeyPressed(KEY_ONE))
         {
@@ -164,10 +224,12 @@ int main() {
         BeginDrawing();
         ClearBackground(BLACK); // these two lines MUST go first
 
-         DrawRectangleLines(0,0,screenWidth,screenHeight,YELLOW);
+        drawgrid(); 
+        DrawRectangleLines(0,0,screenWidth,screenHeight,YELLOW);
          MousePos = GetMousePosition();
          DrawText("<Space> - Save",800,200,20, WHITE);
-         drawCharfromArray(800, 100, 3,8, Char1);
+         drawCharfromArray(herox, heroy, 3,8, Char1);
+         drawCharfromArray(gridtoxy(3), gridtoxy(3), 3,8, CharEnemy1);
         EndDrawing();
     }
 
