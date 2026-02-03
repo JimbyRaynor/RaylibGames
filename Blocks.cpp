@@ -15,6 +15,7 @@
 // Make level editor
 //  dig holes like loderunner? --  Cannot pass through, blocks passage until baddie falls in and dies
 // points for tetris shapes? Then remove? and continue ... Different coloured blocks for shapes? Goals to make space invaders,  coloured blocks, etc
+//    need 2 space invaders to unlock mothership, etc? Sequences? 
 // Enemy ... use full objects!!!
 // Draw love heart
 
@@ -89,16 +90,41 @@ int gridsize = 10;
 int gridwidth = 50;
 float griddensity = 0.35f;
 
-int   gridherox = gridsize-1;
-int   gridheroy = gridsize-1;
 
 int gridtoxy(int gridloc)
 {
      return gridloc*gridwidth+(gridwidth-24)/2;
 }
 
-int herox = gridtoxy(gridsize-1);
-int heroy = gridtoxy(gridsize-1);
+int herox = gridsize-1;
+int heroy = gridsize-1;
+int enemyx = 4;
+int enemyy = 4;
+
+int moveenemy()
+{
+     if (enemyx < herox and Grid[enemyy][enemyx+1]  == 0)
+     {
+          enemyx++;
+          return 0;
+     }
+     if (enemyx > herox and Grid[enemyy][enemyx-1]  == 0)
+     {
+          enemyx--;
+          return 0;
+     }
+     if (enemyy < heroy and Grid[enemyy+1][enemyx]  == 0)
+     {
+          enemyy++;
+          return 0;
+     }
+     if (enemyy > heroy and Grid[enemyy-1][enemyx]  == 0)
+     {
+          enemyy--;
+          return 0;
+     }
+  return 0;
+}
 
 void fillgrid(float density)
 {
@@ -110,6 +136,13 @@ void fillgrid(float density)
               Grid[j][i] = 1;
           }
        }
+}
+
+void cleargrid()
+{
+     for (int i = 0; i < gridsize; i++)
+       for (int j = 0; j < gridsize; j++)
+              Grid[j][i] = 0;
 }
 
 Color getColour(int myindex)
@@ -174,6 +207,7 @@ int main() {
     InitWindow(screenWidth, screenHeight, "Blocks");
     Vector2 MousePos;
     SetTargetFPS(60);
+    cleargrid();
     fillgrid(griddensity);
     while (!WindowShouldClose()) 
     {
@@ -183,35 +217,35 @@ int main() {
         }
         if (IsKeyPressed(KEY_RIGHT))
         {    
-             if (pushblock(gridherox, gridheroy, 1, 0) >= 0 and gridherox < gridsize -1)
+             if (pushblock(herox, heroy, 1, 0) >= 0 and herox < gridsize -1)
              {
-              herox += gridwidth;
-              gridherox++;
+              herox++;
              }
+             moveenemy();
         }
         if (IsKeyPressed(KEY_UP))
         {
-             if (pushblock(gridherox, gridheroy, 0, -1) >= 0 and gridheroy > 0)
+             if (pushblock(herox, heroy, 0, -1) >= 0 and heroy > 0)
              { 
-              heroy -= gridwidth;
-              gridheroy--;
+              heroy--;
              }
+             moveenemy();
         }
         if (IsKeyPressed(KEY_LEFT))
         {
-             if (pushblock(gridherox, gridheroy, -1, 0) >= 0 and gridherox > 0)
+             if (pushblock(herox, heroy, -1, 0) >= 0 and herox > 0)
              {           
-              herox -= gridwidth;
-              gridherox--;
+              herox--;
              }
+             moveenemy();
         }
         if (IsKeyPressed(KEY_DOWN))
         {
-             if (pushblock(gridherox, gridheroy, 0, 1) >= 0 and gridheroy < gridsize -1)
+             if (pushblock(herox, heroy, 0, 1) >= 0 and heroy < gridsize -1)
              {
-              heroy += gridwidth;
-              gridheroy++;
+              heroy++;
              }
+             moveenemy();
         }
         if (IsKeyPressed(KEY_ONE))
         {
@@ -228,8 +262,8 @@ int main() {
         DrawRectangleLines(0,0,screenWidth,screenHeight,YELLOW);
          MousePos = GetMousePosition();
          DrawText("<Space> - Save",800,200,20, WHITE);
-         drawCharfromArray(herox, heroy, 3,8, Char1);
-         drawCharfromArray(gridtoxy(3), gridtoxy(3), 3,8, CharEnemy1);
+         drawCharfromArray(gridtoxy(herox), gridtoxy(heroy), 3,8, Char1);
+         drawCharfromArray(gridtoxy(enemyx), gridtoxy(enemyy), 3,8, CharEnemy1);
         EndDrawing();
     }
 
