@@ -90,16 +90,58 @@ int gridsize = 10;
 int gridwidth = 50;
 float griddensity = 0.35f;
 
+int herox = gridsize-1;
+int heroy = gridsize-1;
+int enemyx = 4;
+int enemyy = 4;
+
+
+class Enemy
+{
+     public:
+       Enemy(int startx, int starty); // constructor, *must* be named the same as the class Enemy
+       int move();
+       int x,y;
+       bool alive;
+     private:
+      
+
+};
+
+Enemy::Enemy(int startx, int starty)
+{
+     alive = true;
+     x = startx;
+     y = starty;
+}
+
+int Enemy::move()
+{
+     if (x < herox and Grid[y][x+1]  == 0) {x++; return 0; }
+     if (x > herox and Grid[y][x-1]  == 0)
+     {
+          x--;
+          return 0; 
+     }
+     if (y < heroy and Grid[y+1][x]  == 0)
+     {
+          y++;
+          return 0; 
+     }
+     if (y > heroy and Grid[y-1][x]  == 0)
+     {
+          y--;
+          return 0; 
+     }
+    return 0;
+}
+
 
 int gridtoxy(int gridloc)
 {
      return gridloc*gridwidth+(gridwidth-24)/2;
 }
 
-int herox = gridsize-1;
-int heroy = gridsize-1;
-int enemyx = 4;
-int enemyy = 4;
 
 int moveenemy()
 {
@@ -203,6 +245,8 @@ int pushblock(int x, int y, int dx, int dy)
 }
 
 int main() {
+    Enemy Enemy1(2,2);
+
     int c = 0;
     InitWindow(screenWidth, screenHeight, "Blocks");
     Vector2 MousePos;
@@ -221,6 +265,7 @@ int main() {
              {
               herox++;
              }
+             Enemy1.move();
              moveenemy();
         }
         if (IsKeyPressed(KEY_UP))
@@ -229,6 +274,7 @@ int main() {
              { 
               heroy--;
              }
+             Enemy1.move();
              moveenemy();
         }
         if (IsKeyPressed(KEY_LEFT))
@@ -237,6 +283,7 @@ int main() {
              {           
               herox--;
              }
+             Enemy1.move();
              moveenemy();
         }
         if (IsKeyPressed(KEY_DOWN))
@@ -245,6 +292,7 @@ int main() {
              {
               heroy++;
              }
+             Enemy1.move();
              moveenemy();
         }
         if (IsKeyPressed(KEY_ONE))
@@ -264,6 +312,7 @@ int main() {
          DrawText("<Space> - Save",800,200,20, WHITE);
          drawCharfromArray(gridtoxy(herox), gridtoxy(heroy), 3,8, Char1);
          drawCharfromArray(gridtoxy(enemyx), gridtoxy(enemyy), 3,8, CharEnemy1);
+         drawCharfromArray(gridtoxy(Enemy1.x), gridtoxy(Enemy1.y), 3,8, CharEnemy1);
         EndDrawing();
     }
 
