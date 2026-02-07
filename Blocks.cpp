@@ -4,6 +4,7 @@
 #include <math.h>
 #include <iostream>
 #include <fstream>
+#include <vector>
 
 //compile: g++ Blocks.cpp -o Blocks -lraylib -lm -ldl -lpthread -lGL -lX11
 //run:     ./Blocks
@@ -16,7 +17,8 @@
 //  dig holes like loderunner? --  Cannot pass through, blocks passage until baddie falls in and dies
 // points for tetris shapes? Then remove? and continue ... Different coloured blocks for shapes? Goals to make space invaders,  coloured blocks, etc
 //    need 2 space invaders to unlock mothership, etc? Sequences? 
-// Enemy ... use full objects!!!
+// Enemy ... use full objects!!! 
+// Enemies object with list of enemy objects? ... later use vector for now
 // Draw love heart
 
 
@@ -86,56 +88,74 @@ int CharBlock[576] = {19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,1
 int CharEnemy1[64] = {5,0,0,17,0,0,0,5,0,5,0,0,17,0,5,0,5,0,11,17,0,11,0,5,0,5,5,5,5,5,5,0,5,5,5,5,5,5,5,5,5,5,24,33,24,33,5,5,5,5,5,5,5,5,5,5,0,5,5,5,5,5,5,0};
 
 int Grid[100][100];
-int gridsize = 10;
+int gridsize = 16;
 int gridwidth = 50;
 float griddensity = 0.35f;
 
 int herox = gridsize-1;
 int heroy = gridsize-1;
-int enemyx = 4;
-int enemyy = 4;
-
 
 class Enemy
 {
      public:
        Enemy(int startx, int starty); // constructor, *must* be named the same as the class Enemy
+       int spawn();
        int move();
        int x,y;
        bool alive;
      private:
-      
-
 };
 
-Enemy::Enemy(int startx, int starty)
+Enemy::Enemy(int startx, int starty) // constructor
 {
      alive = true;
      x = startx;
      y = starty;
 }
 
+int Enemy::spawn()
+{
+     int count = 0;
+     x = GetRandomValue(0,gridsize-3); // 0 to including gridsize-1
+     y = GetRandomValue(0,gridsize-3); // 0 to including gridsize-1
+     while (Grid[y][x] != 0 and count < 1000)
+     {
+       x = GetRandomValue(0,gridsize-3); // 0 to including gridsize-1
+       y = GetRandomValue(0,gridsize-3); // 0 to including gridsize-1 
+       count++;   
+     }
+     Grid[y][x] = 10;
+     return 0;
+}
+
 int Enemy::move()
 {
-     if (x < herox and Grid[y][x+1]  == 0) {x++; return 0; }
+     if (x < herox and Grid[y][x+1]  == 0) {Grid[y][x] = 0; x++; Grid[y][x] = 10; return 0; }
      if (x > herox and Grid[y][x-1]  == 0)
      {
+          Grid[y][x] = 0;
           x--;
+          Grid[y][x] = 10;
           return 0; 
      }
      if (y < heroy and Grid[y+1][x]  == 0)
-     {
+     { 
+          Grid[y][x] = 0;
           y++;
+          Grid[y][x] = 10;
           return 0; 
      }
      if (y > heroy and Grid[y-1][x]  == 0)
      {
+          Grid[y][x] = 0;
           y--;
+          Grid[y][x] = 10;
           return 0; 
      }
     return 0;
 }
 
+vector <Enemy> Enemies;
 
 int gridtoxy(int gridloc)
 {
@@ -145,26 +165,8 @@ int gridtoxy(int gridloc)
 
 int moveenemy()
 {
-     if (enemyx < herox and Grid[enemyy][enemyx+1]  == 0)
-     {
-          enemyx++;
-          return 0;
-     }
-     if (enemyx > herox and Grid[enemyy][enemyx-1]  == 0)
-     {
-          enemyx--;
-          return 0;
-     }
-     if (enemyy < heroy and Grid[enemyy+1][enemyx]  == 0)
-     {
-          enemyy++;
-          return 0;
-     }
-     if (enemyy > heroy and Grid[enemyy-1][enemyx]  == 0)
-     {
-          enemyy--;
-          return 0;
-     }
+  for (int i=0;i<Enemies.size();i++)
+        Enemies[i].move();
   return 0;
 }
 
@@ -216,10 +218,8 @@ void drawgrid()
      for (int i = 0; i < gridsize; i++)
        for (int j = 0; j < gridsize; j++)
        {
-            if ( Grid[j][i] == 1 )
-            {
-               drawCharfromArray(i*gridwidth, j*gridwidth, 2,24, CharBlock);
-            }
+            if ( Grid[j][i] == 1 )  drawCharfromArray(i*gridwidth, j*gridwidth, 2,24, CharBlock); 
+            if ( Grid[j][i] == 10 ) drawCharfromArray(gridtoxy(i), gridtoxy(j), 3,8, CharEnemy1);
        }
 }
 
@@ -244,75 +244,86 @@ int pushblock(int x, int y, int dx, int dy)
    return 0;
 }
 
-int main() {
-    Enemy Enemy1(2,2);
+int createnemies()
+{
+  for (int i=0; i< 9; i++)
+    {  Enemy Entmp(1,1);
+       Entmp.spawn();
+       Enemies.push_back(Entmp);
+    }
+  return 0;
+}
 
-    int c = 0;
-    InitWindow(screenWidth, screenHeight, "Blocks");
-    Vector2 MousePos;
-    SetTargetFPS(60);
-    cleargrid();
-    fillgrid(griddensity);
-    while (!WindowShouldClose()) 
-    {
-        if (IsKeyPressed(KEY_SPACE))
+int ReadKeys()
+{
+   int c = 0;
+   if (IsKeyPressed(KEY_SPACE))
         {
              c++;
         }
-        if (IsKeyPressed(KEY_RIGHT))
+   if (IsKeyPressed(KEY_RIGHT))
         {    
              if (pushblock(herox, heroy, 1, 0) >= 0 and herox < gridsize -1)
              {
               herox++;
              }
-             Enemy1.move();
              moveenemy();
         }
-        if (IsKeyPressed(KEY_UP))
+   if (IsKeyPressed(KEY_UP))
         {
              if (pushblock(herox, heroy, 0, -1) >= 0 and heroy > 0)
              { 
               heroy--;
              }
-             Enemy1.move();
              moveenemy();
         }
-        if (IsKeyPressed(KEY_LEFT))
+    if (IsKeyPressed(KEY_LEFT))
         {
              if (pushblock(herox, heroy, -1, 0) >= 0 and herox > 0)
              {           
               herox--;
              }
-             Enemy1.move();
              moveenemy();
         }
-        if (IsKeyPressed(KEY_DOWN))
+    if (IsKeyPressed(KEY_DOWN))
         {
              if (pushblock(herox, heroy, 0, 1) >= 0 and heroy < gridsize -1)
              {
               heroy++;
              }
-             Enemy1.move();
              moveenemy();
         }
         if (IsKeyPressed(KEY_ONE))
         {
           c++;
         }
-        if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+    if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
         {
          c++;
         }
-        BeginDrawing();
-        ClearBackground(BLACK); // these two lines MUST go first
+    return 0;
+}
+
+int main() {
+    InitWindow(screenWidth, screenHeight, "Blocks"); // RNG seed is set randomly in InitWindow !!
+
+    Vector2 MousePos;
+    SetTargetFPS(60);
+    cleargrid();
+    fillgrid(griddensity);
+    createnemies(); // RNG seed is set randomly in InitWindow !!
+    while (!WindowShouldClose()) 
+    {
+        ReadKeys();
+
+        BeginDrawing();         // these two lines MUST go first when drawing
+        ClearBackground(BLACK); // these two lines MUST go first when drawing
 
         drawgrid(); 
         DrawRectangleLines(0,0,screenWidth,screenHeight,YELLOW);
-         MousePos = GetMousePosition();
-         DrawText("<Space> - Save",800,200,20, WHITE);
-         drawCharfromArray(gridtoxy(herox), gridtoxy(heroy), 3,8, Char1);
-         drawCharfromArray(gridtoxy(enemyx), gridtoxy(enemyy), 3,8, CharEnemy1);
-         drawCharfromArray(gridtoxy(Enemy1.x), gridtoxy(Enemy1.y), 3,8, CharEnemy1);
+        MousePos = GetMousePosition();
+        DrawText("<Space> - Save",800,200,20, WHITE);
+        drawCharfromArray(gridtoxy(herox), gridtoxy(heroy), 3,8, Char1);
         EndDrawing();
     }
 
