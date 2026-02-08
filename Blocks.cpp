@@ -17,8 +17,6 @@
 //  dig holes like loderunner? --  Cannot pass through, blocks passage until baddie falls in and dies
 // points for tetris shapes? Then remove? and continue ... Different coloured blocks for shapes? Goals to make space invaders,  coloured blocks, etc
 //    need 2 space invaders to unlock mothership, etc? Sequences? 
-// Enemy ... use full objects!!! 
-// Enemies object with list of enemy objects? ... later use vector for now
 // Draw love heart
 
 
@@ -116,12 +114,12 @@ Enemy::Enemy(int startx, int starty) // constructor
 int Enemy::spawn()
 {
      int count = 0;
-     x = GetRandomValue(0,gridsize-3); // 0 to including gridsize-1
-     y = GetRandomValue(0,gridsize-3); // 0 to including gridsize-1
+     x = GetRandomValue(0,gridsize-6); // 0 to including gridsize-1
+     y = GetRandomValue(0,gridsize-6); // 0 to including gridsize-1
      while (Grid[y][x] != 0 and count < 1000)
      {
-       x = GetRandomValue(0,gridsize-3); // 0 to including gridsize-1
-       y = GetRandomValue(0,gridsize-3); // 0 to including gridsize-1 
+       x = GetRandomValue(0,gridsize-6); // 0 to including gridsize-1
+       y = GetRandomValue(0,gridsize-6); // 0 to including gridsize-1 
        count++;   
      }
      Grid[y][x] = 10;
@@ -157,17 +155,16 @@ int Enemy::move()
 
 vector <Enemy> Enemies;
 
-int gridtoxy(int gridloc)
-{
-     return gridloc*gridwidth+(gridwidth-24)/2;
-}
-
-
 int moveenemy()
 {
   for (int i=0;i<Enemies.size();i++)
         Enemies[i].move();
   return 0;
+}
+
+int gridtoxy(int gridloc)
+{
+     return gridloc*gridwidth+(gridwidth-24)/2;
 }
 
 void fillgrid(float density)
@@ -246,7 +243,7 @@ int pushblock(int x, int y, int dx, int dy)
 
 int createnemies()
 {
-  for (int i=0; i< 9; i++)
+  for (int i=0; i< 1; i++)
     {  Enemy Entmp(1,1);
        Entmp.spawn();
        Enemies.push_back(Entmp);
