@@ -6,29 +6,12 @@
 #include <fstream>
 #include <vector>
 
-//compile: g++ Blocks.cpp -o Blocks -lraylib -lm -ldl -lpthread -lGL -lX11
-//run:     ./Blocks
-
-
+//compile: g++ MathAttack.cpp -o MathAttack -lraylib -lm -ldl -lpthread -lGL -lX11
+//run:     ./MathAttack
 // raylib uses float for most numbers, and so use 2.0f to convert int to float. Note that 2.0 will be a double
 
-
 // Make level editor
-//  dig holes like loderunner? --  Cannot pass through, blocks passage until baddie falls in and dies
-// points for tetris shapes? Then remove? and continue ... Different coloured blocks for shapes? Goals to make space invaders,  coloured blocks, etc
-//    need 2 space invaders to unlock mothership, etc? Sequences? 
-// Draw love heart
-// Make loderunner font for score and title
-// How to complete? Get to exit?
-// Make rules then finish game. Move on.
-// Bonus score for exact 10000, etc?
-// Collect sword (n times use only) -  shift-arrow (for direction) to use  - damages blocks as well
-// Collect pysch bomb (groupings) - 1 to use
-// shovel to dig hole
-// Make it to the exit to finish
-// draw sword
-// draw bomb
-// enemy makes "hot" footprints which damage it ?? Show flames that burn out??? 
+
 
 
 using namespace std;
@@ -92,11 +75,19 @@ Color AllColours[60] = {rblightblue, rbblue, rbdarkblue, rblightred, rbred, rbda
                        rblightpurple, rbpurple, rbdarkpurple, rbblack, rberaser, rbwhite};                    
 
 
+Color getColour(int myindex)
+{
+  if ( (myindex >= 1) and (myindex <= 33))
+    return AllColours[myindex-1];
+  else
+    return rbblack; 
+}
+
 int Char1[64] = {1,18,23,23,23,23,18,18,1,18,18,23,23,23,18,18,14,16,16,16,16,16,16,16,17,16,0,0,16,0,0,16,0,16,0,0,16,0,0,16,0,16,16,16,16,16,16,16,0,18,1,1,1,1,17,17,23,23,23,18,18,18,23,23};
 int CharBlock[576] = {19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19};
 int CharEnemy1[64] = {5,0,0,17,0,0,0,5,0,5,0,0,17,0,5,0,5,0,11,17,0,11,0,5,0,5,5,5,5,5,5,0,5,5,5,5,5,5,5,5,5,5,24,33,24,33,5,5,5,5,5,5,5,5,5,5,0,5,5,5,5,5,5,0};
 
-int Grid[100][100];
+int Grid[100][100]; // Grid is not needed just remove all blocks with same value
 int gridsize = 16;
 int gridwidth = 50;
 float griddensity = 0.35f;
@@ -104,22 +95,46 @@ float griddensity = 0.35f;
 int herox = gridsize-1;
 int heroy = gridsize-1;
 
-class Enemy
+int gridtoxy(int gridloc)
+{
+     return gridloc*gridwidth+(gridwidth-24)/2;
+}
+
+void drawCharfromArray(int previewx, int previewy, int psize, int bitwidth, int myarray[])
+     {
+       Color Mycolour;
+       int loc = 0;
+       for (int i=0;i < bitwidth; i++ )
+         for (int j=0; j < bitwidth; j++)
+            {
+              if (myarray[loc] != 0)
+              {
+               Mycolour = getColour(myarray[loc]);
+               DrawRectangle(previewx+j*psize,previewy+i*psize,psize,psize,Mycolour);    
+              }
+              loc++;
+            }        
+     }
+
+class Enemy  
 {
      public:
-       Enemy(int startx, int starty); // constructor, *must* be named the same as the class Enemy
+       Enemy(int startx, int starty, int number); // constructor, *must* be named the same as the class Enemy
        int spawn();
        int move();
+       int draw();
        int x,y;
+       int attacknumber;
        bool alive;
      private:
 };
 
-Enemy::Enemy(int startx, int starty) // constructor
+Enemy::Enemy(int startx, int starty, int number) // constructor
 {
      alive = true;
      x = startx;
      y = starty;
+     attacknumber = number;
 }
 
 int Enemy::spawn()
@@ -164,6 +179,11 @@ int Enemy::move()
     return 0;
 }
 
+int Enemy::draw()
+{
+  drawCharfromArray(gridtoxy(x), gridtoxy(y), 3,8, CharEnemy1);
+  return 0;
+}
 vector <Enemy> Enemies;
 
 int moveenemy()
@@ -171,11 +191,6 @@ int moveenemy()
   for (int i=0;i<Enemies.size();i++)
         Enemies[i].move();
   return 0;
-}
-
-int gridtoxy(int gridloc)
-{
-     return gridloc*gridwidth+(gridwidth-24)/2;
 }
 
 void fillgrid(float density)
@@ -196,30 +211,6 @@ void cleargrid()
        for (int j = 0; j < gridsize; j++)
               Grid[j][i] = 0;
 }
-
-Color getColour(int myindex)
-{
-  if ( (myindex >= 1) and (myindex <= 33))
-    return AllColours[myindex-1];
-  else
-    return rbblack; 
-}
-
-void drawCharfromArray(int previewx, int previewy, int psize, int bitwidth, int myarray[])
-     {
-       Color Mycolour;
-       int loc = 0;
-       for (int i=0;i < bitwidth; i++ )
-         for (int j=0; j < bitwidth; j++)
-            {
-              if (myarray[loc] != 0)
-              {
-               Mycolour = getColour(myarray[loc]);
-               DrawRectangle(previewx+j*psize,previewy+i*psize,psize,psize,Mycolour);    
-              }
-              loc++;
-            }        
-     }
 
 void drawgrid()
 {
@@ -255,7 +246,7 @@ int pushblock(int x, int y, int dx, int dy)
 int createnemies()
 {
   for (int i=0; i< 1; i++)
-    {  Enemy Entmp(1,1);
+    {  Enemy Entmp(1,1,1);
        Entmp.spawn();
        Enemies.push_back(Entmp);
     }
@@ -313,13 +304,14 @@ int ReadKeys()
 }
 
 int main() {
-    InitWindow(screenWidth, screenHeight, "Blocks"); // RNG seed is set randomly in InitWindow !!
+    InitWindow(screenWidth, screenHeight, "Math Attack!"); // RNG seed is set randomly in InitWindow !!
 
     Vector2 MousePos;
     SetTargetFPS(60);
     cleargrid();
     fillgrid(griddensity);
     createnemies(); // RNG seed is set randomly in InitWindow !!
+    Enemy Enday(1,1,1);
     while (!WindowShouldClose()) 
     {
         ReadKeys();
@@ -332,6 +324,7 @@ int main() {
         MousePos = GetMousePosition();
         DrawText("<Space> - Save",800,200,20, WHITE);
         drawCharfromArray(gridtoxy(herox), gridtoxy(heroy), 3,8, Char1);
+        Enday.draw();
         EndDrawing();
     }
 
