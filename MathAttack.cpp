@@ -10,7 +10,7 @@
 //run:     ./MathAttack
 // raylib uses float for most numbers, and so use 2.0f to convert int to float. Note that 2.0 will be a double
 
-// Enemy blocks with numbers
+// bonus for multiple hits 20, 40, 80, 160
 // Make level editor
 
 
@@ -91,6 +91,7 @@ int CharEnemy1[64] = {5,0,0,17,0,0,0,5,0,5,0,0,17,0,5,0,5,0,11,17,0,11,0,5,0,5,5
 
 int herox = 20;
 int heroy = 20;
+int traily = -200;
 
 int shootnumber = 1;
 
@@ -153,16 +154,17 @@ vector <Enemy> Enemies;
 
 int moveenemies()
 {
+  traily++;
   for (int i=0;i<Enemies.size();i++)
         Enemies[i].move();
   return 0;
 }
 
-
 int createnemies()
 {
   for (int i=0; i< 9; i++)
-    {  Enemy Entmp(screenWidth/2-30,i*40,GetRandomValue(0,9));
+    {  
+       Enemy Entmp(screenWidth/2-30,i*40+traily,GetRandomValue(0,9));
        Entmp.spawn();
        Enemies.push_back(Entmp);
     }
@@ -178,12 +180,28 @@ int drawnemies()
   return 0;
 }
 
+int removeenemy(int shotnumber)
+{
+  for (int i=Enemies.size()-1;i >= 0; i--) // go backwards to avoid index shifting when element is removed
+    {  
+       if (Enemies[i].attacknumber == shotnumber)
+        {
+          Enemies.erase(Enemies.begin()+i);
+        };
+    }
+  for (int i=0; i < Enemies.size(); i++)
+    {  
+       Enemies[i].y = i*40+traily;
+    }
+  return 0;
+}
+
 int ReadKeys()
 {
    int c = 0;
    if (IsKeyPressed(KEY_SPACE))
         {
-             c++;
+             removeenemy(shootnumber);
         }
    if (IsKeyPressed(KEY_RIGHT))
         {         
@@ -195,7 +213,6 @@ int ReadKeys()
         {
 
               heroy--;
-
 
         }
     if (IsKeyPressed(KEY_LEFT))
@@ -226,20 +243,19 @@ int ReadKeys()
 int main() {
     InitWindow(screenWidth, screenHeight, "Math Attack!"); // RNG seed is set randomly in InitWindow !!
    
-    float moveInterval = 0.02f; // 900 ms 
+    float moveInterval = 0.05f; // 80 ms 
     float moveTimer = 0.0f;
     Vector2 MousePos;
     SetTargetFPS(60);
     createnemies(); // RNG seed is set randomly in InitWindow !!
-    Enemy Enday(1,1,GetRandomValue(0,9));
-    Enemy Enday2(100,100,GetRandomValue(0,9));
     while (!WindowShouldClose()) 
     {
         ReadKeys();
         float dt = GetFrameTime(); // seconds since last frame 
         moveTimer += dt; 
         if (moveTimer >= moveInterval) 
-          { moveenemies(); 
+          { 
+            moveenemies(); 
             moveTimer = 0.0f; // reset timer 
           }
 
@@ -249,6 +265,7 @@ int main() {
         DrawRectangleLines(0,0,screenWidth,screenHeight,YELLOW);
         MousePos = GetMousePosition();
         DrawText(to_string(shootnumber).c_str(),screenWidth/2-40,screenHeight-100,80, WHITE);
+        DrawText(to_string(Enemies.size()).c_str(),screenWidth/2-40,screenHeight-40,40, WHITE);
         drawCharfromArray(herox, heroy, 3,8, Char1);
         drawnemies();
         EndDrawing();
