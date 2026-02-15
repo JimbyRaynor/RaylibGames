@@ -10,8 +10,12 @@
 //run:     ./MathAttack
 // raylib uses float for most numbers, and so use 2.0f to convert int to float. Note that 2.0 will be a double
 
-// bonus for multiple hits 20, 40, 80, 160
-// Make level editor
+// bonus (and explosions) for multiple hits 20, 40, 80, 160
+// Make levels: More, faster, motherships, three missle bases, draw [simple] graphics
+// A miss explodes shell and damages shield
+//  if (shield == -1)  {endgame};
+// Make xmas theme :) !!
+// Chinese New Year Theme with dragons and red envelopes
 
 
 
@@ -91,9 +95,14 @@ int CharEnemy1[64] = {5,0,0,17,0,0,0,5,0,5,0,0,17,0,5,0,5,0,11,17,0,11,0,5,0,5,5
 
 int herox = 20;
 int heroy = 20;
-int traily = -200;
+int traily = -40;
+int totalenemies = 20;
+int createdenemies = 1;
+int enemymovement = 0;
+int movementstep = 2;
 
 int shootnumber = 1;
+int shield = 3;
 
 void drawCharfromArray(int previewx, int previewy, int psize, int bitwidth, int myarray[])
      {
@@ -140,7 +149,7 @@ int Enemy::spawn()
 
 int Enemy::move()
 {
-    y = y + 1;
+    y = y + movementstep;
     return 0;
 }
 
@@ -154,7 +163,9 @@ vector <Enemy> Enemies;
 
 int moveenemies()
 {
-  traily++;
+  traily += movementstep;
+  enemymovement += movementstep;
+
   for (int i=0;i<Enemies.size();i++)
         Enemies[i].move();
   return 0;
@@ -165,9 +176,26 @@ int createnemies()
   for (int i=0; i< 9; i++)
     {  
        Enemy Entmp(screenWidth/2-30,i*40+traily,GetRandomValue(0,9));
-       Entmp.spawn();
        Enemies.push_back(Entmp);
     }
+  return 0;
+}
+
+int resetenemyloc()
+{
+ traily = -40;
+  for (int i=0; i< Enemies.size(); i++)
+    {  
+       Enemies[i].y = i*40+traily;
+    }
+  enemymovement = 0;
+  return 0;
+}
+
+int createnewnemy()
+{
+  Enemy Entmp(screenWidth/2-30,-40,GetRandomValue(0,9));
+  Enemies.push_back(Entmp);
   return 0;
 }
 
@@ -182,17 +210,26 @@ int drawnemies()
 
 int removeenemy(int shotnumber)
 {
+  bool hit = false;
   for (int i=Enemies.size()-1;i >= 0; i--) // go backwards to avoid index shifting when element is removed
     {  
        if (Enemies[i].attacknumber == shotnumber)
         {
           Enemies.erase(Enemies.begin()+i);
+          hit = true;
         };
     }
-  for (int i=0; i < Enemies.size(); i++)
-    {  
+  if (hit == true)
+  {
+     traily = -40;
+     resetenemyloc();
+     for (int i=0; i < Enemies.size(); i++)
+     {  
        Enemies[i].y = i*40+traily;
-    }
+     }
+  }
+  else shield--;
+
   return 0;
 }
 
@@ -256,6 +293,11 @@ int main() {
         if (moveTimer >= moveInterval) 
           { 
             moveenemies(); 
+            if (enemymovement >= 40)
+            {
+                createnewnemy();
+                enemymovement = 0;
+            }
             moveTimer = 0.0f; // reset timer 
           }
 
@@ -265,7 +307,8 @@ int main() {
         DrawRectangleLines(0,0,screenWidth,screenHeight,YELLOW);
         MousePos = GetMousePosition();
         DrawText(to_string(shootnumber).c_str(),screenWidth/2-40,screenHeight-100,80, WHITE);
-        DrawText(to_string(Enemies.size()).c_str(),screenWidth/2-40,screenHeight-40,40, WHITE);
+        DrawText(("Enemies: "+to_string(Enemies.size())).c_str(),screenWidth/2-40,screenHeight-40,40, WHITE);
+        DrawText(("Shield: "+to_string(shield)).c_str(),screenWidth*0.75,screenHeight-40,40, WHITE);
         drawCharfromArray(herox, heroy, 3,8, Char1);
         drawnemies();
         EndDrawing();
