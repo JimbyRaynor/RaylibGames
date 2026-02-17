@@ -110,10 +110,11 @@ int totalenemies = 20;
 int createdenemies = 0;
 int enemymovement = 0;
 int movementstep = 1;
+int hits = 0;
 
 int shootnumber = 1;
 int shield = 3;
-int level = 3;
+int level = 1;
 int levels[] = {0,3,9,14,14,20,33,32,32,32}; // Extra enemies added in each level; 
 
 void drawCharfromArray(int previewx, int previewy, int psize, int bitwidth, int myarray[])
@@ -229,6 +230,7 @@ int removeenemy(int shotnumber)
         {
           Enemies.erase(Enemies.begin()+i);
           hit = true;
+          hits++;
         };
     }
   if (hit == true)
@@ -237,7 +239,14 @@ int removeenemy(int shotnumber)
      resetenemyloc();
   }
   else shield--;
-
+  if (Enemies.size() == 0)
+  {
+     level++;
+     traily = -40;
+     hits = 0;
+     createdenemies = 0;
+     createnemies();
+  }
   return 0;
 }
 
@@ -286,7 +295,7 @@ int ReadKeys()
 int main() {
     InitWindow(screenWidth, screenHeight, "Math Attack!"); // RNG seed is set randomly in InitWindow !!
    
-    float moveInterval = 0.1f; // ms b/w move
+    float moveInterval = 0.01f; // ms b/w move
     float moveTimer = 0.0f;
     Vector2 MousePos;
     SetTargetFPS(60);
@@ -305,8 +314,7 @@ int main() {
                 {
                       createnewnemy();
                       createdenemies++;
-                }
-                
+                }           
                 enemymovement = 0;
             }
             moveTimer = 0.0f; // reset timer 
@@ -318,8 +326,9 @@ int main() {
         DrawRectangleLines(0,0,screenWidth,screenHeight,YELLOW);
         MousePos = GetMousePosition();
         DrawText(to_string(shootnumber).c_str(),screenWidth/2-40,screenHeight-100,80, WHITE);
-        DrawText(("Enemies: "+to_string(Enemies.size())).c_str(),screenWidth/2-40,screenHeight-40,40, WHITE);
+        DrawText(("Enemies: "+to_string(9+levels[level]-hits)).c_str(),screenWidth/2-40,screenHeight-40,40, WHITE);
         DrawText(("Shield: "+to_string(shield)).c_str(),screenWidth*0.75,screenHeight-40,40, WHITE);
+        DrawText(("Level: "+to_string(level)).c_str(),screenWidth*0.25,screenHeight-40,40, WHITE);
         drawCharfromArray(herox, heroy, 3,8, Char1);
         drawnemies();
         EndDrawing();
