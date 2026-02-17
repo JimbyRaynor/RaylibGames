@@ -12,8 +12,18 @@
 
 // bonus (and explosions) for multiple hits 20, 40, 80, 160
 // Make levels: More, faster, motherships, three missle bases, draw [simple] graphics
-// A miss explodes shell and damages shield
+//  A miss explodes shell and damages shield
 //  if (shield == -1)  {endgame};
+// score is proportional to distance from base
+// stage 1 10-60
+// stage 2 20,40, 120
+// ufo appears when sum is multiple of 10, scores 300  --- make into math PUZZLE just some sort of bonus?????
+
+// have a multiplication/addition board in the background. When 1,2 is hit, then light up 3. Level ends when board is full ??
+// 2,2,2 lights up 6, etc. Same for multiplication. Same for (a+b)+c, a+(b+c)  ???? add algebra SLOWLY
+
+
+
 // Make xmas theme :) !!
 // Chinese New Year Theme with dragons and red envelopes
 
@@ -97,12 +107,14 @@ int herox = 20;
 int heroy = 20;
 int traily = -40;
 int totalenemies = 20;
-int createdenemies = 1;
+int createdenemies = 0;
 int enemymovement = 0;
-int movementstep = 2;
+int movementstep = 1;
 
 int shootnumber = 1;
 int shield = 3;
+int level = 3;
+int levels[] = {0,3,9,14,14,20,33,32,32,32}; // Extra enemies added in each level; 
 
 void drawCharfromArray(int previewx, int previewy, int psize, int bitwidth, int myarray[])
      {
@@ -175,18 +187,17 @@ int createnemies()
 {
   for (int i=0; i< 9; i++)
     {  
-       Enemy Entmp(screenWidth/2-30,i*40+traily,GetRandomValue(0,9));
+       Enemy Entmp(screenWidth/2-30,(8-i)*40+traily,GetRandomValue(0,9));
        Enemies.push_back(Entmp);
     }
   return 0;
 }
 
 int resetenemyloc()
-{
- traily = -40;
-  for (int i=0; i< Enemies.size(); i++)
+{ int n = Enemies.size();
+  for (int i=0; i< n; i++)
     {  
-       Enemies[i].y = i*40+traily;
+       Enemies[n-i-1].y = i*40+traily;
     }
   enemymovement = 0;
   return 0;
@@ -194,6 +205,7 @@ int resetenemyloc()
 
 int createnewnemy()
 {
+  traily = -40;
   Enemy Entmp(screenWidth/2-30,-40,GetRandomValue(0,9));
   Enemies.push_back(Entmp);
   return 0;
@@ -220,13 +232,9 @@ int removeenemy(int shotnumber)
         };
     }
   if (hit == true)
-  {
-     traily = -40;
+  {  
+     if (createdenemies < levels[level]) traily = -40;
      resetenemyloc();
-     for (int i=0; i < Enemies.size(); i++)
-     {  
-       Enemies[i].y = i*40+traily;
-     }
   }
   else shield--;
 
@@ -236,11 +244,11 @@ int removeenemy(int shotnumber)
 int ReadKeys()
 {
    int c = 0;
-   if (IsKeyPressed(KEY_SPACE))
+   if (IsKeyPressed(KEY_ENTER))
         {
              removeenemy(shootnumber);
         }
-   if (IsKeyPressed(KEY_RIGHT))
+   if (IsKeyPressed(KEY_SPACE))
         {         
               herox++;
               shootnumber++;
@@ -256,8 +264,6 @@ int ReadKeys()
         {
       
               herox--;
-              shootnumber--;
-              if (shootnumber < 0) shootnumber = 9;
 
         }
     if (IsKeyPressed(KEY_DOWN))
@@ -280,7 +286,7 @@ int ReadKeys()
 int main() {
     InitWindow(screenWidth, screenHeight, "Math Attack!"); // RNG seed is set randomly in InitWindow !!
    
-    float moveInterval = 0.05f; // 80 ms 
+    float moveInterval = 0.1f; // ms b/w move
     float moveTimer = 0.0f;
     Vector2 MousePos;
     SetTargetFPS(60);
@@ -294,8 +300,13 @@ int main() {
           { 
             moveenemies(); 
             if (enemymovement >= 40)
-            {
-                createnewnemy();
+            {      
+                if (createdenemies < levels[level])
+                {
+                      createnewnemy();
+                      createdenemies++;
+                }
+                
                 enemymovement = 0;
             }
             moveTimer = 0.0f; // reset timer 
