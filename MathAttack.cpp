@@ -8,21 +8,21 @@
 
 //compile: g++ MathAttack.cpp -o MathAttack -lraylib -lm -ldl -lpthread -lGL -lX11
 //run:     ./MathAttack
+
 // raylib uses float for most numbers, and so use 2.0f to convert int to float. Note that 2.0 will be a double
 
-// bonus (and explosions) for multiple hits 20, 40, 80, 160
-// Make levels: More, faster, motherships, three missle bases, draw [simple] graphics
-//  A miss explodes shell and damages shield
-//  if (shield == -1)  {endgame};
 // score is proportional to distance from base
-// stage 1 10-60
-// stage 2 20,40, 120
+
+// Work on ideas below
 // ufo appears when sum is multiple of 10, scores 300  --- make into math PUZZLE just some sort of bonus?????
 
 // have a multiplication/addition board in the background. When 1,2 is hit, then light up 3. Level ends when board is full ??
 // 2,2,2 lights up 6, etc. Same for multiplication. Same for (a+b)+c, a+(b+c)  ???? add algebra SLOWLY
 
+// move down like bejeweled when hit? for making matches 1 + 1 =2?
+// match creates a new block that gets placed on the board for extra steps in calculation. E.g 7+7=14, and 14 x 2 =28 is on board 
 
+// reset/backspace block to erase stray (unwanted) number entered
 
 // Make xmas theme :) !!
 // Chinese New Year Theme with dragons and red envelopes
@@ -116,6 +116,7 @@ int shootnumber = 1;
 int shield = 3;
 int level = 1;
 int levels[] = {0,3,9,14,14,20,33,32,32,32}; // Extra enemies added in each level; 
+int Board[10][10] = {{0,1,2,3,4,5,6,7,8,9},{10,11,12,13,14,15,16,17,18,19}, {20,21,22,23,24,25,26,27,28,29}};
 
 void drawCharfromArray(int previewx, int previewy, int psize, int bitwidth, int myarray[])
      {
@@ -186,9 +187,9 @@ int moveenemies()
 
 int createnemies()
 {
-  for (int i=0; i< 9; i++)
+  for (int i=0; i< 18; i++)
     {  
-       Enemy Entmp(screenWidth/2-30,(8-i)*40+traily,GetRandomValue(0,9));
+       Enemy Entmp(screenWidth/2-30,(17-i)*40+traily,GetRandomValue(0,9));
        Enemies.push_back(Entmp);
     }
   return 0;
@@ -295,7 +296,7 @@ int ReadKeys()
 int main() {
     InitWindow(screenWidth, screenHeight, "Math Attack!"); // RNG seed is set randomly in InitWindow !!
    
-    float moveInterval = 0.01f; // ms b/w move
+    float moveInterval = 0.01f; // 1000ms b/w move
     float moveTimer = 0.0f;
     Vector2 MousePos;
     SetTargetFPS(60);
@@ -305,16 +306,13 @@ int main() {
         ReadKeys();
         float dt = GetFrameTime(); // seconds since last frame 
         moveTimer += dt; 
-        if (moveTimer >= moveInterval) 
+        if (moveTimer >= moveInterval and Enemies[0].y < 500) 
           { 
             moveenemies(); 
             if (enemymovement >= 40)
             {      
-                if (createdenemies < levels[level])
-                {
-                      createnewnemy();
-                      createdenemies++;
-                }           
+                createnewnemy();
+                createdenemies++;         
                 enemymovement = 0;
             }
             moveTimer = 0.0f; // reset timer 
