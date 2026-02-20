@@ -19,10 +19,15 @@
 // have a multiplication/addition board in the background. When 1,2 is hit, then light up 3. Level ends when board is full ??
 // 2,2,2 lights up 6, etc. Same for multiplication. Same for (a+b)+c, a+(b+c)  ???? add algebra SLOWLY
 
-// move down like bejeweled when hit? for making matches 1 + 1 =2?
+// every number is a sum of two primes?
+// just input primes?
+
 // match creates a new block that gets placed on the board for extra steps in calculation. E.g 7+7=14, and 14 x 2 =28 is on board 
 
 // reset/backspace block to erase stray (unwanted) number entered
+// levels for +,-,/,*, etc
+
+// The Matrix screensaver theme?
 
 // Make xmas theme :) !!
 // Chinese New Year Theme with dragons and red envelopes
@@ -111,12 +116,24 @@ int createdenemies = 0;
 int enemymovement = 0;
 int movementstep = 1;
 int hits = 0;
+int value1 = 0;
+bool value1picked = false;
+int value2 = 0;
+bool value2picked = false;
 
 int shootnumber = 1;
 int shield = 3;
 int level = 1;
 int levels[] = {0,3,9,14,14,20,33,32,32,32}; // Extra enemies added in each level; 
-int Board[10][10] = {{0,1,2,3,4,5,6,7,8,9},{10,11,12,13,14,15,16,17,18,19}, {20,21,22,23,24,25,26,27,28,29}};
+int Board[20][20];
+
+int fillboard()
+{
+  for (int i = 0;i<10; i++)
+   for (int j = 0; j <10; j++)
+     Board[i][j] = i*10+j;
+  return 0;
+}
 
 void drawCharfromArray(int previewx, int previewy, int psize, int bitwidth, int myarray[])
      {
@@ -222,6 +239,15 @@ int drawnemies()
   return 0;
 }
 
+int removefromboard(int number)
+{
+for (int i = 0;i<10; i++)
+   for (int j = 0; j <10; j++)
+     if (Board[i][j] == number)
+          Board[i][j] = -1;
+return 0;
+}
+
 int removeenemy(int shotnumber)
 {
   bool hit = false;
@@ -231,6 +257,18 @@ int removeenemy(int shotnumber)
         {
           Enemies.erase(Enemies.begin()+i);
           hit = true;
+          if (value1picked == false)
+          {
+            value1 = shotnumber;
+            value1picked = true;
+          }
+          else
+          {
+            value2 = shotnumber;
+            value1picked = false;
+            removefromboard(value1+value2);
+
+          }
           hits++;
         };
     }
@@ -293,6 +331,16 @@ int ReadKeys()
     return 0;
 }
 
+int drawboard()
+{
+  int boardx = 700, boardy = 100, cellwidth = 50;
+  for (int i = 0;i<10; i++)
+   for (int j = 0; j <10; j++)
+     if (Board[i][j] != -1)
+                DrawText(to_string(Board[i][j]).c_str(),boardx+cellwidth*j,boardy+cellwidth*i,30, WHITE);
+  return 0;
+}
+
 int main() {
     InitWindow(screenWidth, screenHeight, "Math Attack!"); // RNG seed is set randomly in InitWindow !!
    
@@ -301,6 +349,7 @@ int main() {
     Vector2 MousePos;
     SetTargetFPS(60);
     createnemies(); // RNG seed is set randomly in InitWindow !!
+    fillboard();
     while (!WindowShouldClose()) 
     {
         ReadKeys();
@@ -322,11 +371,21 @@ int main() {
         ClearBackground(BLACK); // these two lines MUST go first when drawing
 
         DrawRectangleLines(0,0,screenWidth,screenHeight,YELLOW);
+        drawboard();
         MousePos = GetMousePosition();
         DrawText(to_string(shootnumber).c_str(),screenWidth/2-40,screenHeight-100,80, WHITE);
         DrawText(("Enemies: "+to_string(9+levels[level]-hits)).c_str(),screenWidth/2-40,screenHeight-40,40, WHITE);
         DrawText(("Shield: "+to_string(shield)).c_str(),screenWidth*0.75,screenHeight-40,40, WHITE);
         DrawText(("Level: "+to_string(level)).c_str(),screenWidth*0.25,screenHeight-40,40, WHITE);
+        if (value1picked == true)
+        {
+          DrawText((to_string(value1)+" +").c_str(),800,screenHeight-200,40, WHITE);
+        }
+         if (value2picked == true)
+        {
+          DrawText((to_string(value2)+" =").c_str(),880,screenHeight-200,40, WHITE);
+        }
+        
         drawCharfromArray(herox, heroy, 3,8, Char1);
         drawnemies();
         EndDrawing();
