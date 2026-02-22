@@ -5,6 +5,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <algorithm>
 
 //compile: g++ MathAttack.cpp -o MathAttack -lraylib -lm -ldl -lpthread -lGL -lX11
 //run:     ./MathAttack
@@ -19,7 +20,13 @@
 // have a multiplication/addition board in the background. When 1,2 is hit, then light up 3. Level ends when board is full ??
 // 2,2,2 lights up 6, etc. Same for multiplication. Same for (a+b)+c, a+(b+c)  ???? add algebra SLOWLY
 
-// every number is a sum of two primes?
+// Drop + x / -  to change operation
+// Expand expression to n terms ??? 
+// or just recycle number into the stream to create bigger numbers. Bonus for finishing quickly.
+//    will be hard/impossible to finish!!  eventually even 20 will be unobtainable. Then next level: bonus for removing all
+// score = sum of the two numbers (high numbers give best score), and chains can be made naturally.
+
+// every number is a sum of two primes? side track?
 // just input primes?
 
 // match creates a new block that gets placed on the board for extra steps in calculation. E.g 7+7=14, and 14 x 2 =28 is on board 
@@ -126,6 +133,9 @@ int shield = 3;
 int level = 1;
 int levels[] = {0,3,9,14,14,20,33,32,32,32}; // Extra enemies added in each level; 
 int Board[20][20];
+string operation = "+";
+vector <int> gunvector;
+int gunindex = 0;
 
 int fillboard()
 {
@@ -202,6 +212,16 @@ int moveenemies()
   return 0;
 }
 
+int loadgunvector()
+{
+  gunvector.clear();
+  for (int i=0;i<Enemies.size();i++)
+        if (find(gunvector.begin(),gunvector.end(),Enemies[i].attacknumber) == gunvector.end())  // need unique
+              gunvector.push_back(Enemies[i].attacknumber);
+  sort(gunvector.begin(),gunvector.end());
+  return 0;
+}
+
 int createnemies()
 {
   for (int i=0; i< 18; i++)
@@ -230,6 +250,14 @@ int createnewnemy()
   return 0;
 }
 
+int createnewnemysum(int sum)
+{
+  traily = -40;
+  Enemy Entmp(screenWidth/2-30,-40,sum);
+  Enemies.push_back(Entmp);
+  return 0;
+}
+
 int drawnemies()
 {
   for (int i=0; i< Enemies.size(); i++)
@@ -253,7 +281,7 @@ int removeenemy(int shotnumber)
   bool hit = false;
   for (int i=Enemies.size()-1;i >= 0; i--) // go backwards to avoid index shifting when element is removed
     {  
-       if (Enemies[i].attacknumber == shotnumber)
+       if (Enemies[i].attacknumber == shotnumber and hit == false)
         {
           Enemies.erase(Enemies.begin()+i);
           hit = true;
@@ -267,7 +295,7 @@ int removeenemy(int shotnumber)
             value2 = shotnumber;
             value1picked = false;
             removefromboard(value1+value2);
-
+            createnewnemysum(value1+value2);
           }
           hits++;
         };
@@ -294,13 +322,14 @@ int ReadKeys()
    int c = 0;
    if (IsKeyPressed(KEY_ENTER))
         {
-             removeenemy(shootnumber);
+             removeenemy(gunvector[gunindex]);
+             loadgunvector();
         }
    if (IsKeyPressed(KEY_SPACE))
         {         
               herox++;
-              shootnumber++;
-              if (shootnumber > 9) shootnumber = 0;
+              gunindex++;
+              if (gunindex >= gunvector.size()) gunindex = 0;
         }
    if (IsKeyPressed(KEY_UP))
         {
@@ -350,6 +379,7 @@ int main() {
     SetTargetFPS(60);
     createnemies(); // RNG seed is set randomly in InitWindow !!
     fillboard();
+    loadgunvector();
     while (!WindowShouldClose()) 
     {
         ReadKeys();
@@ -373,13 +403,14 @@ int main() {
         DrawRectangleLines(0,0,screenWidth,screenHeight,YELLOW);
         drawboard();
         MousePos = GetMousePosition();
-        DrawText(to_string(shootnumber).c_str(),screenWidth/2-40,screenHeight-100,80, WHITE);
+        DrawText(to_string(gunvector[gunindex]).c_str(),screenWidth/2-40,screenHeight-100,80, WHITE);
         DrawText(("Enemies: "+to_string(9+levels[level]-hits)).c_str(),screenWidth/2-40,screenHeight-40,40, WHITE);
         DrawText(("Shield: "+to_string(shield)).c_str(),screenWidth*0.75,screenHeight-40,40, WHITE);
         DrawText(("Level: "+to_string(level)).c_str(),screenWidth*0.25,screenHeight-40,40, WHITE);
+        DrawText(operation.c_str(),840,screenHeight-200,40, WHITE);
         if (value1picked == true)
         {
-          DrawText((to_string(value1)+" +").c_str(),800,screenHeight-200,40, WHITE);
+          DrawText((to_string(value1)).c_str(),800,screenHeight-200,40, WHITE);
         }
          if (value2picked == true)
         {
