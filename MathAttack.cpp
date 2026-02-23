@@ -12,26 +12,17 @@
 
 // raylib uses float for most numbers, and so use 2.0f to convert int to float. Note that 2.0 will be a double
 
-// score is proportional to distance from base
 
-// Work on ideas below
-// ufo appears when sum is multiple of 10, scores 300  --- make into math PUZZLE just some sort of bonus?????
+// Same for (a+b)+c, a+(b+c)  ???? add algebra SLOWLY
 
-// have a multiplication/addition board in the background. When 1,2 is hit, then light up 3. Level ends when board is full ??
-// 2,2,2 lights up 6, etc. Same for multiplication. Same for (a+b)+c, a+(b+c)  ???? add algebra SLOWLY
 
-// Drop + x / -  to change operation
-// Expand expression to n terms ??? 
-// or just recycle number into the stream to create bigger numbers. Bonus for finishing quickly.
-//    will be hard/impossible to finish!!  eventually even 20 will be unobtainable. Then next level: bonus for removing all
+// Next level when 10-18 are all gone AND all numbers in gunvector <= 9 Just check for "No More Moves".
+// Then next level: bonus for removing all
 // score = sum of the two numbers (high numbers give best score), and chains can be made naturally.
 
 // every number is a sum of two primes? side track?
 // just input primes?
 
-// match creates a new block that gets placed on the board for extra steps in calculation. E.g 7+7=14, and 14 x 2 =28 is on board 
-
-// reset/backspace block to erase stray (unwanted) number entered
 // levels for +,-,/,*, etc
 
 // The Matrix screensaver theme?
@@ -272,8 +263,11 @@ int removefromboard(int number)
 for (int i = 0;i<10; i++)
    for (int j = 0; j <10; j++)
      if (Board[i][j] == number)
+     {
           Board[i][j] = -1;
-return 0;
+          return 0;
+     }
+return -1;
 }
 
 int removeenemy(int shotnumber)
@@ -294,8 +288,12 @@ int removeenemy(int shotnumber)
           {
             value2 = shotnumber;
             value1picked = false;
-            removefromboard(value1+value2);
-            createnewnemysum(value1+value2);
+            if (removefromboard(value1+value2) != -1)
+               if  (value1+value2 <= 99)  
+                 {
+                  createnewnemysum(value1+value2);
+                  if (value1+value2 >= 90)  createnewnemysum(GetRandomValue(10,18));
+                 }
           }
           hits++;
         };
