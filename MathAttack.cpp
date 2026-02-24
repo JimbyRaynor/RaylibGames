@@ -17,6 +17,8 @@
 // Look at expensive watch faces CASIO, SEIKO, etc. for screen design
 
 
+// keep 1-9 but have sparse board 
+
 // Next level when 10-18 are all gone AND all numbers in gunvector <= 9 Just check for "No More Moves".
 // "Orange Peg" numbers give bonus multipliers, but also give an extra 10-18 number
 // Then next level: bonus for removing all
@@ -141,7 +143,11 @@ int fillboard()
 {
   for (int i = 0;i<10; i++)
    for (int j = 0; j <10; j++)
-     Board[i][j] = i*10+j;
+     if (GetRandomValue(0,9) >= 7)
+           Board[i][j] = i*10+j;
+           else
+           Board[i][j] = -1;
+
   return 0;
 }
 
@@ -292,9 +298,6 @@ int drawnemies()
     }
   return 0;
 }
-
-
-
 
 
 int removeenemy(int shotnumber)
