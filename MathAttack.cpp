@@ -14,11 +14,18 @@
 
 
 // Same for (a+b)+c, a+(b+c)  ???? add algebra SLOWLY
+// Look at expensive watch faces CASIO, SEIKO, etc. for screen design
 
 
 // Next level when 10-18 are all gone AND all numbers in gunvector <= 9 Just check for "No More Moves".
+// "Orange Peg" numbers give bonus multipliers, but also give an extra 10-18 number
 // Then next level: bonus for removing all
 // score = sum of the two numbers (high numbers give best score), and chains can be made naturally.
+// Log of sums on left hand side of screen
+
+// remove numbers from board at start, so level is quicker to finish, like a peg board. Design on Kindle Scribe
+
+
 
 // every number is a sum of two primes? side track?
 // just input primes?
@@ -30,6 +37,7 @@
 // Make xmas theme :) !!
 // Chinese New Year Theme with dragons and red envelopes
 
+// chars walking across screen to show progress ?
 
 
 using namespace std;
@@ -126,6 +134,7 @@ int levels[] = {0,3,9,14,14,20,33,32,32,32}; // Extra enemies added in each leve
 int Board[20][20];
 string operation = "+";
 vector <int> gunvector;
+vector <string> sumlog;
 int gunindex = 0;
 
 int fillboard()
@@ -215,7 +224,7 @@ int loadgunvector()
 
 int createnemies()
 {
-  for (int i=0; i< 18; i++)
+  for (int i=0; i< 4; i++)
     {  
        Enemy Entmp(screenWidth/2-30,(17-i)*40+traily,GetRandomValue(0,9));
        Enemies.push_back(Entmp);
@@ -233,10 +242,36 @@ int resetenemyloc()
   return 0;
 }
 
+int removefromboard(int number)
+{
+for (int i = 0;i<10; i++)
+   for (int j = 0; j <10; j++)
+     if (Board[i][j] == number)
+     {
+          Board[i][j] = -1;
+          return 0;
+     }
+return -1;
+}
+
+int findminboard()
+{
+  int min = 99;
+  for (int i = 0;i<10; i++)
+   for (int j = 0; j <10; j++)
+       if (Board[i][j] < min and Board[i][j] != -1) min = Board[i][j];
+  return min;
+}
+
 int createnewnemy()
 {
+  int min, newnumber;
+  min = findminboard();
+  if (min > 9) return 0;
+  newnumber = GetRandomValue(min,9);
+  removefromboard(newnumber);
   traily = -40;
-  Enemy Entmp(screenWidth/2-30,-40,GetRandomValue(0,9));
+  Enemy Entmp(screenWidth/2-30,-40,newnumber);
   Enemies.push_back(Entmp);
   return 0;
 }
@@ -258,17 +293,9 @@ int drawnemies()
   return 0;
 }
 
-int removefromboard(int number)
-{
-for (int i = 0;i<10; i++)
-   for (int j = 0; j <10; j++)
-     if (Board[i][j] == number)
-     {
-          Board[i][j] = -1;
-          return 0;
-     }
-return -1;
-}
+
+
+
 
 int removeenemy(int shotnumber)
 {
@@ -289,11 +316,13 @@ int removeenemy(int shotnumber)
             value2 = shotnumber;
             value1picked = false;
             if (removefromboard(value1+value2) != -1)
-               if  (value1+value2 <= 99)  
-                 {
-                  createnewnemysum(value1+value2);
-                  if (value1+value2 >= 90)  createnewnemysum(GetRandomValue(10,18));
-                 }
+            {
+               createnewnemysum(value1+value2);
+               sumlog.push_back(to_string(value1)+" + "+to_string(value2)+" = "+to_string(value1+value2));
+               if (value1+value2 >= 90)  createnewnemysum(GetRandomValue(10,18));
+
+            }
+            else sumlog.push_back(to_string(value1)+" + "+to_string(value2)+" = "+to_string(value1+value2)+" *not on board* ");
           }
           hits++;
         };
@@ -325,7 +354,6 @@ int ReadKeys()
         }
    if (IsKeyPressed(KEY_SPACE))
         {         
-              herox++;
               gunindex++;
               if (gunindex >= gunvector.size()) gunindex = 0;
         }
@@ -368,6 +396,17 @@ int drawboard()
   return 0;
 }
 
+int drawsumlog()
+{
+  int j = 0;
+  for (int i=sumlog.size()-1; i >= 0 and j <= 10 ; i--)
+    {  
+       DrawText(sumlog[i].c_str(),40,j*30,30, WHITE);
+       j++;
+    }
+  return 0;
+}
+
 int main() {
     InitWindow(screenWidth, screenHeight, "Math Attack!"); // RNG seed is set randomly in InitWindow !!
    
@@ -378,6 +417,7 @@ int main() {
     createnemies(); // RNG seed is set randomly in InitWindow !!
     fillboard();
     loadgunvector();
+    sumlog.clear();
     while (!WindowShouldClose()) 
     {
         ReadKeys();
@@ -400,6 +440,7 @@ int main() {
 
         DrawRectangleLines(0,0,screenWidth,screenHeight,YELLOW);
         drawboard();
+        drawsumlog();
         MousePos = GetMousePosition();
         DrawText(to_string(gunvector[gunindex]).c_str(),screenWidth/2-40,screenHeight-100,80, WHITE);
         DrawText(("Enemies: "+to_string(9+levels[level]-hits)).c_str(),screenWidth/2-40,screenHeight-40,40, WHITE);
@@ -415,7 +456,7 @@ int main() {
           DrawText((to_string(value2)+" =").c_str(),880,screenHeight-200,40, WHITE);
         }
         
-        drawCharfromArray(herox, heroy, 3,8, Char1);
+        //drawCharfromArray(herox, heroy, 3,8, Char1);
         drawnemies();
         EndDrawing();
     }
