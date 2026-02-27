@@ -16,6 +16,10 @@
 // Same for (a+b)+c, a+(b+c)  ???? add algebra SLOWLY
 // Look at expensive watch faces CASIO, SEIKO, etc. for screen design
 
+// snakes and ladders ideas?
+
+// Level completed when sum = 100. Then 100 explodes into fireworks like peggle
+// Char moves across numberline towards 100?
 
 // keep 1-9 but have sparse board 
 
@@ -230,7 +234,7 @@ int loadgunvector()
 
 int createnemies()
 {
-  for (int i=0; i< 4; i++)
+  for (int i=0; i< 10; i++)
     {  
        Enemy Entmp(screenWidth/2-30,(17-i)*40+traily,GetRandomValue(0,9));
        Enemies.push_back(Entmp);
@@ -250,6 +254,7 @@ int resetenemyloc()
 
 int removefromboard(int number)
 {
+if (number == 100) return 0;
 for (int i = 0;i<10; i++)
    for (int j = 0; j <10; j++)
      if (Board[i][j] == number)
@@ -271,11 +276,8 @@ int findminboard()
 
 int createnewnemy()
 {
-  int min, newnumber;
-  min = findminboard();
-  if (min > 9) return 0;
-  newnumber = GetRandomValue(min,9);
-  removefromboard(newnumber);
+  int newnumber;
+  newnumber = GetRandomValue(1,9);
   traily = -40;
   Enemy Entmp(screenWidth/2-30,-40,newnumber);
   Enemies.push_back(Entmp);
@@ -300,6 +302,17 @@ int drawnemies()
 }
 
 
+int createnewlevel()
+{
+     level++;
+     traily = -40;
+     hits = 0;
+     createdenemies = 0;
+     createnemies();
+     return 0;
+  }
+
+
 int removeenemy(int shotnumber)
 {
   bool hit = false;
@@ -317,15 +330,21 @@ int removeenemy(int shotnumber)
           else
           {
             value2 = shotnumber;
-            value1picked = false;
+            value1picked = false;        
             if (removefromboard(value1+value2) != -1)
             {
-               createnewnemysum(value1+value2);
                sumlog.push_back(to_string(value1)+" + "+to_string(value2)+" = "+to_string(value1+value2));
-               if (value1+value2 >= 90)  createnewnemysum(GetRandomValue(10,18));
-
+               if (value1+value2 >= 90)  
+                   createnewnemysum(GetRandomValue(10,18));
+               else
+                   createnewnemysum(value1+value2+10);
+               if (value1+value2 == 100)  createnewlevel();
             }
-            else sumlog.push_back(to_string(value1)+" + "+to_string(value2)+" = "+to_string(value1+value2)+" *not on board* ");
+            else 
+            {
+              sumlog.push_back(to_string(value1)+" + "+to_string(value2)+" = "+to_string(value1+value2)+" *not on board* ");
+              createnewnemy();
+            }
           }
           hits++;
         };
@@ -336,14 +355,6 @@ int removeenemy(int shotnumber)
      resetenemyloc();
   }
   else shield--;
-  if (Enemies.size() == 0)
-  {
-     level++;
-     traily = -40;
-     hits = 0;
-     createdenemies = 0;
-     createnemies();
-  }
   return 0;
 }
 
