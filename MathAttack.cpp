@@ -18,25 +18,30 @@
 
 // snakes and ladders ideas?
 
+
+// work on hardest level, then make easier
+// new numbers 1-9 have to be hard to generate (not just misses), or only 3 misses allowed
+
+// fix number drop so all are visible
+// animate new number falling
+// don't add 10 for new number: just a+ b, not a+b+10 ??? 
+
+// print 100 at bottle
 // Level completed when sum = 100. Then 100 explodes into fireworks like peggle
-// Char moves across numberline towards 100?
+// Char moves across numberline towards 100? Seems good
 
-// keep 1-9 but have sparse board 
-
-// Next level when 10-18 are all gone AND all numbers in gunvector <= 9 Just check for "No More Moves".
 // "Orange Peg" numbers give bonus multipliers, but also give an extra 10-18 number
-// Then next level: bonus for removing all
+
 // score = sum of the two numbers (high numbers give best score), and chains can be made naturally.
-// Log of sums on left hand side of screen
-
-// remove numbers from board at start, so level is quicker to finish, like a peg board. Design on Kindle Scribe
+// the harder the sum, the bigger the score
 
 
+//  Design levels on Kindle Scribe
 
-// every number is a sum of two primes? side track?
-// just input primes?
+
 
 // levels for +,-,/,*, etc
+//  /  splits into divisor + reminder ?
 
 // The Matrix screensaver theme?
 
@@ -147,7 +152,7 @@ int fillboard()
 {
   for (int i = 0;i<10; i++)
    for (int j = 0; j <10; j++)
-     if (GetRandomValue(0,9) >= 7)
+     if (GetRandomValue(0,9) >= 5)   // hardest level 7
            Board[i][j] = i*10+j;
            else
            Board[i][j] = -1;
@@ -334,10 +339,15 @@ int removeenemy(int shotnumber)
             if (removefromboard(value1+value2) != -1)
             {
                sumlog.push_back(to_string(value1)+" + "+to_string(value2)+" = "+to_string(value1+value2));
-               if (value1+value2 >= 90)  
-                   createnewnemysum(GetRandomValue(10,18));
-               else
-                   createnewnemysum(value1+value2+10);
+               if (value1+value2 < 90)
+                    {
+                      createnewnemysum(value1+value2); 
+                    }
+               if (value1+value2 >= 90 and value1+value2 <= 99)  
+                  {
+                   createnewnemysum(GetRandomValue(10,19));
+                   createnewnemysum(value1+value2);
+                  }                
                if (value1+value2 == 100)  createnewlevel();
             }
             else 
@@ -402,7 +412,8 @@ int ReadKeys()
 
 int drawboard()
 {
-  int boardx = 700, boardy = 100, cellwidth = 50;
+  int boardx = 700, boardy = 10, cellwidth = 50;
+  DrawText(to_string(100).c_str(),boardx+cellwidth*4,boardy+cellwidth*10,60, WHITE);
   for (int i = 0;i<10; i++)
    for (int j = 0; j <10; j++)
      if (Board[i][j] != -1)
