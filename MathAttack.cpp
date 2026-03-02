@@ -16,37 +16,43 @@
 // Same for (a+b)+c, a+(b+c)  ???? add algebra SLOWLY
 // Look at expensive watch faces CASIO, SEIKO, etc. for screen design
 
-// snakes and ladders ideas?
-
-
-// work on hardest level, then make easier
-// new numbers 1-9 have to be hard to generate (not just misses), or only 3 misses allowed
 
 // fix number drop so all are visible
+// and still needs balancing
 // animate new number falling
-// don't add 10 for new number: just a+ b, not a+b+10 ??? 
 
-// print 100 at bottle
+
+// Levels:
+// Start with sum = 50 to finish
+
+// 4. What other types? Look for other famous theorems of number theory
+// 4. Big gaps no 20s, 40s, 60s, 80,s
+// 4.       no 30,40,50,60s, etc.
+// 5. pyramid pattern
+// 6. LHS only
+// 7. RHS only
+
+// bonus level: every number is a sum of two primes
+
 // Level completed when sum = 100. Then 100 explodes into fireworks like peggle
 // Char moves across numberline towards 100? Seems good
+// Make animation for removing number (frog jump??)
 
 // "Orange Peg" numbers give bonus multipliers, but also give an extra 10-18 number
+// Casino style board?
 
 // score = sum of the two numbers (high numbers give best score), and chains can be made naturally.
 // the harder the sum, the bigger the score
 
 
-//  Design levels on Kindle Scribe
+//  Design fixed, not random, levels on Kindle Scribe
 
 
 
 // levels for +,-,/,*, etc
-//  /  splits into divisor + reminder ?
+//  / splits into divisor + reminder ?
 
 // The Matrix screensaver theme?
-
-// Make xmas theme :) !!
-// Chinese New Year Theme with dragons and red envelopes
 
 // chars walking across screen to show progress ?
 
@@ -140,7 +146,7 @@ bool value2picked = false;
 
 int shootnumber = 1;
 int shield = 3;
-int level = 1;
+int level = 3;
 int levels[] = {0,3,9,14,14,20,33,32,32,32}; // Extra enemies added in each level; 
 int Board[20][20];
 string operation = "+";
@@ -148,15 +154,51 @@ vector <int> gunvector;
 vector <string> sumlog;
 int gunindex = 0;
 
+bool TestPrime(int n)
+{
+  if (n <= 1) return 0;
+  bool  isprime = true;
+  for (int i = 2; i < n; i++)
+       if (n % i == 0)
+          isprime = false;
+  return isprime;
+
+}
+
 int fillboard()
 {
   for (int i = 0;i<10; i++)
    for (int j = 0; j <10; j++)
-     if (GetRandomValue(0,9) >= 5)   // hardest level 7
+   {
+     if (level == 9)
+     {
+        if (GetRandomValue(0,9) >= 7)   // hardest level 7
            Board[i][j] = i*10+j;
            else
            Board[i][j] = -1;
-
+     }
+     if (level == 1)
+     {
+       if ((i*10+j) % 2 == 0) 
+          Board[i][j] = i*10+j;
+           else
+           Board[i][j] = -1;
+     }
+     if (level == 2)
+     {
+       if ((i*10+j) % 2 == 1) 
+          Board[i][j] = i*10+j;
+           else
+           Board[i][j] = -1;
+     }
+    if (level == 3)
+     {
+          if ( TestPrime(i*10+j) == true )
+          Board[i][j] = i*10+j;
+           else
+           Board[i][j] = -1; 
+     }
+   }
   return 0;
 }
 
