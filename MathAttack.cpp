@@ -17,6 +17,7 @@
 // Look at expensive watch faces CASIO, SEIKO, etc. for screen design
 
 
+// definitely want to see newly created number !!!!
 // fix number drop so all are visible
 // and still needs balancing
 // animate new number falling
@@ -47,7 +48,23 @@
 
 //  Design fixed, not random, levels on Kindle Scribe
 
-
+// Think about * level
+// Need to remove full board (multiplication table)
+// Load gun with primes and 1, all composites get made and so all cases are needed, e.g. 7*8, beacuse we only have a binary operation
+// Two columns, one for primes, one for composites (max 10), limited memory ! ? Then 4 gets loaded 4*2,4*3,4*5,4*7,4*9, 4*11, 4*13, 4*17
+// 4*11 = 2*22 = prime x 22, so 4 is not needed when we have 22 in gun vector, good puzzle! Just add 4 then minimum number of times!/
+// so mistakes can be made. If it is tricky to set up, then it makes a good puzzle!
+// how to build 16 = 2x2x2x2 ?
+// 2x4 = 8 , so need 4 to come back
+// 2x8 = 16, so need 8 to come back, etc
+// 100 = 25*4
+//  50 = 25*2, but there is only one 25
+// 9*4 = 36
+// 72 = 9*4*2, will run out of 4s as well
+// so once a number is loaded into gun, it stays there.
+// Now how to make the level difficult
+//    only three missses allowed?
+//    how to stop spamming?
 
 // levels for +,-,/,*, etc
 //  / splits into divisor + reminder ?
@@ -133,7 +150,7 @@ int CharEnemy1[64] = {5,0,0,17,0,0,0,5,0,5,0,0,17,0,5,0,5,0,11,17,0,11,0,5,0,5,5
 
 int herox = 20;
 int heroy = 20;
-int traily = -40;
+int traily = -30;
 int totalenemies = 20;
 int createdenemies = 0;
 int enemymovement = 0;
@@ -146,7 +163,7 @@ bool value2picked = false;
 
 int shootnumber = 1;
 int shield = 3;
-int level = 3;
+int level = 1;
 int levels[] = {0,3,9,14,14,20,33,32,32,32}; // Extra enemies added in each level; 
 int Board[20][20];
 string operation = "+";
@@ -172,26 +189,26 @@ int fillboard()
    {
      if (level == 9)
      {
-        if (GetRandomValue(0,9) >= 7)   // hardest level 7
+        if (GetRandomValue(0,9) >= 7)   // hardest level 7 (random)
            Board[i][j] = i*10+j;
            else
            Board[i][j] = -1;
      }
-     if (level == 1)
+     if (level == 1) // evens
      {
        if ((i*10+j) % 2 == 0) 
           Board[i][j] = i*10+j;
            else
            Board[i][j] = -1;
      }
-     if (level == 2)
+     if (level == 2)  // odds
      {
        if ((i*10+j) % 2 == 1) 
           Board[i][j] = i*10+j;
            else
            Board[i][j] = -1;
      }
-    if (level == 3)
+    if (level == 3)  // primes
      {
           if ( TestPrime(i*10+j) == true )
           Board[i][j] = i*10+j;
@@ -325,16 +342,16 @@ int createnewnemy()
 {
   int newnumber;
   newnumber = GetRandomValue(1,9);
-  traily = -40;
-  Enemy Entmp(screenWidth/2-30,-40,newnumber);
+  traily = -30;
+  Enemy Entmp(screenWidth/2-30,traily,newnumber);
   Enemies.push_back(Entmp);
   return 0;
 }
 
 int createnewnemysum(int sum)
 {
-  traily = -40;
-  Enemy Entmp(screenWidth/2-30,-40,sum);
+  traily = -30;
+  Enemy Entmp(screenWidth/2-30,0,sum);
   Enemies.push_back(Entmp);
   return 0;
 }
@@ -352,10 +369,10 @@ int drawnemies()
 int createnewlevel()
 {
      level++;
-     traily = -40;
      hits = 0;
      createdenemies = 0;
-     createnemies();
+     createnewnemy();
+     fillboard();
      return 0;
   }
 
@@ -403,7 +420,7 @@ int removeenemy(int shotnumber)
     }
   if (hit == true)
   {  
-     if (createdenemies < levels[level]) traily = -40;
+     if (createdenemies < levels[level]) traily = -30;
      resetenemyloc();
   }
   else shield--;
@@ -477,11 +494,12 @@ int drawsumlog()
 int main() {
     InitWindow(screenWidth, screenHeight, "Math Attack!"); // RNG seed is set randomly in InitWindow !!
    
-    float moveInterval = 0.01f; // 1000ms b/w move
+    float moveInterval = 0.01f; // 10ms b/w move
     float moveTimer = 0.0f;
     Vector2 MousePos;
     SetTargetFPS(60);
-    createnemies(); // RNG seed is set randomly in InitWindow !!
+    //createnemies(); // RNG seed is set randomly in InitWindow !!
+    createnewnemy();
     fillboard();
     loadgunvector();
     sumlog.clear();
@@ -492,10 +510,11 @@ int main() {
         moveTimer += dt; 
         if (moveTimer >= moveInterval and Enemies[0].y < 500) 
           { 
-            moveenemies(); 
+            moveenemies();            
             if (enemymovement >= 40)
             {      
                 createnewnemy();
+                loadgunvector();
                 createdenemies++;         
                 enemymovement = 0;
             }
