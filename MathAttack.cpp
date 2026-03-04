@@ -16,11 +16,12 @@
 // Same for (a+b)+c, a+(b+c)  ???? add algebra SLOWLY
 // Look at expensive watch faces CASIO, SEIKO, etc. for screen design
 
-
+// bring in the fonts from data files
 // definitely want to see newly created number !!!!
 // fix number drop so all are visible
 // and still needs balancing
 // animate new number falling
+// STOP when Ememies.size() >= 10 !!!!!!!!!!!! EASY !!!!
 
 
 // Levels:
@@ -160,7 +161,7 @@ int value1 = 0;
 bool value1picked = false;
 int value2 = 0;
 bool value2picked = false;
-
+bool fullstack;
 int shootnumber = 1;
 int shield = 3;
 int level = 1;
@@ -264,7 +265,8 @@ int Enemy::spawn()
 
 int Enemy::move()
 {
-    y = y + movementstep;
+    if (y <= 600)
+       y = y + movementstep;
     return 0;
 }
 
@@ -276,13 +278,26 @@ int Enemy::draw()
 }
 vector <Enemy> Enemies;
 
+bool checkenemycollision(int index)
+{
+ bool collide = false;
+ for (int i=0;i<Enemies.size();i++)
+ {
+    if (i != index and Enemies[index].y+40 == Enemies[i].y )
+     collide = true;
+ }
+ return collide;
+}
+
 int moveenemies()
 {
   traily += movementstep;
   enemymovement += movementstep;
-
   for (int i=0;i<Enemies.size();i++)
-        Enemies[i].move();
+        if (!checkenemycollision(i)) 
+         {
+          Enemies[i].move();
+         }
   return 0;
 }
 
@@ -421,7 +436,7 @@ int removeenemy(int shotnumber)
   if (hit == true)
   {  
      if (createdenemies < levels[level]) traily = -30;
-     resetenemyloc();
+    // resetenemyloc();
   }
   else shield--;
   return 0;
@@ -497,6 +512,7 @@ int main() {
     float moveInterval = 0.01f; // 10ms b/w move
     float moveTimer = 0.0f;
     Vector2 MousePos;
+    bool onemoved;
     SetTargetFPS(60);
     //createnemies(); // RNG seed is set randomly in InitWindow !!
     createnewnemy();
@@ -507,8 +523,21 @@ int main() {
     {
         ReadKeys();
         float dt = GetFrameTime(); // seconds since last frame 
-        moveTimer += dt; 
-        if (moveTimer >= moveInterval and Enemies[0].y < 500) 
+        moveTimer += dt;
+        if (Enemies.size() == 1) 
+            onemoved = true; 
+           else
+            onemoved = false;
+       for (int i=0;i<Enemies.size()-1;i++)
+        if (!checkenemycollision(i)) 
+         {
+          onemoved = true;
+         }
+       if (!onemoved) 
+          fullstack = true;
+        else
+          fullstack = false;
+       if (moveTimer >= moveInterval and Enemies.size() <= 10) 
           { 
             moveenemies();            
             if (enemymovement >= 40)
