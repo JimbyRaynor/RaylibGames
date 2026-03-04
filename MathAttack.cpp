@@ -363,10 +363,10 @@ int createnewnemy()
   return 0;
 }
 
-int createnewnemysum(int sum)
+int createnewnemysum(int sum, int startloc)
 {
   traily = -30;
-  Enemy Entmp(screenWidth/2-30,0,sum);
+  Enemy Entmp(screenWidth/2-30,startloc,sum);
   Enemies.push_back(Entmp);
   return 0;
 }
@@ -415,12 +415,12 @@ int removeenemy(int shotnumber)
                sumlog.push_back(to_string(value1)+" + "+to_string(value2)+" = "+to_string(value1+value2));
                if (value1+value2 < 90)
                     {
-                      createnewnemysum(value1+value2); 
+                      createnewnemysum(value1+value2,-80); 
                     }
                if (value1+value2 >= 90 and value1+value2 <= 99)  
                   {
-                   createnewnemysum(GetRandomValue(10,19));
-                   createnewnemysum(value1+value2);
+                   createnewnemysum(GetRandomValue(10,19),-120);
+                   createnewnemysum(value1+value2,-80);
                   }                
                if (value1+value2 == 100)  createnewlevel();
             }
@@ -451,7 +451,8 @@ int ReadKeys()
              loadgunvector();
         }
    if (IsKeyPressed(KEY_SPACE))
-        {         
+        {        
+              loadgunvector(); 
               gunindex++;
               if (gunindex >= gunvector.size()) gunindex = 0;
         }
@@ -537,13 +538,12 @@ int main() {
           fullstack = true;
         else
           fullstack = false;
-       if (moveTimer >= moveInterval and Enemies.size() <= 10) 
+       if (moveTimer >= moveInterval) 
           { 
             moveenemies();            
-            if (enemymovement >= 40)
+            if (enemymovement >= 40  and Enemies.size() <= 10)
             {      
                 createnewnemy();
-                loadgunvector();
                 createdenemies++;         
                 enemymovement = 0;
             }
