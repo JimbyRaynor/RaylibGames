@@ -7,8 +7,11 @@
 #include <vector>
 #include <algorithm>
 
-//compile: g++ MathAttack.cpp -o MathAttack -lraylib -lm -ldl -lpthread -lGL -lX11
-//run:     ./MathAttack
+// APP name: MathQuix
+
+// compile: g++ MathAttack.cpp -o MathAttack -lraylib -lm -ldl -lpthread -lGL -lX11
+// run:     ./MathAttack
+// Ctrl-C to close crashed program
 
 // raylib uses float for most numbers, and so use 2.0f to convert int to float. Note that 2.0 will be a double
 
@@ -17,15 +20,15 @@
 // Look at expensive watch faces CASIO, SEIKO, etc. for screen design
 
 // bring in the fonts from data files
-// definitely want to see newly created number !!!!
-// fix number drop so all are visible
-// and still needs balancing
-// animate new number falling
-// STOP when Ememies.size() >= 10 !!!!!!!!!!!! EASY !!!!
+// draw graphics while balancing
+// try led calculator 8 style numbers?
+// Draw controls  AIM  : <spacebar>
+//                FIRE : <Enter>
 
-
+// Is there a way to start with only 1s, then 1+1=2, 2+1 =3, etc. Yes, start with all 1s, when 2 is created then start producing 2s, then 3s, etc
 // Levels:
-// Start with sum = 50 to finish
+// 1. All numbers on board
+
 
 // 4. What other types? Look for other famous theorems of number theory
 // 4. Big gaps no 20s, 40s, 60s, 80,s
@@ -33,6 +36,9 @@
 // 5. pyramid pattern
 // 6. LHS only
 // 7. RHS only
+
+// BUGS:
+// * Numbers still collide ... use enemyqueue to add to screen
 
 // bonus level: every number is a sum of two primes
 
@@ -161,10 +167,10 @@ int value1 = 0;
 bool value1picked = false;
 int value2 = 0;
 bool value2picked = false;
-bool fullstack;
 int shootnumber = 1;
 int shield = 3;
 int level = 1;
+int maxnumber = 2;
 int levels[] = {0,3,9,14,14,20,33,32,32,32}; // Extra enemies added in each level; 
 int Board[20][20];
 string operation = "+";
@@ -195,21 +201,25 @@ int fillboard()
            else
            Board[i][j] = -1;
      }
-     if (level == 1) // evens
+     if (level == 1) // all numbers
+     {
+          Board[i][j] = i*10+j;
+     }
+     if (level == 2) // evens
      {
        if ((i*10+j) % 2 == 0) 
           Board[i][j] = i*10+j;
            else
            Board[i][j] = -1;
      }
-     if (level == 2)  // odds
+     if (level == 3)  // odds
      {
        if ((i*10+j) % 2 == 1) 
           Board[i][j] = i*10+j;
            else
            Board[i][j] = -1;
      }
-    if (level == 3)  // primes
+    if (level == 4)  // primes
      {
           if ( TestPrime(i*10+j) == true )
           Board[i][j] = i*10+j;
@@ -277,6 +287,7 @@ int Enemy::draw()
   return 0;
 }
 vector <Enemy> Enemies;
+vector <Enemy> Enemyqueue;
 
 bool checkenemycollision(int index)
 {
@@ -307,17 +318,9 @@ int loadgunvector()
   for (int i=0;i<Enemies.size();i++)
         if (find(gunvector.begin(),gunvector.end(),Enemies[i].attacknumber) == gunvector.end())  // need unique
               gunvector.push_back(Enemies[i].attacknumber);
-  sort(gunvector.begin(),gunvector.end());
-  return 0;
-}
-
-int createnemies()
-{
-  for (int i=0; i< 10; i++)
-    {  
-       Enemy Entmp(screenWidth/2-30,(17-i)*40+traily,GetRandomValue(0,9));
-       Enemies.push_back(Entmp);
-    }
+  if (gunvector.size() > 0)  
+       sort(gunvector.begin(),gunvector.end());
+  gunindex = 0;
   return 0;
 }
 
@@ -353,21 +356,15 @@ int findminboard()
   return min;
 }
 
-int createnewnemy()
+int createnewenemyinqueue(int value)
 {
-  int newnumber;
-  newnumber = GetRandomValue(1,9);
-  traily = -30;
-  Enemy Entmp(screenWidth/2-30,traily,newnumber);
-  Enemies.push_back(Entmp);
-  return 0;
-}
-
-int createnewnemysum(int sum, int startloc)
-{
-  traily = -30;
-  Enemy Entmp(screenWidth/2-30,startloc,sum);
-  Enemies.push_back(Entmp);
+  Enemy Entmp(screenWidth/2-30,-30,value);
+  if (value > maxnumber and value < 10)
+  {
+    maxnumber = value;
+  }
+  Enemyqueue.push_back(Entmp);
+  loadgunvector();
   return 0;
 }
 
@@ -385,8 +382,9 @@ int createnewlevel()
 {
      level++;
      hits = 0;
+     maxnumber = 2;
      createdenemies = 0;
-     createnewnemy();
+     createnewenemyinqueue(GetRandomValue(1,maxnumber));
      fillboard();
      return 0;
   }
@@ -395,6 +393,7 @@ int createnewlevel()
 int removeenemy(int shotnumber)
 {
   bool hit = false;
+  if (Enemies.size() == 0) return 0;
   for (int i=Enemies.size()-1;i >= 0; i--) // go backwards to avoid index shifting when element is removed
     {  
        if (Enemies[i].attacknumber == shotnumber and hit == false)
@@ -415,30 +414,25 @@ int removeenemy(int shotnumber)
                sumlog.push_back(to_string(value1)+" + "+to_string(value2)+" = "+to_string(value1+value2));
                if (value1+value2 < 90)
                     {
-                      createnewnemysum(value1+value2,-80); 
+                      createnewenemyinqueue(value1+value2);
                     }
                if (value1+value2 >= 90 and value1+value2 <= 99)  
                   {
-                   createnewnemysum(GetRandomValue(10,19),-120);
-                   createnewnemysum(value1+value2,-80);
+                   createnewenemyinqueue(GetRandomValue(10,19));
+                   createnewenemyinqueue(value1+value2);
                   }                
                if (value1+value2 == 100)  createnewlevel();
             }
             else 
             {
               sumlog.push_back(to_string(value1)+" + "+to_string(value2)+" = "+to_string(value1+value2)+" *not on board* ");
-              createnewnemy();
+              createnewenemyinqueue(GetRandomValue(1,maxnumber));
             }
           }
           hits++;
         };
     }
-  if (hit == true)
-  {  
-     if (createdenemies < levels[level]) traily = -30;
-    // resetenemyloc();
-  }
-  else shield--;
+  if (!hit) shield--;
   return 0;
 }
 
@@ -452,7 +446,6 @@ int ReadKeys()
         }
    if (IsKeyPressed(KEY_SPACE))
         {        
-              loadgunvector(); 
               gunindex++;
               if (gunindex >= gunvector.size()) gunindex = 0;
         }
@@ -508,15 +501,12 @@ int drawsumlog()
 }
 
 int main() {
-    InitWindow(screenWidth, screenHeight, "Math Attack!"); // RNG seed is set randomly in InitWindow !!
+    InitWindow(screenWidth, screenHeight, "Math Attack! or MathQuix"); // RNG seed is set randomly in InitWindow !!
    
     float moveInterval = 0.01f; // 10ms b/w move
     float moveTimer = 0.0f;
     Vector2 MousePos;
-    bool onemoved;
     SetTargetFPS(60);
-    //createnemies(); // RNG seed is set randomly in InitWindow !!
-    createnewnemy();
     fillboard();
     loadgunvector();
     sumlog.clear();
@@ -524,28 +514,25 @@ int main() {
     {
         ReadKeys();
         float dt = GetFrameTime(); // seconds since last frame 
-        moveTimer += dt;
-        if (Enemies.size() == 1) 
-            onemoved = true; 
-           else
-            onemoved = false;
-       for (int i=0;i<Enemies.size()-1;i++)
-        if (!checkenemycollision(i)) 
-         {
-          onemoved = true;
-         }
-       if (!onemoved) 
-          fullstack = true;
-        else
-          fullstack = false;
-       if (moveTimer >= moveInterval) 
+        moveTimer += dt; 
+        if (moveTimer >= moveInterval) 
           { 
             moveenemies();            
-            if (enemymovement >= 40  and Enemies.size() <= 10)
+            if (enemymovement >= 40)
             {      
-                createnewnemy();
-                createdenemies++;         
                 enemymovement = 0;
+                if (Enemies.size() <= 4)
+                {
+                  createnewenemyinqueue(GetRandomValue(1,maxnumber));
+                  loadgunvector();
+                  createdenemies++;   
+                }  
+                if (Enemyqueue.size() > 0)
+                {
+                  Enemies.push_back(Enemyqueue.back());
+                  Enemyqueue.pop_back();
+                  loadgunvector();
+                }     
             }
             moveTimer = 0.0f; // reset timer 
           }
@@ -557,7 +544,10 @@ int main() {
         drawboard();
         drawsumlog();
         MousePos = GetMousePosition();
-        DrawText(to_string(gunvector[gunindex]).c_str(),screenWidth/2-40,screenHeight-100,80, WHITE);
+        if (gunvector.size() > gunindex)
+         {
+          DrawText(to_string(gunvector[gunindex]).c_str(),screenWidth/2-40,screenHeight-100,80, WHITE);
+         }
         DrawText(("Enemies: "+to_string(9+levels[level]-hits)).c_str(),screenWidth/2-40,screenHeight-40,40, WHITE);
         DrawText(("Shield: "+to_string(shield)).c_str(),screenWidth*0.75,screenHeight-40,40, WHITE);
         DrawText(("Level: "+to_string(level)).c_str(),screenWidth*0.25,screenHeight-40,40, WHITE);
