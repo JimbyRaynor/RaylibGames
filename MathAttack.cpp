@@ -7,7 +7,7 @@
 #include <vector>
 #include <algorithm>
 
-// APP name: MathQuix
+// APP name: MathQuix or QuixoMath
 
 // compile: g++ MathAttack.cpp -o MathAttack -lraylib -lm -ldl -lpthread -lGL -lX11
 // run:     ./MathAttack
@@ -15,6 +15,12 @@
 
 // raylib uses float for most numbers, and so use 2.0f to convert int to float. Note that 2.0 will be a double
 
+// Solitare is fun partly because it looks good. Think Casino.
+// E-ink soft colours on cream-white or cream-light-green???
+// Look at Tetris for game design and music
+// Avoid over-tall stack by only adding from queue when size <= 10 ?? needed ?? how to increase stack size while playing game?
+// Score -2 for each sum not on board.
+// Load and Fire  or    Aim and Fire?  or Load and Store?
 
 // Same for (a+b)+c, a+(b+c)  ???? add algebra SLOWLY
 // Look at expensive watch faces CASIO, SEIKO, etc. for screen design
@@ -25,10 +31,7 @@
 // Draw controls  AIM  : <spacebar>
 //                FIRE : <Enter>
 
-// Is there a way to start with only 1s, then 1+1=2, 2+1 =3, etc. Yes, start with all 1s, when 2 is created then start producing 2s, then 3s, etc
 // Levels:
-// 1. All numbers on board
-
 
 // 4. What other types? Look for other famous theorems of number theory
 // 4. Big gaps no 20s, 40s, 60s, 80,s
@@ -37,8 +40,11 @@
 // 6. LHS only
 // 7. RHS only
 
+// POINTS:
+//  Score = 100-y for dropping number
+// -1 for firing a number not in stack (gun explode animation?) -  already shield gets decreased
+
 // BUGS:
-// * Numbers still collide ... use enemyqueue to add to screen
 
 // bonus level: every number is a sum of two primes
 
@@ -315,12 +321,13 @@ int moveenemies()
 int loadgunvector()
 {
   gunvector.clear();
+  for (int i=1;i<10;i++)
+     gunvector.push_back(i);
   for (int i=0;i<Enemies.size();i++)
-        if (find(gunvector.begin(),gunvector.end(),Enemies[i].attacknumber) == gunvector.end())  // need unique
+        if (find(gunvector.begin(),gunvector.end(),Enemies[i].attacknumber) == gunvector.end() and Enemies[i].attacknumber > 9)  // need unique
               gunvector.push_back(Enemies[i].attacknumber);
   if (gunvector.size() > 0)  
        sort(gunvector.begin(),gunvector.end());
-  gunindex = 0;
   return 0;
 }
 
@@ -399,6 +406,7 @@ int removeenemy(int shotnumber)
        if (Enemies[i].attacknumber == shotnumber and hit == false)
         {
           Enemies.erase(Enemies.begin()+i);
+          if (shotnumber > 9) gunindex--;
           hit = true;
           if (value1picked == false)
           {
