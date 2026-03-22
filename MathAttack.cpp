@@ -30,15 +30,18 @@
 // try led calculator 8 style numbers?
 // Draw controls  AIM  : <spacebar>
 //                FIRE : <Enter>
+// Removing a title should be satisfying. Candy Crush?
 
-// Levels:
-
+// LEVELS:
+// 0. Training: numbers do not get removed from board
 // 4. What other types? Look for other famous theorems of number theory
 // 4. Big gaps no 20s, 40s, 60s, 80,s
 // 4.       no 30,40,50,60s, etc.
 // 5. pyramid pattern
 // 6. LHS only
 // 7. RHS only
+// bonus level: every natural number > 3 is a sum of two primes
+// Level completed when sum = 100. Then 100 explodes into fireworks like peggle
 
 // POINTS:
 //  Score = 100-y for dropping number
@@ -46,9 +49,15 @@
 
 // BUGS:
 
-// bonus level: every number is a sum of two primes
 
-// Level completed when sum = 100. Then 100 explodes into fireworks like peggle
+// FONTS and TILES: 
+// 1. Windows minesweeper style tiles
+// 2. 80s Bitmap font
+// 3. 80s Bitmap font enlarged and random dots removed to look old and damaged
+// 4. Look at Solitare City
+// 5. All make of wood with raytracing
+// 6. All make of marble with raytracing
+
 // Char moves across numberline towards 100? Seems good
 // Make animation for removing number (frog jump??)
 
@@ -63,7 +72,7 @@
 
 // Think about * level
 // Need to remove full board (multiplication table)
-// Load gun with primes and 1, all composites get made and so all cases are needed, e.g. 7*8, beacuse we only have a binary operation
+// Load gun with primes and 1, all composites get made and so all cases are needed, e.g. 7*8, because we only have a binary operation
 // Two columns, one for primes, one for composites (max 10), limited memory ! ? Then 4 gets loaded 4*2,4*3,4*5,4*7,4*9, 4*11, 4*13, 4*17
 // 4*11 = 2*22 = prime x 22, so 4 is not needed when we have 22 in gun vector, good puzzle! Just add 4 then minimum number of times!/
 // so mistakes can be made. If it is tricky to set up, then it makes a good puzzle!
@@ -183,6 +192,7 @@ string operation = "+";
 vector <int> gunvector;
 vector <string> sumlog;
 int gunindex = 0;
+int MAXstacksize = 4;
 
 bool TestPrime(int n)
 {
@@ -420,6 +430,7 @@ int removeenemy(int shotnumber)
             if (removefromboard(value1+value2) != -1)
             {
                sumlog.push_back(to_string(value1)+" + "+to_string(value2)+" = "+to_string(value1+value2));
+               if (MAXstacksize <= 10) MAXstacksize++;
                if (value1+value2 < 90)
                     {
                       createnewenemyinqueue(value1+value2);
@@ -435,6 +446,7 @@ int removeenemy(int shotnumber)
             {
               sumlog.push_back(to_string(value1)+" + "+to_string(value2)+" = "+to_string(value1+value2)+" *not on board* ");
               createnewenemyinqueue(GetRandomValue(1,maxnumber));
+              if (MAXstacksize >= 3) MAXstacksize--;
             }
           }
           hits++;
@@ -510,7 +522,6 @@ int drawsumlog()
 
 int main() {
     InitWindow(screenWidth, screenHeight, "Math Attack! or MathQuix"); // RNG seed is set randomly in InitWindow !!
-   
     float moveInterval = 0.01f; // 10ms b/w move
     float moveTimer = 0.0f;
     Vector2 MousePos;
@@ -529,7 +540,7 @@ int main() {
             if (enemymovement >= 40)
             {      
                 enemymovement = 0;
-                if (Enemies.size() <= 4)
+                if (Enemies.size() <= MAXstacksize)
                 {
                   createnewenemyinqueue(GetRandomValue(1,maxnumber));
                   loadgunvector();
