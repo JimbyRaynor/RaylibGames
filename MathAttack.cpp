@@ -15,8 +15,15 @@
 
 // raylib uses float for most numbers, and so use 2.0f to convert int to float. Note that 2.0 will be a double
 
-// Solitare is fun partly because it looks good. Think Casino.
-// E-ink soft colours on cream-white or cream-light-green???
+// Tidy up code!
+
+// good board numbers:green
+// bad (used board numbers): red
+// gunvector: number available green
+//          : number not available greyed out
+
+// include data as library
+// Use Python library bitmap graphics!!!! and draw boxes with animated dots moving around
 // Look at Tetris for game design and music
 // Avoid over-tall stack by only adding from queue when size <= 10 ?? needed ?? how to increase stack size while playing game?
 // Score -2 for each sum not on board.
@@ -25,14 +32,17 @@
 // Same for (a+b)+c, a+(b+c)  ???? add algebra SLOWLY
 // Look at expensive watch faces CASIO, SEIKO, etc. for screen design
 
+// draw 3d blocks in raylib
+
 // bring in the fonts from data files
 // draw graphics while balancing
 // try led calculator 8 style numbers?
 // Draw controls  AIM  : <spacebar>
 //                FIRE : <Enter>
-// Removing a title should be satisfying. Candy Crush?
+// Removing a tile should be satisfying. Candy Crush?
 
 // LEVELS:
+// Levels are chosen like in peggle, with intro etc.
 // 0. Training: numbers do not get removed from board
 // 4. What other types? Look for other famous theorems of number theory
 // 4. Big gaps no 20s, 40s, 60s, 80,s
@@ -168,7 +178,7 @@ Color getColour(int myindex)
 int Char1[64] = {1,18,23,23,23,23,18,18,1,18,18,23,23,23,18,18,14,16,16,16,16,16,16,16,17,16,0,0,16,0,0,16,0,16,0,0,16,0,0,16,0,16,16,16,16,16,16,16,0,18,1,1,1,1,17,17,23,23,23,18,18,18,23,23};
 int CharBlock[576] = {19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19};
 int CharEnemy1[64] = {5,0,0,17,0,0,0,5,0,5,0,0,17,0,5,0,5,0,11,17,0,11,0,5,0,5,5,5,5,5,5,0,5,5,5,5,5,5,5,5,5,5,24,33,24,33,5,5,5,5,5,5,5,5,5,5,0,5,5,5,5,5,5,0};
-
+int Char3[64] = {0,16,16,16,16,16,0,0,16,16,0,0,0,16,16,0,0,0,0,0,0,16,16,0,0,0,0,16,16,16,0,0,0,0,0,0,0,16,16,0,16,16,0,0,0,16,16,0,0,16,16,16,16,16,0,0,0,0,0,0,0,0,0,0};
 
 int herox = 20;
 int heroy = 20;
@@ -257,6 +267,23 @@ void drawCharfromArray(int previewx, int previewy, int psize, int bitwidth, int 
               {
                Mycolour = getColour(myarray[loc]);
                DrawRectangle(previewx+j*psize,previewy+i*psize,psize,psize,Mycolour);    
+              }
+              loc++;
+            }        
+     }
+
+void drawRetroChar(int previewx, int previewy, int psize, int bitwidth, int myarray[])
+     {
+       Color Mycolour;
+       int loc = 0;
+       int gap = 1;
+       for (int i=0;i < bitwidth; i++ )
+         for (int j=0; j < bitwidth; j++)
+            {
+              if (myarray[loc] != 0)
+              {
+               Mycolour = getColour(myarray[loc]);
+               DrawRectangle(previewx+j*(psize+gap),previewy+i*(psize+gap),psize,psize,Mycolour);    
               }
               loc++;
             }        
@@ -580,7 +607,12 @@ int main() {
           DrawText((to_string(value2)+" =").c_str(),880,screenHeight-200,40, WHITE);
         }
         
-        //drawCharfromArray(herox, heroy, 3,8, Char1);
+        drawCharfromArray(herox, heroy, 3,8, Char1);
+        for (int i = 1; i < 10; i++)
+            drawRetroChar(herox, heroy+i*80, i,8, Char1); 
+
+        for (int i = 1; i < 10; i++)
+            drawRetroChar(200, 10+i*80, i,8, Char3); 
         drawnemies();
         EndDrawing();
     }
