@@ -16,8 +16,10 @@
 // raylib uses float for most numbers, and so use 2.0f to convert int to float. Note that 2.0 will be a double
 
 // Keep short! just +
-// Side panel of Bob, graphics, 3s etc
+// Side panel of Bob, graphics, 3s etc, just like arcade games
+// 1+2=3 should appear in a box somewhere
 // each dropping number has a different colour
+
 
 // Tidy up code!
 
@@ -36,18 +38,21 @@
 // Same for (a+b)+c, a+(b+c)  ???? add algebra SLOWLY
 // Look at expensive watch faces CASIO, SEIKO, etc. for screen design
 
-// draw 3d blocks in raylib
-
-// bring in the fonts from data files
 // draw graphics while balancing
 // try led calculator 8 style numbers?
 // Draw controls  AIM  : <spacebar>
 //                FIRE : <Enter>
 // Removing a tile should be satisfying. Candy Crush?
 
+// THEMES:
+// 1. Light Gray CASIO watch background, and dark gray text just like watch/calculator
+//       Add splash of colour for effects
+// 2. Standard dark mode with green text
+// 3. Minesweeper style
+
 // LEVELS:
 // Levels are chosen like in peggle, with intro etc.
-// 0. Training: numbers do not get removed from board
+// 0. Training: numbers do not get removed from board, and ONLY need to get to a sum of 30
 // 4. What other types? Look for other famous theorems of number theory
 // 4. Big gaps no 20s, 40s, 60s, 80,s
 // 4.       no 30,40,50,60s, etc.
@@ -56,10 +61,14 @@
 // 7. RHS only
 // bonus level: every natural number > 3 is a sum of two primes
 // Level completed when sum = 100. Then 100 explodes into fireworks like peggle
+// Orange numbers give bonus?
 
 // POINTS:
 //  Score = 100-y for dropping number
 // -1 for firing a number not in stack (gun explode animation?) -  already shield gets decreased
+
+// BONUS:
+// colourful bonus number moves around in pattern on table
 
 // BUGS:
 
@@ -196,6 +205,8 @@ int Char9[64] = {0,1,1,1,1,1,0,0,1,1,0,0,0,1,1,0,1,1,0,0,0,1,1,0,0,1,1,1,1,1,1,0
 int* digitarray[10] = {Char0, Char1, Char2, Char3,  // array of pointers to chars, this works well! Access with digitarray[charnum][bitnum] 
                        Char4, Char5, Char6, Char7, Char8, Char9};  
 
+Color EnemyColourArray[10] = { rbwhite, rblightgreen, rbdarkyellow,
+                              rbdarkpink, rbblue, rbred, rbgreen, rbbrown, rbaqua, rbpurple};
 int herox = 20;
 int heroy = 20;
 int traily = -30;
@@ -288,6 +299,35 @@ void drawCharfromArray(int previewx, int previewy, int psize, int bitwidth, int 
             }        
      }
 
+void drawCharOneColour(int previewx, int previewy, int psize, int bitwidth, int myarray[], Color Mycolour)
+     {
+       int loc = 0;
+       for (int i=0;i < bitwidth; i++ )
+         for (int j=0; j < bitwidth; j++)
+            {
+              if (myarray[loc] != 0)
+              {
+               DrawRectangle(previewx+j*psize,previewy+i*psize,psize,psize,Mycolour);    
+              }
+              loc++;
+            }        
+     }
+
+void drawRetroCharOneColour(int previewx, int previewy, int psize, int bitwidth, int myarray[], Color Mycolour)
+     {
+       int loc = 0;
+       int gap = 1;
+       for (int i=0;i < bitwidth; i++ )
+         for (int j=0; j < bitwidth; j++)
+            {
+              if (myarray[loc] != 0)
+              {
+               DrawRectangle(previewx+j*(psize+gap),previewy+i*(psize+gap),psize,psize,Mycolour);    
+              }
+              loc++;
+            }        
+     }
+
 void drawRetroChar(int previewx, int previewy, int psize, int bitwidth, int myarray[])
      {
        Color Mycolour;
@@ -305,12 +345,15 @@ void drawRetroChar(int previewx, int previewy, int psize, int bitwidth, int myar
             }        
      }
 
-void draw2digits(int locx, int locy, int mynum, int psize)
+void draw2digits(int locx, int locy, int mynum, int psize, Color Mycolour)
 {
   int first = mynum / 10;
   int second = mynum % 10;
-  if (first > 0) drawRetroChar(locx, locy, psize, 8, digitarray[first]);
-  drawRetroChar(locx+ 8*(psize+1), locy, psize, 8, digitarray[second]);
+  if (first > 0) 
+   { 
+    drawRetroCharOneColour(locx, locy, psize, 8, digitarray[first], Mycolour);
+   }
+  drawRetroCharOneColour(locx+ 8*(psize+1), locy, psize, 8, digitarray[second], Mycolour);
 }
 
 class Enemy  
@@ -349,9 +392,12 @@ int Enemy::move()
 
 int Enemy::draw()
 {
-  //drawCharfromArray(x, y, 3,8, CharEnemy1);
-  draw2digits(x, y, attacknumber, 3);
-  //DrawText(to_string(attacknumber).c_str(),x+8,y,40, WHITE);
+  Color Mycolour;
+  if (attacknumber < 10)
+     Mycolour = EnemyColourArray[attacknumber];
+  else
+     Mycolour = rbdarkorange;
+  draw2digits(x, y, attacknumber, 3, Mycolour);
   return 0;
 }
 vector <Enemy> Enemies;
@@ -427,7 +473,7 @@ int findminboard()
 
 int createnewenemyinqueue(int value)
 {
-  Enemy Entmp(screenWidth/2-30,-30,value);
+  Enemy Entmp(screenWidth/2-50,-30,value);
   if (value > maxnumber and value < 10)
   {
     maxnumber = value;
@@ -617,7 +663,10 @@ int main() {
         MousePos = GetMousePosition();
         if (gunvector.size() > gunindex)
          {
-          DrawText(to_string(gunvector[gunindex]).c_str(),screenWidth/2-40,screenHeight-100,80, WHITE);
+          if  (gunvector[gunindex] < 10)
+                draw2digits(screenWidth/2-100,screenHeight-100, gunvector[gunindex], 7, rblightgreen);
+              else
+               draw2digits(screenWidth/2-70,screenHeight-100, gunvector[gunindex], 7, rblightgreen);  
          }
         DrawText(("Enemies: "+to_string(9+levels[level]-hits)).c_str(),screenWidth/2-40,screenHeight-40,40, WHITE);
         DrawText(("Shield: "+to_string(shield)).c_str(),screenWidth*0.75,screenHeight-40,40, WHITE);
@@ -634,7 +683,7 @@ int main() {
         
         drawCharfromArray(herox, heroy, 3,8, CharBob);
         for (int i = 0; i< 10;i++)
-            draw2digits(herox+300, heroy+i*8*(3+i), 88, i);
+            draw2digits(herox+300, heroy+i*8*(3+i), 88, i, rblightgrey);
         drawRetroChar(herox+300, heroy+200, 2,8, Char9);
         for (int i = 1; i < 10; i++)
             drawRetroChar(herox, heroy+i*80, 3,8, CharBob); 
