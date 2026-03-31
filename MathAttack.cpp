@@ -69,6 +69,7 @@
 
 // BONUS:
 // colourful bonus number moves around in pattern on table
+// Bonus for shorter path to 100
 
 // BUGS:
 
@@ -599,11 +600,14 @@ int ReadKeys()
 int drawboard()
 {
   int boardx = 700, boardy = 10, cellwidth = 50;
-  DrawText(to_string(100).c_str(),boardx+cellwidth*4,boardy+cellwidth*10,60, WHITE);
+  //DrawText(to_string(100).c_str(),boardx+cellwidth*4,boardy+cellwidth*10,60, WHITE);
+  drawRetroCharOneColour(boardx+cellwidth*2,boardy+cellwidth*10,10,8,Char1, rbwhite);
+  drawRetroCharOneColour(boardx+cellwidth*2+100,boardy+cellwidth*10,10,8,Char0, rbwhite);
+  drawRetroCharOneColour(boardx+cellwidth*2+200,boardy+cellwidth*10,10,8,Char0, rbwhite);
   for (int i = 0;i<10; i++)
    for (int j = 0; j <10; j++)
      if (Board[i][j] != -1)
-                DrawText(to_string(Board[i][j]).c_str(),boardx+cellwidth*j,boardy+cellwidth*i,30, WHITE);
+                draw2digits(boardx+cellwidth*j,boardy+cellwidth*i,Board[i][j],1,rblightpink);
   return 0;
 }
 
