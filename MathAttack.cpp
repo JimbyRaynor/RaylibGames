@@ -1,5 +1,6 @@
 #include "raylib.h"
 #include <string>
+#include <cstring>
 #include <time.h>
 #include <math.h>
 #include <iostream>
@@ -82,6 +83,8 @@
 // 5. All make of wood with raytracing
 // 6. All make of marble with raytracing
 
+// retro arrow -> points to place where number is placed _ + _  
+
 // Char moves across numberline towards 100? Seems good
 // Make animation for removing number (frog jump??)
 
@@ -112,18 +115,25 @@
 //    only three missses allowed?
 //    how to stop spamming?
 
+// write = MISS if value1+value2 NOT on board
+
 // levels for +,-,/,*, etc
 //  / splits into divisor + reminder ?
 
 // The Matrix screensaver theme?
 
 // chars walking across screen to show progress ?
+// Look at Donut Dodo for ideas of background animations
 
 
 using namespace std;
 
 int screenWidth = 1200; 
 int screenHeight = 800;
+string theme = "dark";    // dark, CASIO
+string themearray[2] = {"dark", "CASIO"}; // uparrow to change
+int themearrayindex = 0;
+Color rbbackgroundcolour = BLACK;
 
 string mystring;
 // note that mystring.c_str() converts the C++ string mystring to the C array of characters
@@ -171,22 +181,49 @@ Color rblightpurple = HexToColour(0xE6E6FA);
 Color rbpurple = HexToColour(0xBE1CBE);
 Color rbdarkpurple = HexToColour(0x4B0082);
 
+Color rbgray0 = HexToColour(0x999999);
 Color rbgray1 = HexToColour(0xAAAAAA);
 Color rbgray2 = HexToColour(0xCCCCCC);
+Color rbgraytext = HexToColour(0x1E1E1E);
+Color rbgray24 = HexToColour(0xC8C8C8);
 Color rbgray3 = HexToColour(0xEEEEEE);
 
+ // DO NOT CHANGE
+ // for LEDColour pixel editor
 Color AllColours[60] = {rblightblue, rbblue, rbdarkblue, rblightred, rbred, rbdarkred, rblightorange, rborange, rbdarkorange,
                        rblightgreen, rbgreen, rbdarkgreen, rblightpink, rbpink, rbdarkpink, rblightyellow, rbyellow, rbdarkyellow,
                        rblightgrey, rbgrey, rbdarkgrey, rblightbrown, rbbrown, rbdarkbrown, rblightaqua, rbaqua, rbdarkaqua,
                        rblightpurple, rbpurple, rbdarkpurple, rbblack, rberaser, rbwhite};                    
-
-
+ // for LEDColour pixel editor
 Color getColour(int myindex)
 {
   if ( (myindex >= 1) and (myindex <= 33))
     return AllColours[myindex-1];
   else
     return rbblack; 
+}
+
+Color ColourRainbow[10] = { rbwhite, rblightgreen, rbdarkyellow,
+                              rbdarkpink, rbblue, rbred, rbgreen, rbbrown, rbaqua, rbpurple};
+
+Color ColourCASIOArray[10] = { rbgraytext,rbgraytext,rbgraytext,rbgraytext,rbgraytext,rbgraytext,rbgraytext,rbgraytext,rbgraytext,rbgraytext};
+
+
+Color EnemyColourArray[10];
+
+
+void settheme()
+{
+  if (theme == "dark")
+    {
+      rbbackgroundcolour = BLACK;
+      memcpy(EnemyColourArray, ColourRainbow, sizeof(ColourRainbow));
+    }
+   if (theme == "CASIO")
+    {
+      rbbackgroundcolour = rbgray24;
+       memcpy(EnemyColourArray, ColourCASIOArray, sizeof(ColourCASIOArray));
+    }
 }
 
 int CharBob[64] = {1,18,23,23,23,23,18,18,1,18,18,23,23,23,18,18,14,16,16,16,16,16,16,16,17,16,0,0,16,0,0,16,0,16,0,0,16,0,0,16,0,16,16,16,16,16,16,16,0,18,1,1,1,1,17,17,23,23,23,18,18,18,23,23};
@@ -202,14 +239,19 @@ int Char6[64] = {0,1,1,1,1,1,0,0,1,1,0,0,0,1,1,0,1,1,0,0,0,0,0,0,1,1,1,1,1,1,0,0
 int Char7[64] = {1,1,1,1,1,1,1,0,1,1,0,0,1,1,1,0,0,0,0,0,1,1,0,0,0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0};
 int Char8[64] = {0,1,1,1,1,1,0,0,1,1,0,0,0,1,1,0,1,1,0,0,0,1,1,0,0,1,1,1,1,1,0,0,1,1,0,0,0,1,1,0,1,1,0,0,0,1,1,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0};
 int Char9[64] = {0,1,1,1,1,1,0,0,1,1,0,0,0,1,1,0,1,1,0,0,0,1,1,0,0,1,1,1,1,1,1,0,0,0,0,0,0,1,1,0,1,1,0,0,1,1,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0};
+int CharPlus1[64] = {0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,1,1,1,1,1,1,0,0,1,1,1,1,1,1,0,0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0};
+int CharPlus2[64] = {0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+int CharUnderline[64] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1};
+int CharEquals[64] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
 int* digitarray[10] = {Char0, Char1, Char2, Char3,  // array of pointers to chars, this works well! Access with digitarray[charnum][bitnum] 
                        Char4, Char5, Char6, Char7, Char8, Char9};  
 
-Color EnemyColourArray[10] = { rbwhite, rblightgreen, rbdarkyellow,
-                              rbdarkpink, rbblue, rbred, rbgreen, rbbrown, rbaqua, rbpurple};
+
 int herox = 20;
 int heroy = 20;
+int resultx = 600;
+int resulty = 400;
 int traily = -30;
 int totalenemies = 20;
 int createdenemies = 0;
@@ -220,6 +262,8 @@ int value1 = 0;
 bool value1picked = false;
 int value2 = 0;
 bool value2picked = false;
+bool resultdisplayed = false;
+int EnterCount = 0;
 int shootnumber = 1;
 int shield = 3;
 int level = 1;
@@ -357,6 +401,17 @@ void draw2digits(int locx, int locy, int mynum, int psize, Color Mycolour)
   drawRetroCharOneColour(locx+ 8*(psize+1), locy, psize, 8, digitarray[second], Mycolour);
 }
 
+void draw2digitsSolid(int locx, int locy, int mynum, int psize, Color Mycolour)
+{
+  int first = mynum / 10;
+  int second = mynum % 10;
+  if (first > 0) 
+   { 
+    drawCharOneColour(locx, locy, psize, 8, digitarray[first], Mycolour);
+   }
+  drawCharOneColour(locx+ 8*(psize+1), locy, psize, 8, digitarray[second], Mycolour);
+}
+
 class Enemy  
 {
      public:
@@ -398,7 +453,10 @@ int Enemy::draw()
      Mycolour = EnemyColourArray[attacknumber];
   else
      Mycolour = rbdarkorange;
-  draw2digits(x, y, attacknumber, 3, Mycolour);
+  if (theme == "dark")
+      draw2digits(x, y, attacknumber, 3, Mycolour);
+  else
+      draw2digitsSolid(x, y, attacknumber, 4, Mycolour);
   return 0;
 }
 vector <Enemy> Enemies;
@@ -498,6 +556,8 @@ int createnewlevel()
 {
      level++;
      hits = 0;
+     EnterCount = 0;
+     resultdisplayed = false;
      maxnumber = 2;
      createdenemies = 0;
      createnewenemyinqueue(GetRandomValue(1,maxnumber));
@@ -525,7 +585,8 @@ int removeenemy(int shotnumber)
           else
           {
             value2 = shotnumber;
-            value1picked = false;        
+            value1picked = false;     
+            value2picked = true;   
             if (removefromboard(value1+value2) != -1)
             {
                sumlog.push_back(to_string(value1)+" + "+to_string(value2)+" = "+to_string(value1+value2));
@@ -551,8 +612,10 @@ int removeenemy(int shotnumber)
           hits++;
         };
     }
-  if (!hit) shield--;
-  return 0;
+  if (!hit) 
+    return -1;
+  else
+    return 0;
 }
 
 int ReadKeys()
@@ -560,18 +623,40 @@ int ReadKeys()
    int c = 0;
    if (IsKeyPressed(KEY_ENTER))
         {
-             removeenemy(gunvector[gunindex]);
-             loadgunvector();
+             if (removeenemy(gunvector[gunindex]) >= 0) // number found
+             {
+              EnterCount++;
+              if (EnterCount == 2)
+              {
+              resultdisplayed = true;
+              }
+              if (EnterCount == 3)
+              {
+              resultdisplayed = false;
+              value2picked = false;
+              EnterCount = 1;
+              }           
+             }
+             loadgunvector();  
         }
    if (IsKeyPressed(KEY_SPACE))
         {        
               gunindex++;
               if (gunindex >= gunvector.size()) gunindex = 0;
+              //resultdisplayed = false; 
+              if (EnterCount == 2)
+              {
+              resultdisplayed = false;
+              value2picked = false;
+              EnterCount = 0;
+              }
         }
    if (IsKeyPressed(KEY_UP))
         {
-
-              heroy--;
+              themearrayindex++;
+              if (themearrayindex > 1) themearrayindex = 0;
+              theme =  themearray[themearrayindex];
+              settheme();
 
         }
     if (IsKeyPressed(KEY_LEFT))
@@ -623,6 +708,7 @@ int drawsumlog()
 }
 
 int main() {
+    settheme();
     InitWindow(screenWidth, screenHeight, "Math Attack! or MathQuix"); // RNG seed is set randomly in InitWindow !!
     float moveInterval = 0.01f; // 10ms b/w move
     float moveTimer = 0.0f;
@@ -659,7 +745,7 @@ int main() {
           }
 
         BeginDrawing();         // these two lines MUST go first when drawing
-        ClearBackground(BLACK); // these two lines MUST go first when drawing
+        ClearBackground(rbbackgroundcolour); // these two lines MUST go first when drawing
 
         DrawRectangleLines(0,0,screenWidth,screenHeight,YELLOW);
         drawboard();
@@ -673,16 +759,20 @@ int main() {
                draw2digits(screenWidth/2-70,screenHeight-100, gunvector[gunindex], 7, rblightgreen);  
          }
         DrawText(("Enemies: "+to_string(9+levels[level]-hits)).c_str(),screenWidth/2-40,screenHeight-40,40, WHITE);
-        DrawText(("Shield: "+to_string(shield)).c_str(),screenWidth*0.75,screenHeight-40,40, WHITE);
+        DrawText(("EnterCount: "+to_string(EnterCount)).c_str(),screenWidth*0.75,screenHeight-40,40, WHITE);
         DrawText(("Level: "+to_string(level)).c_str(),screenWidth*0.25,screenHeight-40,40, WHITE);
-        DrawText(operation.c_str(),840,screenHeight-200,40, WHITE);
+
+        resultx = 800;
+        resulty = 650;
         if (value1picked == true)
         {
-          DrawText((to_string(value1)).c_str(),800,screenHeight-200,40, WHITE);
+          draw2digits(resultx,resulty,value1,3,rblightgreen);
         }
-         if (value2picked == true)
+         if (resultdisplayed  == true)
         {
-          DrawText((to_string(value2)+" =").c_str(),880,screenHeight-200,40, WHITE);
+          draw2digits(resultx,resulty,value1,3,rblightgreen);
+          draw2digits(resultx+3*5*8,resulty,value2,3,rblightgreen);
+          draw2digits(resultx+6*5*8+8*2,resulty,value1+value2,3,rblightgreen);
         }
         
         drawCharfromArray(herox, heroy, 3,8, CharBob);
@@ -696,6 +786,12 @@ int main() {
             drawRetroChar(200, 10+i*80, i,8, Char3); 
 
         
+        drawRetroCharOneColour(resultx, resulty,3,8,CharUnderline,rbgray24);
+        drawRetroCharOneColour(resultx+5*8, resulty,3,8,CharUnderline,rbgray24);
+        drawRetroCharOneColour(resultx+2*5*8, resulty,4,8,CharPlus2,rblightgreen);
+        drawRetroCharOneColour(resultx+3*5*8, resulty,3,8,CharUnderline,rbgray24);
+        drawRetroCharOneColour(resultx+4*5*8, resulty,3,8,CharUnderline,rbgray24);
+        drawRetroCharOneColour(resultx+5*5*8, resulty,3,8,CharEquals,rblightgreen);
         drawnemies();
         EndDrawing();
     }
