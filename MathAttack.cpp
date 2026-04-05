@@ -8,7 +8,7 @@
 #include <vector>
 #include <algorithm>
 
-// APP name: MathQuix or QuixoMath
+// APP name: MathQuix or QuixoMath or Math Addition Game
 
 // compile: g++ MathAttack.cpp -o MathAttack -lraylib -lm -ldl -lpthread -lGL -lX11
 // run:     ./MathAttack
@@ -17,39 +17,46 @@
 // raylib uses float for most numbers, and so use 2.0f to convert int to float. Note that 2.0 will be a double
 
 // Keep short! just +
-// Side panel of Bob, graphics, 3s etc, just like arcade games
+// Side panel of Bob, graphics, 3s, 1+2=3 current sum, etc, just like arcade games
 // 1+2=3 should appear in a box somewhere
-// each dropping number has a different colour
 
 
+// draw round japanese style characters with little arms and legs, and flowy hair
+// released number should be displayed on LHS 
 // Tidy up code!
 
+// hires Battery meter progress bar?
 // good board numbers:green
 // bad (used board numbers): red
 // gunvector: number available green
 //          : number not available greyed out
 
-// include data as library
-// Use Python library bitmap graphics!!!! and draw boxes with animated dots moving around
+
+// draw boxes with animated dots moving around
 // Look at Tetris for game design and music
 // Avoid over-tall stack by only adding from queue when size <= 10 ?? needed ?? how to increase stack size while playing game?
-// Score -2 for each sum not on board.
-// Load and Fire  or    Aim and Fire?  or Load and Store?
+// mistakes decrease bonus by 1000
+
 
 // Same for (a+b)+c, a+(b+c)  ???? add algebra SLOWLY
 // Look at expensive watch faces CASIO, SEIKO, etc. for screen design
 
 // draw graphics while balancing
-// try led calculator 8 style numbers?
+
 // Draw controls  AIM  : <spacebar>
 //                FIRE : <Enter>
 // Removing a tile should be satisfying. Candy Crush?
 
+
+// write = MISS if value1+value2 NOT on board
+// Trailing headlights (particles) on moving numbers
+// Just remove bonus for mistakes
+
+
 // THEMES:
-// 1. Light Gray CASIO watch background, and dark gray text just like watch/calculator
-//       Add splash of colour for effects
 // 2. Standard dark mode with green text
 // 3. Minesweeper style
+// 5. Latex - everything in LaTeX
 
 // LEVELS:
 // Levels are chosen like in peggle, with intro etc.
@@ -66,25 +73,30 @@
 
 // POINTS:
 //  Score = 100-y for dropping number
-// -1 for firing a number not in stack (gun explode animation?) -  already shield gets decreased
 
 // BONUS:
 // colourful bonus number moves around in pattern on table
+// Bonus hit repairs a removed tile
 // Bonus for shorter path to 100
 
 // BUGS:
 
 
-// FONTS and TILES: 
-// 1. Windows minesweeper style tiles
-// 2. 80s Bitmap font
-// 3. 80s Bitmap font enlarged and random dots removed to look old and damaged
-// 4. Look at Solitare City
-// 5. All make of wood with raytracing
-// 6. All make of marble with raytracing
-
 // retro arrow -> points to place where number is placed _ + _  
 
+
+// Bonus mission board like casino roulette table
+// Give me 
+// (a) even
+// (b) odd
+// (c) prime
+// (d) mersenne prime
+// (e) red number
+// (f) 2 evens in a row
+// (g) 2 odds in a row, etc
+// (h) think poker
+//    (1) straight 2,3,4,5,6
+//    (2) full house?
 // Char moves across numberline towards 100? Seems good
 // Make animation for removing number (frog jump??)
 
@@ -96,6 +108,12 @@
 
 
 //  Design fixed, not random, levels on Kindle Scribe
+
+
+// For multiplication just give random numbers from 1 to 10
+//  Goal is just to remove all numbers from the board 
+//    Board should be spatse to avoid randomly multiplying two numbers
+// Similar for minus and divide
 
 // Think about * level
 // Need to remove full board (multiplication table)
@@ -115,7 +133,7 @@
 //    only three missses allowed?
 //    how to stop spamming?
 
-// write = MISS if value1+value2 NOT on board
+
 
 // levels for +,-,/,*, etc
 //  / splits into divisor + reminder ?
@@ -243,6 +261,9 @@ int CharPlus1[64] = {0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,1,1,1,1,1
 int CharPlus2[64] = {0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 int CharUnderline[64] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1};
 int CharEquals[64] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+int CharUpArrow[64] = {0,0,0,1,0,0,0,0,0,0,1,1,1,0,0,0,0,1,0,1,0,1,0,0,1,0,0,1,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0};
+
+
 
 int* digitarray[10] = {Char0, Char1, Char2, Char3,  // array of pointers to chars, this works well! Access with digitarray[charnum][bitnum] 
                        Char4, Char5, Char6, Char7, Char8, Char9};  
@@ -786,12 +807,13 @@ int main() {
             drawRetroChar(200, 10+i*80, i,8, Char3); 
 
         
-        drawRetroCharOneColour(resultx, resulty,3,8,CharUnderline,rbgray24);
-        drawRetroCharOneColour(resultx+5*8, resulty,3,8,CharUnderline,rbgray24);
+        drawRetroCharOneColour(resultx, resulty+4,3,8,CharUnderline,rbgray24);
+        drawRetroCharOneColour(resultx+5*8, resulty+4,3,8,CharUnderline,rbgray24);
         drawRetroCharOneColour(resultx+2*5*8, resulty,4,8,CharPlus2,rblightgreen);
-        drawRetroCharOneColour(resultx+3*5*8, resulty,3,8,CharUnderline,rbgray24);
-        drawRetroCharOneColour(resultx+4*5*8, resulty,3,8,CharUnderline,rbgray24);
-        drawRetroCharOneColour(resultx+5*5*8, resulty,3,8,CharEquals,rblightgreen);
+          drawRetroCharOneColour(resultx+3*5*8-2, resulty+4,3,8,CharUnderline,rbgray24);
+          drawRetroCharOneColour(resultx+4*5*8-8, resulty+4,3,8,CharUnderline,rbgray24);
+          drawRetroCharOneColour(resultx+4*5*8+2-8, resulty+40,3,8,CharUpArrow,rbgray24);
+        drawRetroCharOneColour(resultx+5*5*8+8, resulty,3,8,CharEquals,rblightgreen);
         drawnemies();
         EndDrawing();
     }
