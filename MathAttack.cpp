@@ -165,6 +165,9 @@ Color HexToColour(int hexValue) {
     return c;
 }
 
+
+ // DO NOT CHANGE
+ // needed for LEDColour pixel editor
 Color rbblack = HexToColour(0x000000);
 Color rberaser = HexToColour(0x000001); 
 Color rbwhite = HexToColour(0xFFFFFF);
@@ -199,6 +202,7 @@ Color rblightpurple = HexToColour(0xE6E6FA);
 Color rbpurple = HexToColour(0xBE1CBE);
 Color rbdarkpurple = HexToColour(0x4B0082);
 
+Color rbgray00 = HexToColour(0x222222);
 Color rbgray0 = HexToColour(0x999999);
 Color rbgray1 = HexToColour(0xAAAAAA);
 Color rbgray2 = HexToColour(0xCCCCCC);
@@ -207,7 +211,7 @@ Color rbgray24 = HexToColour(0xC8C8C8);
 Color rbgray3 = HexToColour(0xEEEEEE);
 
  // DO NOT CHANGE
- // for LEDColour pixel editor
+ // needed for LEDColour pixel editor
 Color AllColours[60] = {rblightblue, rbblue, rbdarkblue, rblightred, rbred, rbdarkred, rblightorange, rborange, rbdarkorange,
                        rblightgreen, rbgreen, rbdarkgreen, rblightpink, rbpink, rbdarkpink, rblightyellow, rbyellow, rbdarkyellow,
                        rblightgrey, rbgrey, rbdarkgrey, rblightbrown, rbbrown, rbdarkbrown, rblightaqua, rbaqua, rbdarkaqua,
@@ -259,7 +263,7 @@ int Char8[64] = {0,1,1,1,1,1,0,0,1,1,0,0,0,1,1,0,1,1,0,0,0,1,1,0,0,1,1,1,1,1,0,0
 int Char9[64] = {0,1,1,1,1,1,0,0,1,1,0,0,0,1,1,0,1,1,0,0,0,1,1,0,0,1,1,1,1,1,1,0,0,0,0,0,0,1,1,0,1,1,0,0,1,1,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0};
 int CharPlus1[64] = {0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,1,1,1,1,1,1,0,0,1,1,1,1,1,1,0,0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0};
 int CharPlus2[64] = {0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-int CharUnderline[64] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1};
+int CharUnderline[64] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0};
 int CharEquals[64] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 int CharUpArrow[64] = {0,0,0,1,0,0,0,0,0,0,1,1,1,0,0,0,0,1,0,1,0,1,0,0,1,0,0,1,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0};
 
@@ -271,8 +275,6 @@ int* digitarray[10] = {Char0, Char1, Char2, Char3,  // array of pointers to char
 
 int herox = 20;
 int heroy = 20;
-int resultx = 600;
-int resulty = 400;
 int traily = -30;
 int totalenemies = 20;
 int createdenemies = 0;
@@ -572,7 +574,6 @@ int drawnemies()
   return 0;
 }
 
-
 int createnewlevel()
 {
      level++;
@@ -586,6 +587,15 @@ int createnewlevel()
      return 0;
   }
 
+bool findenemy(int shotnumber)
+{
+  bool found = false;
+  for (int i = 0; i < Enemies.size(); i++)
+     if (Enemies[i].attacknumber == shotnumber)
+         found = true;
+  return found;
+    
+}
 
 int removeenemy(int shotnumber)
 {
@@ -728,6 +738,48 @@ int drawsumlog()
   return 0;
 }
 
+void drawarrowsandinput()
+{
+  int resultx = 800;
+  int resulty = 650;
+  drawRetroCharOneColour(resultx, resulty+4,3,8,CharUnderline,rbgray24);
+  drawRetroCharOneColour(resultx+5*8-8, resulty+4,3,8,CharUnderline,rbgray24);
+  drawRetroCharOneColour(resultx+2*5*8-6, resulty,4,8,CharPlus2,rblightgreen);
+  drawRetroCharOneColour(resultx+3*5*8, resulty+4,3,8,CharUnderline,rbgray24);
+  drawRetroCharOneColour(resultx+4*5*8-8, resulty+4,3,8,CharUnderline,rbgray24);
+ if (value1picked == true or resultdisplayed == false)
+        drawRetroCharOneColour(resultx+5*8-8, resulty+40,3,8,CharUpArrow,rbgray24);
+ else
+        drawRetroCharOneColour(resultx+4*5*8-8, resulty+40,3,8,CharUpArrow,rbgray24);
+
+  drawRetroCharOneColour(resultx+5*5*8+8, resulty,3,8,CharEquals,rblightgreen);
+  if (value1picked == true)
+        {
+          draw2digits(resultx,resulty,value1,3,rblightgreen);
+        }
+  if (resultdisplayed  == true)
+        {
+          draw2digits(resultx,resulty,value1,3,rblightgreen);
+          draw2digits(resultx+3*5*8,resulty,value2,3,rblightgreen);
+          draw2digits(resultx+6*5*8+8*2,resulty,value1+value2,3,rblightgreen);
+        }
+}
+
+void drawgunvector()
+{
+ if (gunvector.size() > gunindex)
+         {
+          int shotnumber = gunvector[gunindex];
+          Color shotcolour = rblightgreen;
+          if (findenemy(shotnumber) == false) shotcolour = rbgray00;
+          if  (shotnumber  < 10)
+                draw2digits(screenWidth/2-100,screenHeight-100, shotnumber, 7, shotcolour);
+              else
+               draw2digits(screenWidth/2-70,screenHeight-100, shotnumber, 7, shotcolour);  
+         }
+}
+
+
 int main() {
     settheme();
     InitWindow(screenWidth, screenHeight, "Math Attack! or MathQuix"); // RNG seed is set randomly in InitWindow !!
@@ -771,31 +823,13 @@ int main() {
         DrawRectangleLines(0,0,screenWidth,screenHeight,YELLOW);
         drawboard();
         drawsumlog();
+        drawgunvector();
         MousePos = GetMousePosition();
-        if (gunvector.size() > gunindex)
-         {
-          if  (gunvector[gunindex] < 10)
-                draw2digits(screenWidth/2-100,screenHeight-100, gunvector[gunindex], 7, rblightgreen);
-              else
-               draw2digits(screenWidth/2-70,screenHeight-100, gunvector[gunindex], 7, rblightgreen);  
-         }
+        
         DrawText(("Enemies: "+to_string(9+levels[level]-hits)).c_str(),screenWidth/2-40,screenHeight-40,40, WHITE);
         DrawText(("EnterCount: "+to_string(EnterCount)).c_str(),screenWidth*0.75,screenHeight-40,40, WHITE);
         DrawText(("Level: "+to_string(level)).c_str(),screenWidth*0.25,screenHeight-40,40, WHITE);
 
-        resultx = 800;
-        resulty = 650;
-        if (value1picked == true)
-        {
-          draw2digits(resultx,resulty,value1,3,rblightgreen);
-        }
-         if (resultdisplayed  == true)
-        {
-          draw2digits(resultx,resulty,value1,3,rblightgreen);
-          draw2digits(resultx+3*5*8,resulty,value2,3,rblightgreen);
-          draw2digits(resultx+6*5*8+8*2,resulty,value1+value2,3,rblightgreen);
-        }
-        
         drawCharfromArray(herox, heroy, 3,8, CharBob);
         for (int i = 0; i< 10;i++)
             draw2digits(herox+300, heroy+i*8*(3+i), 88, i, rblightgrey);
@@ -806,14 +840,7 @@ int main() {
         for (int i = 1; i < 10; i++)
             drawRetroChar(200, 10+i*80, i,8, Char3); 
 
-        
-        drawRetroCharOneColour(resultx, resulty+4,3,8,CharUnderline,rbgray24);
-        drawRetroCharOneColour(resultx+5*8, resulty+4,3,8,CharUnderline,rbgray24);
-        drawRetroCharOneColour(resultx+2*5*8, resulty,4,8,CharPlus2,rblightgreen);
-          drawRetroCharOneColour(resultx+3*5*8-2, resulty+4,3,8,CharUnderline,rbgray24);
-          drawRetroCharOneColour(resultx+4*5*8-8, resulty+4,3,8,CharUnderline,rbgray24);
-          drawRetroCharOneColour(resultx+4*5*8+2-8, resulty+40,3,8,CharUpArrow,rbgray24);
-        drawRetroCharOneColour(resultx+5*5*8+8, resulty,3,8,CharEquals,rblightgreen);
+        drawarrowsandinput();
         drawnemies();
         EndDrawing();
     }
