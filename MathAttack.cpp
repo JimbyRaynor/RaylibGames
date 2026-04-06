@@ -26,11 +26,6 @@
 // Tidy up code!
 
 // hires Battery meter progress bar?
-// good board numbers:green
-// bad (used board numbers): red
-// gunvector: number available green
-//          : number not available greyed out
-
 
 // draw boxes with animated dots moving around
 // Look at Tetris for game design and music
@@ -57,6 +52,7 @@
 // 2. Standard dark mode with green text
 // 3. Minesweeper style
 // 5. Latex - everything in LaTeX
+// 6. The Matrix screensaver theme?
 
 // LEVELS:
 // Levels are chosen like in peggle, with intro etc.
@@ -80,10 +76,6 @@
 // Bonus for shorter path to 100
 
 // BUGS:
-
-
-// retro arrow -> points to place where number is placed _ + _  
-
 
 // Bonus mission board like casino roulette table
 // Give me 
@@ -129,16 +121,9 @@
 // 9*4 = 36
 // 72 = 9*4*2, will run out of 4s as well
 // so once a number is loaded into gun, it stays there.
-// Now how to make the level difficult
-//    only three missses allowed?
-//    how to stop spamming?
-
-
 
 // levels for +,-,/,*, etc
 //  / splits into divisor + reminder ?
-
-// The Matrix screensaver theme?
 
 // chars walking across screen to show progress ?
 // Look at Donut Dodo for ideas of background animations
@@ -202,7 +187,7 @@ Color rblightpurple = HexToColour(0xE6E6FA);
 Color rbpurple = HexToColour(0xBE1CBE);
 Color rbdarkpurple = HexToColour(0x4B0082);
 
-Color rbgray00 = HexToColour(0x222222);
+Color rbgray00 = HexToColour(0x666666);
 Color rbgray0 = HexToColour(0x999999);
 Color rbgray1 = HexToColour(0xAAAAAA);
 Color rbgray2 = HexToColour(0xCCCCCC);
