@@ -8,18 +8,29 @@
 #include <vector>
 #include <algorithm>
 
-// APP name: MathQuix or QuixoMath or Math Addition Game
+
 
 // compile: g++ MathAttack.cpp -o MathAttack -lraylib -lm -ldl -lpthread -lGL -lX11
 // run:     ./MathAttack
 // Ctrl-C to close crashed program
-
 // raylib uses float for most numbers, and so use 2.0f to convert int to float. Note that 2.0 will be a double
+// Only use GameMaker for final animations and sound. Make full game (o/w animations) with raylib
 
-// Keep short! just +
+// Draw a finite state machine (on Kindle) for difficult logic problems while programming
+
+// This shooting mechanic can be used for many different games +-*/:
+//   (a) Table filled with all 8s
+//   (b) Invaders/tower defense numbers falling from sky
+
 // Side panel of Bob, graphics, 3s, 1+2=3 current sum, etc, just like arcade games
 // 1+2=3 should appear in a box somewhere
 
+
+// Score + fully build levels
+// Make display number function, just like in Python.
+// Need to draw alpanumeric font !!
+// Then make functions for drawing text. Copy full text to sprites for GameMaker. Then only need numbers 0...9 in sprite array
+// Think freecell for random type games
 
 // draw round japanese style characters with little arms and legs, and flowy hair
 // released number should be displayed on LHS 
@@ -35,6 +46,8 @@
 
 // Same for (a+b)+c, a+(b+c)  ???? add algebra SLOWLY
 // Look at expensive watch faces CASIO, SEIKO, etc. for screen design
+// Look at CASIO 8-attack and invaders videos for level progression
+
 
 // draw graphics while balancing
 
@@ -43,7 +56,6 @@
 // Removing a tile should be satisfying. Candy Crush?
 
 
-// write = MISS if value1+value2 NOT on board
 // Trailing headlights (particles) on moving numbers
 // Just remove bonus for mistakes
 
@@ -100,7 +112,7 @@
 
 
 //  Design fixed, not random, levels on Kindle Scribe
-
+// use Theme/inverse text for *big* explosion effect
 
 // For multiplication just give random numbers from 1 to 10
 //  Goal is just to remove all numbers from the board 
@@ -271,6 +283,7 @@ bool value1picked = false;
 int value2 = 0;
 bool value2picked = false;
 bool resultdisplayed = false;
+bool sumisonboard = false;
 int EnterCount = 0;
 int shootnumber = 1;
 int shield = 3;
@@ -283,6 +296,7 @@ vector <int> gunvector;
 vector <string> sumlog;
 int gunindex = 0;
 int MAXstacksize = 4;
+int score = 0;
 
 bool TestPrime(int n)
 {
@@ -418,6 +432,29 @@ void draw2digitsSolid(int locx, int locy, int mynum, int psize, Color Mycolour)
     drawCharOneColour(locx, locy, psize, 8, digitarray[first], Mycolour);
    }
   drawCharOneColour(locx+ 8*(psize+1), locy, psize, 8, digitarray[second], Mycolour);
+}
+
+void ShowColourScore2(int locx, int locy, int myscore, int psize, Color Mycolour,  int numzeros=9)
+{
+string stringscore="";
+string num = to_string(myscore);
+for (int i = num.length(); i < numzeros; i++) // Add leading zeros until the string reaches numzeros length
+{
+    stringscore += '0';
+}
+stringscore += num;
+ 
+for (int i = 0; i < stringscore.size(); i++) 
+{
+    char c = stringscore[i];
+    int index = c - '0';
+    auto value = digitarray[0];
+    if (c >= '0' && c <= '9')  
+       {
+        value = digitarray[c - '0'];
+       }
+    drawRetroCharOneColour(locx+ i*8*(psize+1), locy, psize, 8, value, Mycolour);
+}
 }
 
 class Enemy  
@@ -617,12 +654,14 @@ int removeenemy(int shotnumber)
                    createnewenemyinqueue(value1+value2);
                   }                
                if (value1+value2 == 100)  createnewlevel();
+               sumisonboard = true;
             }
             else 
             {
               sumlog.push_back(to_string(value1)+" + "+to_string(value2)+" = "+to_string(value1+value2)+" *not on board* ");
               createnewenemyinqueue(GetRandomValue(1,maxnumber));
               if (MAXstacksize >= 3) MAXstacksize--;
+              sumisonboard = false;
             }
           }
           hits++;
@@ -639,7 +678,7 @@ int ReadKeys()
    int c = 0;
    if (IsKeyPressed(KEY_ENTER))
         {
-             if (removeenemy(gunvector[gunindex]) >= 0) // number found
+             if (removeenemy(gunvector[gunindex]) >= 0) // enemy number found in descending list
              {
               EnterCount++;
               if (EnterCount == 2)
@@ -732,7 +771,7 @@ void drawarrowsandinput()
   drawRetroCharOneColour(resultx+2*5*8-6, resulty,4,8,CharPlus2,rblightgreen);
   drawRetroCharOneColour(resultx+3*5*8, resulty+4,3,8,CharUnderline,rbgray24);
   drawRetroCharOneColour(resultx+4*5*8-8, resulty+4,3,8,CharUnderline,rbgray24);
- if (value1picked == true or resultdisplayed == false)
+ if (value1picked == false or resultdisplayed == true)
         drawRetroCharOneColour(resultx+5*8-8, resulty+40,3,8,CharUpArrow,rbgray24);
  else
         drawRetroCharOneColour(resultx+4*5*8-8, resulty+40,3,8,CharUpArrow,rbgray24);
@@ -746,7 +785,10 @@ void drawarrowsandinput()
         {
           draw2digits(resultx,resulty,value1,3,rblightgreen);
           draw2digits(resultx+3*5*8,resulty,value2,3,rblightgreen);
-          draw2digits(resultx+6*5*8+8*2,resulty,value1+value2,3,rblightgreen);
+          if (sumisonboard == true)
+             draw2digits(resultx+6*5*8+8*2,resulty,value1+value2,3,rblightgreen);
+          else 
+             draw2digits(resultx+6*5*8+8*2,resulty,value1+value2,3,rbred);
         }
 }
 
@@ -767,7 +809,7 @@ void drawgunvector()
 
 int main() {
     settheme();
-    InitWindow(screenWidth, screenHeight, "Math Attack! or MathQuix"); // RNG seed is set randomly in InitWindow !!
+    InitWindow(screenWidth, screenHeight, "Math Addition Game"); // RNG seed is set randomly in InitWindow !!
     float moveInterval = 0.01f; // 10ms b/w move
     float moveTimer = 0.0f;
     Vector2 MousePos;
@@ -807,11 +849,12 @@ int main() {
 
         DrawRectangleLines(0,0,screenWidth,screenHeight,YELLOW);
         drawboard();
-        drawsumlog();
+        //drawsumlog();
         drawgunvector();
         MousePos = GetMousePosition();
         
-        DrawText(("Enemies: "+to_string(9+levels[level]-hits)).c_str(),screenWidth/2-40,screenHeight-40,40, WHITE);
+        ShowColourScore2(100, 200, 1234, 3, WHITE, 9);
+        DrawText(("Score: "+to_string(score)).c_str(),100,10,40, WHITE);
         DrawText(("EnterCount: "+to_string(EnterCount)).c_str(),screenWidth*0.75,screenHeight-40,40, WHITE);
         DrawText(("Level: "+to_string(level)).c_str(),screenWidth*0.25,screenHeight-40,40, WHITE);
 
