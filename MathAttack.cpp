@@ -156,7 +156,7 @@ string themearray[2] = {"dark", "CASIO"}; // uparrow to change
 int themearrayindex = 0;
 Color rbbackgroundcolour = BLACK;
 
-string mystring;
+//string mystring;
 // note that mystring.c_str() converts the C++ string mystring to the C array of characters
 
 Color HexToColour(int hexValue) {
@@ -303,6 +303,9 @@ int CharUpArrow[64] = {0,0,0,1,0,0,0,0,0,0,1,1,1,0,0,0,0,1,0,1,0,1,0,0,1,0,0,1,0
 
 int* digitarray[10] = {Char0, Char1, Char2, Char3,  // array of pointers to chars, this works well! Access with digitarray[charnum][bitnum] 
                        Char4, Char5, Char6, Char7, Char8, Char9};  
+
+int* alphaarray[26] = {CharA, CharB, CharC, CharD, CharE, CharF, CharG, CharH, CharI, CharJ, CharK, CharL, CharM, CharN, CharO, CharP, CharQ, 
+                       CharR, CharS, CharT, CharU, CharV, CharW, CharX, CharY, CharZ}; 
 
 
 int herox = 20;
@@ -490,6 +493,37 @@ for (int i = 0; i < stringscore.size(); i++)
        }
     drawRetroCharOneColour(locx+ i*8*(psize+1), locy, psize, 8, value, Mycolour);
 }
+}
+
+string ToUpperCase(string mystring)
+{
+  char c;
+  string resultstring = mystring;
+  for (int i = 0; i < mystring.size(); i++)
+  {
+    c = mystring[i];
+    if (c >= 'a' and c <= 'z')
+       c = c - 32; // convert to UpperCase character;
+    resultstring[i] = c;
+  }
+  return resultstring;
+}
+
+void ShowColourText(int locx, int locy, string mytext, int psize, Color Mycolour)
+{
+   char c;
+   string UPtext;
+   UPtext = ToUpperCase(mytext);
+   for (int i = 0; i < UPtext.size(); i++) 
+   {
+     c = UPtext[i];
+     auto value = alphaarray[0];
+     if (c >= 'A' && c <= 'Z')  
+       {
+        value = alphaarray[c - 'A'];
+       }
+     drawRetroCharOneColour(locx+ i*8*(psize+1), locy, psize, 8, value, Mycolour);
+   }
 }
 
 class Enemy  
@@ -891,6 +925,9 @@ int main() {
         MousePos = GetMousePosition();
         
         ShowColourScore2(100, 200, 1234, 3, WHITE, 9);
+
+        ShowColourText(100, 300, "ABCDefghijklmnopqrstuvwxyz", 3, WHITE);
+
         DrawText(("Score: "+to_string(score)).c_str(),100,10,40, WHITE);
         DrawText(("EnterCount: "+to_string(EnterCount)).c_str(),screenWidth*0.75,screenHeight-40,40, WHITE);
         DrawText(("Level: "+to_string(level)).c_str(),screenWidth*0.25,screenHeight-40,40, WHITE);
@@ -910,6 +947,8 @@ int main() {
             drawRetroChar(200+80, 10+i*80, i,8, CharZ); 
         }
         if (boby++ > 79) boby = 0;
+
+
         drawarrowsandinput();
         drawnemies();
         EndDrawing();
