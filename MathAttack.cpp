@@ -20,8 +20,12 @@
 //   (a) Table filled with all 8s
 //   (b) Invaders/tower defense numbers falling from sky
 
+// draw peggle balls/pegs. a + b = c: a spawns a balls, b spawns b balls and all move into c. If there is a match in the table, then all move into table
+// spot
+
 // Side panel of Bob, graphics, 3s, 1+2=3 current sum, etc, just like arcade games
 // 1+2=3 should appear in a box somewhere
+// call the game 100, or One Hundred ???
 
 // Scrolling message telling what to do ...
 // after a+b=c, display in scrolling message all in one line 1+1=2, 2+2=4, etc??? this is educational
@@ -35,18 +39,24 @@
 // Tidy up code!
 
 // hires Battery meter progress bar?
+// make it feel like you are building -- Number height?
+// Peggle bonus meter style? yes ... 100 on top
+// make points for each shot float UP in side column
+
 
 // draw boxes with animated dots moving around
 // Look at Tetris for game design and music
 // Avoid over-tall stack by only adding from queue when size <= 10 ?? needed ?? how to increase stack size while playing game?
 // mistakes decrease bonus by 1000
 
+// send in some bonus numbers now and then which are worth a lot of points
+
 
 // Same for (a+b)+c, a+(b+c)  ???? add algebra SLOWLY
 // Look at expensive watch faces CASIO, SEIKO, etc. for screen design
 // Look at CASIO 8-attack and invaders videos for level progression
 
-
+// small Chars running on top of big "Math Addition Game" sign is fun (look at jumpman, gunner)
 // draw graphics while balancing
 
 // Draw controls  AIM  : <spacebar>
@@ -254,6 +264,8 @@ void settheme()
 int CharBob[64] = {1,18,23,23,23,23,18,18,1,18,18,23,23,23,18,18,14,16,16,16,16,16,16,16,17,16,0,0,16,0,0,16,0,16,0,0,16,0,0,16,0,16,16,16,16,16,16,16,0,18,1,1,1,1,17,17,23,23,23,18,18,18,23,23};
 int CharBlock[576] = {19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19};
 int CharEnemy1[64] = {5,0,0,17,0,0,0,5,0,5,0,0,17,0,5,0,5,0,11,17,0,11,0,5,0,5,5,5,5,5,5,0,5,5,5,5,5,5,5,5,5,5,24,33,24,33,5,5,5,5,5,5,5,5,5,5,0,5,5,5,5,5,5,0};
+int CharBall[64] = {0,0,0,21,21,0,0,0,0,0,19,19,19,19,0,0,0,19,16,16,16,16,19,0,21,19,16,33,33,16,19,21,21,19,16,33,33,16,19,21,0,19,16,16,16,16,19,0,0,0,19,19,19,19,0,0,0,0,0,21,21,0,0,0};
+int CharBallSmall[64] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,21,19,21,0,0,0,0,0,19,33,19,0,0,0,0,0,21,19,21,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
 
 int CharA[64] = {0,1,1,1,1,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,1,1,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,0,0,0,0,0,0,0};
@@ -298,7 +310,7 @@ int CharPlus2[64] = {0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,1,1,1,1,1
 int CharUnderline[64] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0};
 int CharEquals[64] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 int CharUpArrow[64] = {0,0,0,1,0,0,0,0,0,0,1,1,1,0,0,0,0,1,0,1,0,1,0,0,1,0,0,1,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0};
-
+int CharColon[64] = {0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
 
 int* digitarray[10] = {Char0, Char1, Char2, Char3,  // array of pointers to chars, this works well! Access with digitarray[charnum][bitnum] 
@@ -522,6 +534,7 @@ void ShowColourText(int locx, int locy, string mytext, int psize, Color Mycolour
        {
         value = alphaarray[c - 'A'];
        }
+     if (c == ':') value = CharColon;
      drawRetroCharOneColour(locx+ i*8*(psize+1), locy, psize, 8, value, Mycolour);
    }
 }
@@ -691,11 +704,18 @@ bool findenemy(int shotnumber)
 int removeenemy(int shotnumber)
 {
   bool hit = false;
+  int hitvalue;
   if (Enemies.size() == 0) return 0;
   for (int i=Enemies.size()-1;i >= 0; i--) // go backwards to avoid index shifting when element is removed
     {  
        if (Enemies[i].attacknumber == shotnumber and hit == false)
         {
+           hitvalue = (100-Enemies[i].y/20)/10 * 10;
+           if (hitvalue < 10)
+               {
+                hitvalue = 10;
+               }
+          score = score + hitvalue;
           Enemies.erase(Enemies.begin()+i);
           if (shotnumber > 9) gunindex--;
           hit = true;
@@ -924,15 +944,16 @@ int main() {
         drawgunvector();
         MousePos = GetMousePosition();
         
-        ShowColourScore2(100, 200, 1234, 3, WHITE, 9);
+       
 
-        ShowColourText(100, 300, "ABCDefghijklmnopqrstuvwxyz", 3, WHITE);
+        ShowColourText(100, 10, "Score:", 3, YELLOW);
+        ShowColourScore2(300, 10, score, 3, YELLOW, 9);
 
-        DrawText(("Score: "+to_string(score)).c_str(),100,10,40, WHITE);
+      
         DrawText(("EnterCount: "+to_string(EnterCount)).c_str(),screenWidth*0.75,screenHeight-40,40, WHITE);
         DrawText(("Level: "+to_string(level)).c_str(),screenWidth*0.25,screenHeight-40,40, WHITE);
 
-        //drawCharfromArray(herox, heroy, 3,8, CharBob);
+        drawCharfromArray(herox, heroy, 3,8, CharBall);
         for (int i = 0; i< 10;i++)
             draw2digits(herox+300, heroy+i*8*(3+i), 88, i, rblightgrey);
         drawRetroChar(herox+300, heroy+200, 2,8, Char9);
@@ -948,7 +969,11 @@ int main() {
         }
         if (boby++ > 79) boby = 0;
 
-
+        for (int i = 1; i < 10; i++)
+        {
+           drawCharfromArray(800+i*8, 750, 1,8, CharBall);
+           drawCharfromArray(800+i*4, 750+8, 1,8, CharBallSmall);
+        }
         drawarrowsandinput();
         drawnemies();
         EndDrawing();
