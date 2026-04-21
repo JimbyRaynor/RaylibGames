@@ -96,7 +96,7 @@
 // Orange numbers give bonus?
 
 // POINTS:
-//  Score = 100-y for dropping number
+//  Score = 100-y for dropping number ** cannot so this** since then just let numbers accumulate at top!!!
 
 // BONUS:
 // colourful bonus number moves around in pattern on table
@@ -539,6 +539,101 @@ void ShowColourText(int locx, int locy, string mytext, int psize, Color Mycolour
    }
 }
 
+double lerp(double a, double b, double t) {
+    return a + (b - a) * t;
+}
+
+std::vector<std::pair<double, double>> interpolate(
+        const std::pair<double, double>& p0,
+        const std::pair<double, double>& p1,
+        int steps) 
+{
+    std::vector<std::pair<double, double>> result;
+    result.reserve(steps);
+
+    for (int i = 0; i < steps; ++i) {
+        double t = static_cast<double>(i) / steps;
+        double x = lerp(p0.first,  p1.first,  t);
+        double y = lerp(p0.second, p1.second, t);
+        result.emplace_back(x, y);
+    }
+
+    return result;
+}
+
+std::vector<std::pair<double,double>> interpolatePath(
+        const std::vector<std::pair<double,double>>& path,
+        int stepsPerSegment)
+{
+    std::vector<std::pair<double,double>> full;
+
+    for (size_t i = 0; i + 1 < path.size(); ++i) {
+        auto segment = interpolate(path[i], path[i+1], stepsPerSegment);
+        full.insert(full.end(), segment.begin(), segment.end());
+    }
+
+    return full;
+}
+
+
+// defender path
+std::vector<std::pair<double, double>> PATHG = {
+    {-30, 250},
+    {370, 250},
+    {390, -30}
+};
+
+// other paths
+std::vector<std::pair<double, double>> PATHPARADE = {
+    {700, 700},
+    {1000, 700},
+    {1000, 200},
+    {200, 200},
+    {200,250}
+};
+
+auto fullPath = interpolatePath(PATHPARADE, 200);
+
+
+class Ball
+{
+   public:
+    Ball(int startx, int starty, int targetx, int targety);  // constructor, *must* be named the same as the class
+    int draw();
+    int move();
+    int x,y;
+    int tagx, tagy;
+    int ipath;
+    int dx = 1;
+    int dy = 0;
+   private:
+};
+Ball::Ball(int startx, int starty, int targetx, int targety) // constructor code
+{
+  x = startx;
+  y = starty;
+  ipath = 0;
+  tagx = targetx;
+  tagy = targety;
+}
+int Ball::draw()
+{
+  drawCharfromArray(x, y, 1,8, CharBall);
+  return 0;
+}
+int Ball::move()
+{
+    //y = y + dy;
+    //x = x + dx;
+    if (ipath++ >= fullPath.size()) ipath = 0;
+    x = fullPath[ipath].first;
+    y = fullPath[ipath].second;
+    return 0;
+}
+
+
+
+
 class Enemy  
 {
      public:
@@ -551,8 +646,7 @@ class Enemy
        bool alive;
      private:
 };
-
-Enemy::Enemy(int startx, int starty, int number) // constructor
+Enemy::Enemy(int startx, int starty, int number) // constructor code
 {
      alive = true;
      x = startx;
@@ -586,6 +680,7 @@ int Enemy::draw()
       draw2digitsSolid(x, y, attacknumber, 4, Mycolour);
   return 0;
 }
+
 vector <Enemy> Enemies;
 vector <Enemy> Enemyqueue;
 
@@ -855,11 +950,11 @@ void drawarrowsandinput()
 {
   int resultx = 800;
   int resulty = 650;
-  drawRetroCharOneColour(resultx, resulty+4,3,8,CharUnderline,rbgray24);
-  drawRetroCharOneColour(resultx+5*8-8, resulty+4,3,8,CharUnderline,rbgray24);
+  drawRetroCharOneColour(resultx, resulty+4,3,8,CharUnderline,rbgray00);
+  drawRetroCharOneColour(resultx+5*8-8, resulty+4,3,8,CharUnderline,rbgray00);
   drawRetroCharOneColour(resultx+2*5*8-6, resulty,4,8,CharPlus2,rblightgreen);
-  drawRetroCharOneColour(resultx+3*5*8, resulty+4,3,8,CharUnderline,rbgray24);
-  drawRetroCharOneColour(resultx+4*5*8-8, resulty+4,3,8,CharUnderline,rbgray24);
+  drawRetroCharOneColour(resultx+3*5*8, resulty+4,3,8,CharUnderline,rbgray00);
+  drawRetroCharOneColour(resultx+4*5*8-8, resulty+4,3,8,CharUnderline,rbgray00);
  if (value1picked == false or resultdisplayed == true)
         drawRetroCharOneColour(resultx+5*8-8, resulty+40,3,8,CharUpArrow,rbgray24);
  else
@@ -907,15 +1002,17 @@ int main() {
     fillboard();
     loadgunvector();
     sumlog.clear();
+    Ball Ball1(700,700,200,200);
    
     while (!WindowShouldClose()) 
     {
         ReadKeys();
         float dt = GetFrameTime(); // seconds since last frame 
         moveTimer += dt; 
+        Ball1.move();  
         if (moveTimer >= moveInterval) 
           { 
-            moveenemies();            
+            moveenemies();                     
             if (enemymovement >= 40)
             {      
                 enemymovement = 0;
@@ -976,6 +1073,7 @@ int main() {
         }
         drawarrowsandinput();
         drawnemies();
+        Ball1.draw();
         EndDrawing();
     }
 
