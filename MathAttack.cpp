@@ -14,6 +14,12 @@
 // raylib uses float for most numbers, and so use 2.0f to convert int to float. Note that 2.0 will be a double
 // Only use GameMaker for final animations and sound. Make full game (o/w animations) with raylib
 
+
+// build table, do not remove numbers!!! 
+// pearls accumulate over game and then get converted into gold coins (100p - 1 gc, remove remainder) at end of game.
+// Use coins to buy powerups. Powerups get randomly assigned to table where each number gets "gift wrapped" - double score, free number, etc
+// just like in peggle. Pearls are only awarded for numbers added to board (table)
+
 // Draw a finite state machine (on Kindle) for difficult logic problems while programming
 
 // This shooting mechanic can be used for many different games +-*/:
@@ -37,6 +43,9 @@
 // draw round japanese style characters with little arms and legs, and flowy hair
 // released number should be displayed on LHS 
 // Tidy up code!
+
+// Make the screen come alive even if not playing the game
+// lots of animations 
 
 // hires Battery meter progress bar?
 // make it feel like you are building -- Number height?
@@ -262,11 +271,12 @@ void settheme()
 }
 
 int CharBob[64] = {1,18,23,23,23,23,18,18,1,18,18,23,23,23,18,18,14,16,16,16,16,16,16,16,17,16,0,0,16,0,0,16,0,16,0,0,16,0,0,16,0,16,16,16,16,16,16,16,0,18,1,1,1,1,17,17,23,23,23,18,18,18,23,23};
-int CharBlock[576] = {19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19};
 int CharEnemy1[64] = {5,0,0,17,0,0,0,5,0,5,0,0,17,0,5,0,5,0,11,17,0,11,0,5,0,5,5,5,5,5,5,0,5,5,5,5,5,5,5,5,5,5,24,33,24,33,5,5,5,5,5,5,5,5,5,5,0,5,5,5,5,5,5,0};
 int CharBall[64] = {0,0,0,21,21,0,0,0,0,0,19,19,19,19,0,0,0,19,16,16,16,16,19,0,21,19,16,33,33,16,19,21,21,19,16,33,33,16,19,21,0,19,16,16,16,16,19,0,0,0,19,19,19,19,0,0,0,0,0,21,21,0,0,0};
 int CharBallSmall[64] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,21,19,21,0,0,0,0,0,19,33,19,0,0,0,0,0,21,19,21,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
+
+int CharBlock[576] = {19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,19,19,33,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,33,19,19,33,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,33,19,19,33,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,33,19,19,33,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,33,19,19,33,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,33,19,19,33,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,33,19,19,33,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,33,19,19,33,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,33,19,19,33,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,33,19,19,33,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,33,19,19,33,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,33,19,19,33,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,33,19,19,33,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,33,19,19,33,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,33,19,19,33,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,33,19,19,33,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,33,19,19,33,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,33,19,19,33,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,33,19,19,33,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,33,19,19,33,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,33,19,19,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19};
 
 int CharA[64] = {0,1,1,1,1,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,1,1,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,0,0,0,0,0,0,0};
 int CharB[64] = {0,1,1,1,1,1,0,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,1,1,1,0,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0};
@@ -341,6 +351,7 @@ int level = 1;
 int maxnumber = 2;
 int levels[] = {0,3,9,14,14,20,33,32,32,32}; // Extra enemies added in each level; 
 int Board[20][20];
+int boardx = 700, boardy = 10, cellwidth = 50;
 string operation = "+";
 vector <int> gunvector;
 vector <string> sumlog;
@@ -483,6 +494,18 @@ void draw2digitsSolid(int locx, int locy, int mynum, int psize, Color Mycolour)
    }
   drawCharOneColour(locx+ 8*(psize+1), locy, psize, 8, digitarray[second], Mycolour);
 }
+
+void draw2digitsSolid2(int locx, int locy, int mynum, int psize, Color Mycolour)
+{
+  int first = mynum / 10;
+  int second = mynum % 10;
+  if (first > 0) 
+   { 
+    drawCharOneColour(locx, locy, psize, 8, digitarray[first], Mycolour);
+   }
+  drawCharOneColour(locx+ 6*psize, locy, psize, 8, digitarray[second], Mycolour);
+}
+
 
 void ShowColourScore2(int locx, int locy, int myscore, int psize, Color Mycolour,  int numzeros=9)
 {
@@ -923,7 +946,6 @@ int ReadKeys()
 
 int drawboard()
 {
-  int boardx = 700, boardy = 10, cellwidth = 50;
   //DrawText(to_string(100).c_str(),boardx+cellwidth*4,boardy+cellwidth*10,60, WHITE);
   drawRetroCharOneColour(boardx+cellwidth*2,boardy+cellwidth*10,10,8,Char1, rbwhite);
   drawRetroCharOneColour(boardx+cellwidth*2+100,boardy+cellwidth*10,10,8,Char0, rbwhite);
@@ -933,6 +955,12 @@ int drawboard()
      if (Board[i][j] != -1)
                 draw2digits(boardx+cellwidth*j,boardy+cellwidth*i,Board[i][j],1,rblightpink);
   return 0;
+}
+
+void drawfilledtablecell(int i, int j, int num)
+{
+  drawCharfromArray(boardx+j*cellwidth, boardy+i*cellwidth, 2,24, CharBlock); 
+  draw2digitsSolid2(boardx+j*cellwidth+5, boardy+i*cellwidth+12, num, 3, BLACK);
 }
 
 int drawsumlog()
@@ -1071,6 +1099,12 @@ int main() {
            drawCharfromArray(800+i*8, 750, 1,8, CharBall);
            drawCharfromArray(800+i*4, 750+8, 1,8, CharBallSmall);
         }
+        for (int i = 0; i< 10; i++)
+        {
+           drawfilledtablecell(2, i,i);
+           drawfilledtablecell(i, 2, 20-i); 
+        }
+        
         drawarrowsandinput();
         drawnemies();
         Ball1.draw();
