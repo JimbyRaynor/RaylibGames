@@ -14,6 +14,15 @@
 // raylib uses float for most numbers, and so use 2.0f to convert int to float. Note that 2.0 will be a double
 // Only use GameMaker for final animations and sound. Make full game (o/w animations) with raylib
 
+// Better? Put table in centre, numbers slide in horizontally from the right bottom side of the screen.
+// left-right arrows move a selector underneath the numbers, press spacebar to select the number, then it moves in a tunnel to operand slot
+// (1) this makes it clearer that the number is selected, and where it is going 
+// (2) added numbers just appear at RHS of list ?? is this bad? I think they need to slide
+// so make selector move up and down at LHS of screen
+// Just make arrow's vertical position = vertical position of element of enemy. Easy
+
+// make selector
+// draw trail from right arrow (selector) to uparrow (operand)
 
 // build table, do not remove numbers!!! 
 // pearls accumulate over game and then get converted into gold coins (100p - 1 gc, remove remainder) at end of game.
@@ -321,7 +330,7 @@ int CharUnderline[64] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 int CharEquals[64] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 int CharUpArrow[64] = {0,0,0,1,0,0,0,0,0,0,1,1,1,0,0,0,0,1,0,1,0,1,0,0,1,0,0,1,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0};
 int CharColon[64] = {0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0};
-
+int CharRightArrow[64] = {0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,1,1,1,1,1,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0};
 
 int* digitarray[10] = {Char0, Char1, Char2, Char3,  // array of pointers to chars, this works well! Access with digitarray[charnum][bitnum] 
                        Char4, Char5, Char6, Char7, Char8, Char9};  
@@ -819,6 +828,61 @@ bool findenemy(int shotnumber)
     
 }
 
+int removeenemyatgunindex()
+{
+  int hitvalue;
+  int shotnumber;
+  if (Enemies.size() == 0) return 0;
+  hitvalue = (100-Enemies[gunindex].y/20)/10 * 10;
+  if (hitvalue < 10)
+               {
+                hitvalue = 10;
+               }
+  score = score + hitvalue;
+  Enemies.erase(Enemies.begin()+gunindex);
+  shotnumber = Enemies[gunindex].attacknumber;
+  if (value1picked == false)
+          {
+            value1 = shotnumber;
+            value1picked = true;
+          }
+  else
+          {
+            value2 = shotnumber;
+            value1picked = false;     
+            value2picked = true;   
+            if (removefromboard(value1+value2) != -1)
+            {
+               sumlog.push_back(to_string(value1)+" + "+to_string(value2)+" = "+to_string(value1+value2));
+               if (MAXstacksize <= 10) MAXstacksize++;
+               if (value1+value2 < 90)
+                    {
+                      createnewenemyinqueue(value1+value2);
+                    }
+               if (value1+value2 >= 90 and value1+value2 <= 99)  
+                  {
+                   createnewenemyinqueue(GetRandomValue(10,19));
+                   createnewenemyinqueue(value1+value2);
+                  }                
+               if (value1+value2 == 100)  createnewlevel();
+               sumisonboard = true;
+            }
+            else 
+            {
+              sumlog.push_back(to_string(value1)+" + "+to_string(value2)+" = "+to_string(value1+value2)+" *not on board* ");
+              createnewenemyinqueue(GetRandomValue(1,maxnumber));
+              if (MAXstacksize >= 3) MAXstacksize--;
+              sumisonboard = false;
+            }
+          }
+          hits++;
+return 0;
+};
+
+
+
+
+
 int removeenemy(int shotnumber)
 {
   bool hit = false;
@@ -885,7 +949,9 @@ int ReadKeys()
    int c = 0;
    if (IsKeyPressed(KEY_ENTER))
         {
-             if (removeenemy(gunvector[gunindex]) >= 0) // enemy number found in descending list
+             //Enemies[gunindex].attacknumber
+            // if (removeenemy(gunvector[gunindex]) >= 0) // enemy number found in descending list
+            if (removeenemyatgunindex() >= 0)
              {
               EnterCount++;
               if (EnterCount == 2)
@@ -1016,7 +1082,16 @@ void drawgunvector()
               else
                draw2digits(screenWidth/2-70,screenHeight-100, shotnumber, 7, shotcolour);  
          }
+ if (gunindex >= Enemies.size())
+ {
+  gunindex = 0;
+ }
+ if (Enemies.size() > 0)
+{ 
+  drawCharfromArray(screenWidth/2-100, Enemies[gunindex].y, 4,8, CharRightArrow); // selector
 }
+}
+
 
 
 int main() {
