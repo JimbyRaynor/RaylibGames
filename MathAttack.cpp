@@ -739,18 +739,6 @@ int moveenemies()
   return 0;
 }
 
-int loadgunvector()
-{
-  gunvector.clear();
-  for (int i=1;i<10;i++)
-     gunvector.push_back(i);
-  for (int i=0;i<Enemies.size();i++)
-        if (find(gunvector.begin(),gunvector.end(),Enemies[i].attacknumber) == gunvector.end() and Enemies[i].attacknumber > 9)  // need unique
-              gunvector.push_back(Enemies[i].attacknumber);
-  if (gunvector.size() > 0)  
-       sort(gunvector.begin(),gunvector.end());
-  return 0;
-}
 
 int resetenemyloc()
 { int n = Enemies.size();
@@ -792,7 +780,6 @@ int createnewenemyinqueue(int value)
     maxnumber = value;
   }
   Enemyqueue.push_back(Entmp);
-  loadgunvector();
   return 0;
 }
 
@@ -818,15 +805,6 @@ int createnewlevel()
      return 0;
   }
 
-bool findenemy(int shotnumber)
-{
-  bool found = false;
-  for (int i = 0; i < Enemies.size(); i++)
-     if (Enemies[i].attacknumber == shotnumber)
-         found = true;
-  return found;
-    
-}
 
 int removeenemyatgunindex()
 {
@@ -839,8 +817,9 @@ int removeenemyatgunindex()
                 hitvalue = 10;
                }
   score = score + hitvalue;
-  Enemies.erase(Enemies.begin()+gunindex);
   shotnumber = Enemies[gunindex].attacknumber;
+  Enemies.erase(Enemies.begin()+gunindex);
+  if (gunindex >= Enemies.size()) {gunindex = Enemies.size()-1;}
   if (value1picked == false)
           {
             value1 = shotnumber;
@@ -882,68 +861,6 @@ return 0;
 
 
 
-
-int removeenemy(int shotnumber)
-{
-  bool hit = false;
-  int hitvalue;
-  if (Enemies.size() == 0) return 0;
-  for (int i=Enemies.size()-1;i >= 0; i--) // go backwards to avoid index shifting when element is removed
-    {  
-       if (Enemies[i].attacknumber == shotnumber and hit == false)
-        {
-           hitvalue = (100-Enemies[i].y/20)/10 * 10;
-           if (hitvalue < 10)
-               {
-                hitvalue = 10;
-               }
-          score = score + hitvalue;
-          Enemies.erase(Enemies.begin()+i);
-          if (shotnumber > 9) gunindex--;
-          hit = true;
-          if (value1picked == false)
-          {
-            value1 = shotnumber;
-            value1picked = true;
-          }
-          else
-          {
-            value2 = shotnumber;
-            value1picked = false;     
-            value2picked = true;   
-            if (removefromboard(value1+value2) != -1)
-            {
-               sumlog.push_back(to_string(value1)+" + "+to_string(value2)+" = "+to_string(value1+value2));
-               if (MAXstacksize <= 10) MAXstacksize++;
-               if (value1+value2 < 90)
-                    {
-                      createnewenemyinqueue(value1+value2);
-                    }
-               if (value1+value2 >= 90 and value1+value2 <= 99)  
-                  {
-                   createnewenemyinqueue(GetRandomValue(10,19));
-                   createnewenemyinqueue(value1+value2);
-                  }                
-               if (value1+value2 == 100)  createnewlevel();
-               sumisonboard = true;
-            }
-            else 
-            {
-              sumlog.push_back(to_string(value1)+" + "+to_string(value2)+" = "+to_string(value1+value2)+" *not on board* ");
-              createnewenemyinqueue(GetRandomValue(1,maxnumber));
-              if (MAXstacksize >= 3) MAXstacksize--;
-              sumisonboard = false;
-            }
-          }
-          hits++;
-        };
-    }
-  if (!hit) 
-    return -1;
-  else
-    return 0;
-}
-
 int ReadKeys()
 {
    int c = 0;
@@ -965,12 +882,11 @@ int ReadKeys()
               EnterCount = 1;
               }           
              }
-             loadgunvector();  
         }
    if (IsKeyPressed(KEY_SPACE))
         {        
               gunindex++;
-              if (gunindex >= gunvector.size()) gunindex = 0;
+              if (gunindex >= Enemies.size()) gunindex = 0;
               //resultdisplayed = false; 
               if (EnterCount == 2)
               {
@@ -1072,24 +988,10 @@ void drawarrowsandinput()
 
 void drawgunvector()
 {
- if (gunvector.size() > gunindex)
-         {
-          int shotnumber = gunvector[gunindex];
-          Color shotcolour = rblightgreen;
-          if (findenemy(shotnumber) == false) shotcolour = rbgray00;
-          if  (shotnumber  < 10)
-                draw2digits(screenWidth/2-100,screenHeight-100, shotnumber, 7, shotcolour);
-              else
-               draw2digits(screenWidth/2-70,screenHeight-100, shotnumber, 7, shotcolour);  
-         }
- if (gunindex >= Enemies.size())
- {
-  gunindex = 0;
- }
  if (Enemies.size() > 0)
-{ 
-  drawCharfromArray(screenWidth/2-100, Enemies[gunindex].y, 4,8, CharRightArrow); // selector
-}
+   { 
+    drawCharfromArray(screenWidth/2-100, Enemies[gunindex].y, 4,8, CharRightArrow); // selector
+   }
 }
 
 
@@ -1103,7 +1005,6 @@ int main() {
     Vector2 MousePos;
     SetTargetFPS(60);
     fillboard();
-    loadgunvector();
     sumlog.clear();
     Ball Ball1(700,700,200,200);
    
@@ -1122,14 +1023,12 @@ int main() {
                 if (Enemies.size() <= MAXstacksize)
                 {
                   createnewenemyinqueue(GetRandomValue(1,maxnumber));
-                  loadgunvector();
                   createdenemies++;   
                 }  
                 if (Enemyqueue.size() > 0)
                 {
                   Enemies.push_back(Enemyqueue.back());
                   Enemyqueue.pop_back();
-                  loadgunvector();
                 }     
             }
             moveTimer = 0.0f; // reset timer 
@@ -1141,7 +1040,7 @@ int main() {
         DrawRectangleLines(0,0,screenWidth,screenHeight,YELLOW);
         drawboard();
         //drawsumlog();
-        drawgunvector();
+        drawgunvector(); // this is draw selector now!
         MousePos = GetMousePosition();
         
        
