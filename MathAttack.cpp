@@ -819,7 +819,8 @@ int removeenemyatgunindex()
   score = score + hitvalue;
   shotnumber = Enemies[gunindex].attacknumber;
   Enemies.erase(Enemies.begin()+gunindex);
-  if (gunindex >= Enemies.size()) {gunindex = Enemies.size()-1;}
+  //if (gunindex >= Enemies.size()) {gunindex = Enemies.size()-1;}
+  gunindex = 0;
   if (value1picked == false)
           {
             value1 = shotnumber;
@@ -885,7 +886,10 @@ int ReadKeys()
         }
    if (IsKeyPressed(KEY_SPACE))
         {        
-              gunindex++;
+              if (Enemies[gunindex].y >= 300) 
+                 gunindex++;
+              else
+                 gunindex = 0;
               if (gunindex >= Enemies.size()) gunindex = 0;
               //resultdisplayed = false; 
               if (EnterCount == 2)
