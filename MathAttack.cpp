@@ -14,6 +14,15 @@
 // raylib uses float for most numbers, and so use 2.0f to convert int to float. Note that 2.0 will be a double
 // Only use GameMaker for final animations and sound. Make full game (o/w animations) with raylib
 
+
+// comments namespace. Expand to view
+namespace {
+// DRAW: Empty Crates at bottom with crateheight = 4,5,6,7,8,..., 10?
+// Selector can only point to crates (which can be empty)
+// CAN ONLY SHOOT when number is in crate and STATIONAY
+// Crate is an OBJECT which draws itself, and gets filled (remove from enemies when they hit the top of the crates)
+// enemy only falls (from offscreen) when top crate is empty
+
 // Better? Put table in centre, numbers slide in horizontally from the right bottom side of the screen.
 // left-right arrows move a selector underneath the numbers, press spacebar to select the number, then it moves in a tunnel to operand slot
 // (1) this makes it clearer that the number is selected, and where it is going 
@@ -173,7 +182,7 @@
 
 // chars walking across screen to show progress ?
 // Look at Donut Dodo for ideas of background animations
-
+}
 
 using namespace std;
 
@@ -197,6 +206,8 @@ Color HexToColour(int hexValue) {
 }
 
 
+// colours and graphics characters namespace. Expand to view
+namespace {
  // DO NOT CHANGE
  // needed for LEDColour pixel editor
 Color rbblack = HexToColour(0x000000);
@@ -241,6 +252,7 @@ Color rbgraytext = HexToColour(0x1E1E1E);
 Color rbgray24 = HexToColour(0xC8C8C8);
 Color rbgray3 = HexToColour(0xEEEEEE);
 
+
  // DO NOT CHANGE
  // needed for LEDColour pixel editor
 Color AllColours[60] = {rblightblue, rbblue, rbdarkblue, rblightred, rbred, rbdarkred, rblightorange, rborange, rbdarkorange,
@@ -283,7 +295,7 @@ int CharBob[64] = {1,18,23,23,23,23,18,18,1,18,18,23,23,23,18,18,14,16,16,16,16,
 int CharEnemy1[64] = {5,0,0,17,0,0,0,5,0,5,0,0,17,0,5,0,5,0,11,17,0,11,0,5,0,5,5,5,5,5,5,0,5,5,5,5,5,5,5,5,5,5,24,33,24,33,5,5,5,5,5,5,5,5,5,5,0,5,5,5,5,5,5,0};
 int CharBall[64] = {0,0,0,21,21,0,0,0,0,0,19,19,19,19,0,0,0,19,16,16,16,16,19,0,21,19,16,33,33,16,19,21,21,19,16,33,33,16,19,21,0,19,16,16,16,16,19,0,0,0,19,19,19,19,0,0,0,0,0,21,21,0,0,0};
 int CharBallSmall[64] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,21,19,21,0,0,0,0,0,19,33,19,0,0,0,0,0,21,19,21,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-
+int CharCrate[256] = {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,17,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,17,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,17,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,17,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,17,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,17,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,17,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,17,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,17,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,17,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,17,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,17,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,17,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,17,0,17,17,17,17,17,17,17,17,17,17,17,17,17,17,17};
 
 int CharBlock[576] = {19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,19,19,33,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,33,19,19,33,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,33,19,19,33,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,33,19,19,33,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,33,19,19,33,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,33,19,19,33,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,33,19,19,33,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,33,19,19,33,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,33,19,19,33,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,33,19,19,33,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,33,19,19,33,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,33,19,19,33,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,33,19,19,33,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,33,19,19,33,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,33,19,19,33,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,33,19,19,33,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,33,19,19,33,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,33,19,19,33,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,33,19,19,33,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,33,19,19,33,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,33,19,19,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19};
 
@@ -337,10 +349,15 @@ int* digitarray[10] = {Char0, Char1, Char2, Char3,  // array of pointers to char
 
 int* alphaarray[26] = {CharA, CharB, CharC, CharD, CharE, CharF, CharG, CharH, CharI, CharJ, CharK, CharL, CharM, CharN, CharO, CharP, CharQ, 
                        CharR, CharS, CharT, CharU, CharV, CharW, CharX, CharY, CharZ}; 
-
+}
 
 int herox = 20;
 int heroy = 20;
+int cratex = screenWidth/2 - 50;
+int cratey = screenHeight-100;
+int numcrates = 4;
+int numberfallx = cratex-24;
+int numberfallbottom = cratey-(numcrates)*(16*3+6)+20;
 int traily = -30;
 int totalenemies = 20;
 int createdenemies = 0;
@@ -420,12 +437,12 @@ int fillboard()
   return 0;
 }
 
-void drawCharfromArray(int previewx, int previewy, int psize, int bitwidth, int myarray[])
+void drawCharfromArray(int previewx, int previewy, int psize, int width, int myarray[])
      {
        Color Mycolour;
        int loc = 0;
-       for (int i=0;i < bitwidth; i++ )
-         for (int j=0; j < bitwidth; j++)
+       for (int i=0;i < width; i++ )
+         for (int j=0; j < width; j++)
             {
               if (myarray[loc] != 0)
               {
@@ -663,8 +680,36 @@ int Ball::move()
     return 0;
 }
 
+class Crate
+{
+  public:
+    Crate(int startx, int starty); // constructor, *must* be named the same as the class
+    int draw();
+    int x,y;
+  private:
+};
 
+Crate::Crate(int startx, int starty) // constructor code
+{
+  x = startx;
+  y = starty;
+}
+int Crate::draw()
+{
+  drawCharfromArray(x, y, 3,16, CharCrate);
+  return 0;
+}
 
+vector <Crate> Crates;
+int makecrates()
+{
+  for (int i=0; i < numcrates; i++)
+   {
+    Crate cratetmp(cratex,cratey-(16*3+6)*i);
+    Crates.push_back(cratetmp);
+   }
+  return 0;
+}
 
 class Enemy  
 {
@@ -694,7 +739,7 @@ int Enemy::spawn()
 
 int Enemy::move()
 {
-    if (y <= 600)
+    if (y <= numberfallbottom)
        y = y + movementstep;
     return 0;
 }
@@ -721,7 +766,7 @@ bool checkenemycollision(int index)
  bool collide = false;
  for (int i=0;i<Enemies.size();i++)
  {
-    if (i != index and Enemies[index].y+40 == Enemies[i].y )
+    if (i != index and (Enemies[index].y+42 - Enemies[i].y <= 24) and (Enemies[index].y+42 - Enemies[i].y >= 0) )
      collide = true;
  }
  return collide;
@@ -774,7 +819,7 @@ int findminboard()
 
 int createnewenemyinqueue(int value)
 {
-  Enemy Entmp(screenWidth/2-50,-30,value);
+  Enemy Entmp(numberfallx,-30,value);
   if (value > maxnumber and value < 10)
   {
     maxnumber = value;
@@ -804,7 +849,6 @@ int createnewlevel()
      fillboard();
      return 0;
   }
-
 
 int removeenemyatgunindex()
 {
@@ -858,9 +902,6 @@ int removeenemyatgunindex()
           hits++;
 return 0;
 };
-
-
-
 
 int ReadKeys()
 {
@@ -1011,7 +1052,8 @@ int main() {
     fillboard();
     sumlog.clear();
     Ball Ball1(700,700,200,200);
-   
+
+    makecrates();
     while (!WindowShouldClose()) 
     {
         ReadKeys();
@@ -1086,6 +1128,8 @@ int main() {
         drawarrowsandinput();
         drawnemies();
         Ball1.draw();
+        for (int i =0;i < Crates.size(); i++)
+          Crates[i].draw();
         EndDrawing();
     }
 
