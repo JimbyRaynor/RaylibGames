@@ -17,6 +17,7 @@
 
 // comments namespace. Expand to view
 namespace {
+// make animation timers fast (done) and slow (one step per 0.7 seconds)  
 // DRAW: Empty Crates at bottom with crateheight = 4,5,6,7,8,..., 10?
 // Selector can only point to crates (which can be empty)
 // CAN ONLY SHOOT when number is in crate and STATIONAY
@@ -344,6 +345,9 @@ int CharEquals[64] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,0,
 int CharUpArrow[64] = {0,0,0,1,0,0,0,0,0,0,1,1,1,0,0,0,0,1,0,1,0,1,0,0,1,0,0,1,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0};
 int CharColon[64] = {0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0};
 int CharRightArrow[64] = {0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,1,1,1,1,1,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0};
+
+int CharLEDRightArrow[64] = {0,0,16,17,0,0,0,0,0,0,0,16,17,0,0,0,0,0,0,0,16,17,0,0,0,0,0,0,0,16,16,0,0,0,0,0,16,17,0,0,0,0,0,16,17,0,0,0,0,0,16,17,0,0,0,0,0,0,0,0,0,0,0,0};
+
 
 int* digitarray[10] = {Char0, Char1, Char2, Char3,  // array of pointers to chars, this works well! Access with digitarray[charnum][bitnum] 
                        Char4, Char5, Char6, Char7, Char8, Char9};  
@@ -1019,6 +1023,17 @@ void drawarrowsandinput()
 {
   int resultx = 800;
   int resulty = 650;
+  int arrowsx = cratex+80;
+  int arrowsy = cratey+10;
+  for (int i = 0; i < 3; i++)
+   {
+      drawCharfromArray(arrowsx+i*24*2.5, arrowsy,3,8,CharLEDRightArrow);
+      drawCharfromArray(arrowsx+i*24*2.5+12, arrowsy,3,8,CharLEDRightArrow);
+      drawCharfromArray(arrowsx+i*24*2.5+24, arrowsy,3,8,CharLEDRightArrow);
+
+   }
+  
+
   drawRetroCharOneColour(resultx, resulty+4,3,8,CharUnderline,rbgray00);
   drawRetroCharOneColour(resultx+5*8-8, resulty+4,3,8,CharUnderline,rbgray00);
   drawRetroCharOneColour(resultx+2*5*8-6, resulty,4,8,CharPlus2,rblightgreen);
