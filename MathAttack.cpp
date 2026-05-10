@@ -347,7 +347,7 @@ int CharColon[64] = {0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0
 int CharRightArrow[64] = {0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,1,1,1,1,1,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0};
 
 int CharLEDRightArrow[64] = {0,0,16,17,0,0,0,0,0,0,0,16,17,0,0,0,0,0,0,0,16,17,0,0,0,0,0,0,0,16,16,0,0,0,0,0,16,17,0,0,0,0,0,16,17,0,0,0,0,0,16,17,0,0,0,0,0,0,0,0,0,0,0,0};
-
+int CharLEDGreenRightArrow[64] = {0,0,10,11,0,0,0,0,0,0,0,10,11,0,0,0,0,0,0,0,10,11,0,0,0,0,0,0,0,10,10,0,0,0,0,0,10,11,0,0,0,0,0,10,11,0,0,0,0,0,10,11,0,0,0,0,0,0,0,0,0,0,0,0};
 
 int* digitarray[10] = {Char0, Char1, Char2, Char3,  // array of pointers to chars, this works well! Access with digitarray[charnum][bitnum] 
                        Char4, Char5, Char6, Char7, Char8, Char9};  
@@ -356,6 +356,8 @@ int* alphaarray[26] = {CharA, CharB, CharC, CharD, CharE, CharF, CharG, CharH, C
                        CharR, CharS, CharT, CharU, CharV, CharW, CharX, CharY, CharZ}; 
 }
 
+int deciseconds = 0; // 1/60 of a second timer for animations
+int targetarrow = 0; 
 int herox = 20;
 int heroy = 20;
 int cratex = screenWidth/2 - 50;
@@ -687,10 +689,39 @@ int Ball::move()
     return 0;
 }
 
+
+
+class Arrow
+{
+  public:
+   Arrow(int startx, int starty, int mydrawnumber); // constructor *must* be named the same as the class
+   int draw();
+   int x,y;
+   int drawnumber;
+  private:
+};
+
+Arrow::Arrow(int startx, int starty, int mydrawnumber) // constructor
+{
+  x = startx;
+  y = starty;
+  drawnumber = mydrawnumber;
+}
+
+int Arrow::draw()
+{
+  if (drawnumber++ >= 60) {drawnumber = 0;}
+  if (drawnumber < 50)
+     drawCharfromArray(x, y, 3,8, CharLEDRightArrow);
+  else
+     drawCharfromArray(x, y, 3,8, CharLEDGreenRightArrow);
+  return 0;
+}
+
 class Crate
 {
   public:
-    Crate(int startx, int starty); // constructor, *must* be named the same as the class
+    Crate(int startx, int starty); // constructor *must* be named the same as the class
     int draw();
     int x,y;
     int number;
@@ -1019,6 +1050,15 @@ int drawsumlog()
   return 0;
 }
 
+int* arrowanimate(int loc)
+{
+  if (loc == targetarrow)
+    return CharLEDRightArrow;
+  else
+    return CharLEDGreenRightArrow;
+
+}
+
 void drawarrowsandinput()
 {
   int resultx = 800;
@@ -1027,12 +1067,16 @@ void drawarrowsandinput()
   int arrowsy = cratey+10;
   for (int i = 0; i < 3; i++)
    {
-      drawCharfromArray(arrowsx+i*24*2.5, arrowsy,3,8,CharLEDRightArrow);
-      drawCharfromArray(arrowsx+i*24*2.5+12, arrowsy,3,8,CharLEDRightArrow);
-      drawCharfromArray(arrowsx+i*24*2.5+24, arrowsy,3,8,CharLEDRightArrow);
-
+      drawCharfromArray(arrowsx+i*24*2, arrowsy,3,8,arrowanimate(1));
+      drawCharfromArray(arrowsx+i*24*2+12, arrowsy,3,8,arrowanimate(2));
+      drawCharfromArray(arrowsx+i*24*2+24, arrowsy,3,8,arrowanimate(3));
+      drawCharfromArray(arrowsx+i*24*2+36, arrowsy,3,8,arrowanimate(4));
    }
-  
+  if (deciseconds % 40 == 0)
+  {
+    targetarrow++;
+    if (targetarrow > 4) targetarrow = 1;
+  }
 
   drawRetroCharOneColour(resultx, resulty+4,3,8,CharUnderline,rbgray00);
   drawRetroCharOneColour(resultx+5*8-8, resulty+4,3,8,CharUnderline,rbgray00);
@@ -1068,8 +1112,6 @@ void drawgunvector()
    }
 }
 
-
-
 int main() {
     settheme();
     InitWindow(screenWidth, screenHeight, "Math Addition Game"); // RNG seed is set randomly in InitWindow !!
@@ -1081,11 +1123,11 @@ int main() {
     fillboard();
     sumlog.clear();
     Ball Ball1(700,700,200,200);
-
     makecrates();
     while (!WindowShouldClose()) 
     {
         ReadKeys();
+        deciseconds++;
         float dt = GetFrameTime(); // seconds since last frame 
         moveTimer += dt; 
         Ball1.move();  
