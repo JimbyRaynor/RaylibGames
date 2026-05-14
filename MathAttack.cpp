@@ -17,7 +17,6 @@
 
 // comments namespace. Expand to view
 namespace {
-// make animation timers fast (done) and slow (one step per 0.7 seconds)  
 // DRAW: Empty Crates at bottom with crateheight = 4,5,6,7,8,..., 10?
 // Selector can only point to crates (which can be empty)
 // CAN ONLY SHOOT when number is in crate and STATIONAY
@@ -732,7 +731,7 @@ Crate::Crate(int startx, int starty) // constructor code
 {
   x = startx;
   y = starty;
-  number = 88;
+  number = 0;
 }
 int Crate::draw()
 {
@@ -758,6 +757,19 @@ int makecrates()
     Crates.push_back(cratetmp);
    }
   return 0;
+}
+
+int stackincrate(int mynumber)
+{
+  for (int i=0; i < numcrates; i++)
+   {
+    if (Crates[i].number == 0)
+    {
+       Crates[i].number = mynumber;
+       return 1;
+    }
+   }
+  return -1;
 }
 
 class Enemy  
@@ -829,6 +841,12 @@ int moveenemies()
         if (!checkenemycollision(i)) 
          {
           Enemies[i].move();
+          if (Enemies[i].y > cratey-(16*3+6)*numcrates)
+           if (stackincrate(Enemies[i].attacknumber) >= 0)
+           {
+            Enemies.erase(Enemies.begin()+i);
+            i--;
+           }
          }
   return 0;
 }
@@ -903,17 +921,11 @@ int removeenemyatgunindex()
 {
   int hitvalue;
   int shotnumber;
-  if (Enemies.size() == 0) return 0;
-  hitvalue = (100-Enemies[gunindex].y/20)/10 * 10;
-  if (hitvalue < 10)
-               {
-                hitvalue = 10;
-               }
+  hitvalue = 10;
   score = score + hitvalue;
-  shotnumber = Enemies[gunindex].attacknumber;
-  Enemies.erase(Enemies.begin()+gunindex);
-  //if (gunindex >= Enemies.size()) {gunindex = Enemies.size()-1;}
-  gunindex = 0;
+  shotnumber = Crates[gunindex].number;
+  if (shotnumber == 0) return -1;
+  Crates[gunindex].number = 0;
   if (value1picked == false)
           {
             value1 = shotnumber;
@@ -976,11 +988,8 @@ int ReadKeys()
         }
    if (IsKeyPressed(KEY_SPACE))
         {        
-              if (Enemies[gunindex].y >= 300) 
-                 gunindex++;
-              else
-                 gunindex = 0;
-              if (gunindex >= Enemies.size()) gunindex = 0;
+              gunindex++;
+              if (gunindex >= numcrates) gunindex = 0;
               //resultdisplayed = false; 
               if (EnterCount == 2)
               {
@@ -1104,12 +1113,9 @@ void drawarrowsandinput()
         }
 }
 
-void drawgunvector()
+void drawgunvector() // draw selector
 {
- if (Enemies.size() > 0)
-   { 
-    drawCharfromArray(screenWidth/2-100, Enemies[gunindex].y, 4,8, CharRightArrow); // selector
-   }
+  drawCharfromArray(screenWidth/2-85, Crates[gunindex].y+9, 4,8, CharRightArrow); // selector
 }
 
 int main() {
