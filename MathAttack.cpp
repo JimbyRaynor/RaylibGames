@@ -736,7 +736,7 @@ Crate::Crate(int startx, int starty) // constructor code
 {
   x = startx;
   y = starty;
-  number = 0;
+  number = 1;
 }
 int Crate::draw()
 {
@@ -1128,12 +1128,16 @@ void drawarrowsandinput()
 {
   int resultx = 800;
   int resulty = 650;
+  int inputstep = 2;
 
- if (value1picked == false or resultdisplayed == true)
-        drawRetroCharOneColour(resultx+5*8-8, resulty+40,3,8,CharUpArrow,rbgray24);
- else
-        drawRetroCharOneColour(resultx+4*5*8-8, resulty+40,3,8,CharUpArrow,rbgray24);
-
+  if (value1picked == false or resultdisplayed == true)
+       {
+        inputstep = 2;
+      }
+  else
+      {
+        inputstep = 5;
+      }
 
   int arrowsx = cratex+80; // start of arrow system
   int arrowsy = Crates[gunindex].y+9; // start of arrow system
@@ -1144,7 +1148,7 @@ void drawarrowsandinput()
   arrows2y = arrowsy-6;
   arrowsy = drawarrowchaindown(arrows2x,arrows2y,gunindex);
   arrowsx = arrows2x-6;
-  arrows2x = drawarrowchainright(arrowsx,arrowsy,2);
+  arrows2x = drawarrowchainright(arrowsx,arrowsy,inputstep);
   arrows2y = arrowsy+6;
   drawarrowchainup(arrows2x,arrows2y,1);
   if (deciseconds % 40 == 0)
@@ -1155,12 +1159,12 @@ void drawarrowsandinput()
 
   drawRetroCharOneColour(resultx, resulty+4,3,8,CharUnderline,rbgray00);
   drawRetroCharOneColour(resultx+5*8-8, resulty+4,3,8,CharUnderline,rbgray00);
-  drawRetroCharOneColour(resultx+2*5*8-6, resulty,4,8,CharPlus2,rblightgreen);
-  drawRetroCharOneColour(resultx+3*5*8, resulty+4,3,8,CharUnderline,rbgray00);
-  drawRetroCharOneColour(resultx+4*5*8-8, resulty+4,3,8,CharUnderline,rbgray00);
+  drawRetroCharOneColour(resultx+2*5*8+6, resulty,4,8,CharPlus2,rblightgreen);
+  drawRetroCharOneColour(resultx+3*5*8+24, resulty+4,3,8,CharUnderline,rbgray00);
+  drawRetroCharOneColour(resultx+4*5*8-8+24, resulty+4,3,8,CharUnderline,rbgray00);
 
 
-  drawRetroCharOneColour(resultx+5*5*8+8, resulty,3,8,CharEquals,rblightgreen);
+  drawRetroCharOneColour(resultx+5*5*8+8+24+6, resulty,3,8,CharEquals,rblightgreen);
   if (value1picked == true)
         {
           draw2digits(resultx,resulty,value1,3,rblightgreen);
@@ -1168,11 +1172,11 @@ void drawarrowsandinput()
   if (resultdisplayed  == true)
         {
           draw2digits(resultx,resulty,value1,3,rblightgreen);
-          draw2digits(resultx+3*5*8,resulty,value2,3,rblightgreen);
+          draw2digits(resultx+3*5*8+24,resulty,value2,3,rblightgreen);
           if (sumisonboard == true)
-             draw2digits(resultx+6*5*8+8*2,resulty,value1+value2,3,rblightgreen);
+             draw2digits(resultx+6*5*8+8*2+24+12,resulty,value1+value2,3,rblightgreen);
           else 
-             draw2digits(resultx+6*5*8+8*2,resulty,value1+value2,3,rbred);
+             draw2digits(resultx+6*5*8+8*2+24+12,resulty,value1+value2,3,rbred);
         }
 }
 
