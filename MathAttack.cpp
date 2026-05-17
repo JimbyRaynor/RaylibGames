@@ -346,7 +346,12 @@ int CharColon[64] = {0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0
 int CharRightArrow[64] = {0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,1,1,1,1,1,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0};
 
 int CharLEDRightArrow[64] = {0,0,16,17,0,0,0,0,0,0,0,16,17,0,0,0,0,0,0,0,16,17,0,0,0,0,0,0,0,16,16,0,0,0,0,0,16,17,0,0,0,0,0,16,17,0,0,0,0,0,16,17,0,0,0,0,0,0,0,0,0,0,0,0};
+int CharLEDDownArrow[64] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,16,0,0,0,0,0,16,0,17,16,0,0,0,16,17,0,0,17,16,0,16,17,0,0,0,0,17,16,17,0,0,0,0,0,0,16,0,0,0,0,0,0,0,0,0,0,0,0};
+int CharLEDUpArrow[64] = {0,0,0,16,0,0,0,0,0,0,17,16,17,0,0,0,0,17,16,0,16,17,0,0,17,16,0,0,0,16,17,0,16,0,0,0,0,0,16,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 int CharLEDGreenRightArrow[64] = {0,0,10,11,0,0,0,0,0,0,0,10,11,0,0,0,0,0,0,0,10,11,0,0,0,0,0,0,0,10,10,0,0,0,0,0,10,11,0,0,0,0,0,10,11,0,0,0,0,0,10,11,0,0,0,0,0,0,0,0,0,0,0,0};
+int CharLEDGreenDownArrow[64] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,10,0,0,0,0,0,10,0,11,10,0,0,0,10,11,0,0,11,10,0,10,11,0,0,0,0,11,10,11,0,0,0,0,0,0,10,0,0,0,0,0,0,0,0,0,0,0,0};
+int CharLEDGreenUpArrow[64] = {0,0,0,10,0,0,0,0,0,0,11,10,11,0,0,0,0,11,10,0,10,11,0,0,11,10,0,0,0,10,11,0,10,0,0,0,0,0,10,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+
 
 int* digitarray[10] = {Char0, Char1, Char2, Char3,  // array of pointers to chars, this works well! Access with digitarray[charnum][bitnum] 
                        Char4, Char5, Char6, Char7, Char8, Char9};  
@@ -360,7 +365,7 @@ int targetarrow = 0;
 int herox = 20;
 int heroy = 20;
 int cratex = screenWidth/2 - 50;
-int cratey = screenHeight-100;
+int cratey = screenHeight-96;
 int numcrates = 4;
 int numberfallx = cratex+8;
 int numberfallbottom = cratey-(numcrates)*(16*3+6)+20;
@@ -753,7 +758,7 @@ int makecrates()
 {
   for (int i=0; i < numcrates; i++)
    {
-    Crate cratetmp(cratex,cratey-(16*3+6)*i);
+    Crate cratetmp(cratex,cratey-(16*3+0)*i);
     Crates.push_back(cratetmp);
    }
   return 0;
@@ -1059,28 +1064,89 @@ int drawsumlog()
   return 0;
 }
 
-int* arrowanimate(int loc)
+int* arrowrightanimate(int loc)
 {
   if (loc == targetarrow)
     return CharLEDRightArrow;
   else
     return CharLEDGreenRightArrow;
-
 }
+
+int* arrowdownanimate(int loc)
+{
+  if (loc == targetarrow)
+    return CharLEDDownArrow;
+  else
+    return CharLEDGreenDownArrow;
+}
+
+int* arrowupanimate(int loc)
+{
+  if (loc == targetarrow)
+    return CharLEDUpArrow;
+  else
+    return CharLEDGreenUpArrow;
+}
+
+int drawarrowchainright(int x, int y, int count)
+{
+  for (int i = 0; i < count; i++)
+   {
+      drawCharfromArray(x+i*24*2, y,3,8,arrowrightanimate(1));
+      drawCharfromArray(x+i*24*2+12, y,3,8,arrowrightanimate(2));
+      drawCharfromArray(x+i*24*2+24, y,3,8,arrowrightanimate(3));
+      drawCharfromArray(x+i*24*2+36, y,3,8,arrowrightanimate(4));
+   }
+  return x+(count-1)*24*2+36+22; // use this for x value of downarrows that start at end of this arrow system 
+} 
+
+int drawarrowchaindown(int x, int y, int count)
+{
+  for (int i = 0; i < count; i++)
+   {
+      drawCharfromArray(x, y+i*24*2,3,8,arrowdownanimate(1));
+      drawCharfromArray(x, y+i*24*2+12,3,8,arrowdownanimate(2));
+      drawCharfromArray(x, y+i*24*2+24,3,8,arrowdownanimate(3));
+      drawCharfromArray(x, y+i*24*2+36,3,8,arrowdownanimate(4));
+   }
+  return y+(count-1)*24*2+36+22; // use this for y value of rightarrows that start at end of this arrow system 
+} 
+
+int drawarrowchainup(int x, int y, int count)
+{
+  for (int i = 0; i < count; i++)
+   {
+      drawCharfromArray(x, y-i*24*2,3,8,arrowupanimate(1));
+      drawCharfromArray(x, y-i*24*2-12,3,8,arrowupanimate(2));
+      drawCharfromArray(x, y-i*24*2-24,3,8,arrowupanimate(3));
+      drawCharfromArray(x, y-i*24*2-36,3,8,arrowupanimate(4));
+   }
+  return y-(count-1)*24*2-36-22; // use this for y value of rightarrows that start at end of this arrow system 
+} 
 
 void drawarrowsandinput()
 {
   int resultx = 800;
   int resulty = 650;
-  int arrowsx = cratex+80;
-  int arrowsy = cratey+10;
-  for (int i = 0; i < 3; i++)
-   {
-      drawCharfromArray(arrowsx+i*24*2, arrowsy,3,8,arrowanimate(1));
-      drawCharfromArray(arrowsx+i*24*2+12, arrowsy,3,8,arrowanimate(2));
-      drawCharfromArray(arrowsx+i*24*2+24, arrowsy,3,8,arrowanimate(3));
-      drawCharfromArray(arrowsx+i*24*2+36, arrowsy,3,8,arrowanimate(4));
-   }
+
+ if (value1picked == false or resultdisplayed == true)
+        drawRetroCharOneColour(resultx+5*8-8, resulty+40,3,8,CharUpArrow,rbgray24);
+ else
+        drawRetroCharOneColour(resultx+4*5*8-8, resulty+40,3,8,CharUpArrow,rbgray24);
+
+
+  int arrowsx = cratex+80; // start of arrow system
+  int arrowsy = Crates[gunindex].y+9; // start of arrow system
+  int arrows2x = 0, arrows2y = 0;
+  int arrowsdownx = 0;
+  int arrowsdowny = arrowsy-6;
+  arrows2x = drawarrowchainright(arrowsx,arrowsy,2);
+  arrows2y = arrowsy-6;
+  arrowsy = drawarrowchaindown(arrows2x,arrows2y,gunindex);
+  arrowsx = arrows2x-6;
+  arrows2x = drawarrowchainright(arrowsx,arrowsy,2);
+  arrows2y = arrowsy+6;
+  drawarrowchainup(arrows2x,arrows2y,1);
   if (deciseconds % 40 == 0)
   {
     targetarrow++;
@@ -1092,10 +1158,7 @@ void drawarrowsandinput()
   drawRetroCharOneColour(resultx+2*5*8-6, resulty,4,8,CharPlus2,rblightgreen);
   drawRetroCharOneColour(resultx+3*5*8, resulty+4,3,8,CharUnderline,rbgray00);
   drawRetroCharOneColour(resultx+4*5*8-8, resulty+4,3,8,CharUnderline,rbgray00);
- if (value1picked == false or resultdisplayed == true)
-        drawRetroCharOneColour(resultx+5*8-8, resulty+40,3,8,CharUpArrow,rbgray24);
- else
-        drawRetroCharOneColour(resultx+4*5*8-8, resulty+40,3,8,CharUpArrow,rbgray24);
+
 
   drawRetroCharOneColour(resultx+5*5*8+8, resulty,3,8,CharEquals,rblightgreen);
   if (value1picked == true)
