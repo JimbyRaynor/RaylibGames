@@ -17,21 +17,11 @@
 
 // comments namespace. Expand to view
 namespace {
-// DRAW: Empty Crates at bottom with crateheight = 4,5,6,7,8,..., 10?
-// Selector can only point to crates (which can be empty)
-// CAN ONLY SHOOT when number is in crate and STATIONAY
-// Crate is an OBJECT which draws itself, and gets filled (remove from enemies when they hit the top of the crates)
-// enemy only falls (from offscreen) when top crate is empty
+
+// Give each level a name like "clear the board", "even numbers", "even numbers 2", etc
+// look at number theory book for ideas 
 
 // Better? Put table in centre, numbers slide in horizontally from the right bottom side of the screen.
-// left-right arrows move a selector underneath the numbers, press spacebar to select the number, then it moves in a tunnel to operand slot
-// (1) this makes it clearer that the number is selected, and where it is going 
-// (2) added numbers just appear at RHS of list ?? is this bad? I think they need to slide
-// so make selector move up and down at LHS of screen
-// Just make arrow's vertical position = vertical position of element of enemy. Easy
-
-// make selector
-// draw trail from right arrow (selector) to uparrow (operand)
 
 // build table, do not remove numbers!!! 
 // pearls accumulate over game and then get converted into gold coins (100p - 1 gc, remove remainder) at end of game.
@@ -268,8 +258,11 @@ Color getColour(int myindex)
     return rbblack; 
 }
 
-Color ColourRainbow[10] = { rbwhite, rblightgreen, rbdarkyellow,
-                              rbdarkpink, rbblue, rbred, rbgreen, rbbrown, rbaqua, rbpurple};
+//Color ColourRainbow[10] = { rbwhite, rblightgreen, rbdarkyellow,
+//                              rbdarkpink, rbblue, rbred, rbgreen, rbbrown, rbaqua, rbpurple};
+
+Color ColourRainbow[10] = {  rblightgreen, rblightgreen, rblightgreen, rblightgreen, rblightgreen, rblightgreen, rblightgreen, 
+                             rblightgreen, rblightgreen, rblightgreen};
 
 Color ColourCASIOArray[10] = { rbgraytext,rbgraytext,rbgraytext,rbgraytext,rbgraytext,rbgraytext,rbgraytext,rbgraytext,rbgraytext,rbgraytext};
 
@@ -364,9 +357,9 @@ int deciseconds = 0; // 1/60 of a second timer for animations
 int targetarrow = 0; 
 int herox = 20;
 int heroy = 20;
-int cratex = screenWidth/2 - 50;
+int cratex = screenWidth/2 - 46;
 int cratey = screenHeight-96;
-int numcrates = 4;
+int numcrates = 7;
 int numberfallx = cratex+8;
 int numberfallbottom = cratey-(numcrates)*(16*3+6)+20;
 int traily = -30;
@@ -1139,8 +1132,8 @@ void drawarrowsandinput()
         inputstep = 5;
       }
 
-  int arrowsx = cratex+80; // start of arrow system
-  int arrowsy = Crates[gunindex].y+9; // start of arrow system
+  int arrowsx = cratex+76; // start of arrow system
+  int arrowsy = Crates[gunindex].y+12; // start of arrow system
   int arrows2x = 0, arrows2y = 0;
   int arrowsdownx = 0;
   int arrowsdowny = arrowsy-6;
@@ -1182,7 +1175,8 @@ void drawarrowsandinput()
 
 void drawgunvector() // draw selector
 {
-  drawCharfromArray(screenWidth/2-85, Crates[gunindex].y+9, 4,8, CharRightArrow); // selector
+  //drawCharfromArray(screenWidth/2-85, Crates[gunindex].y+9, 4,8, CharRightArrow); // selector
+  drawarrowchainright(screenWidth/2-106,Crates[gunindex].y+12,1);
 }
 
 int main() {
