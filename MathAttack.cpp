@@ -28,6 +28,9 @@ namespace {
 // Use coins to buy powerups. Powerups get randomly assigned to table where each number gets "gift wrapped" - double score, free number, etc
 // just like in peggle. Pearls are only awarded for numbers added to board (table)
 
+// +,-,*,/  can also drop from sky. If selected, the operation changes!!!  risky????
+
+
 // Draw a finite state machine (on Kindle) for difficult logic problems while programming
 
 // This shooting mechanic can be used for many different games +-*/:
@@ -357,7 +360,7 @@ int deciseconds = 0; // 1/60 of a second timer for animations
 int targetarrow = 0; 
 int herox = 20;
 int heroy = 20;
-int cratex = screenWidth/2 - 46;
+int cratex =  120;
 int cratey = screenHeight-96;
 int numcrates = 7;
 int numberfallx = cratex+8;
@@ -385,7 +388,7 @@ int boardx = 700, boardy = 10, cellwidth = 50;
 string operation = "+";
 vector <int> gunvector;
 vector <string> sumlog;
-int gunindex = 0;
+int gunindex = 1;
 int MAXstacksize = 4;
 int score = 0;
 
@@ -987,7 +990,7 @@ int ReadKeys()
    if (IsKeyPressed(KEY_SPACE))
         {        
               gunindex++;
-              if (gunindex >= numcrates) gunindex = 0;
+              if (gunindex >= numcrates) gunindex = 1;
               //resultdisplayed = false; 
               if (EnterCount == 2)
               {
@@ -1119,17 +1122,17 @@ int drawarrowchainup(int x, int y, int count)
 
 void drawarrowsandinput()
 {
-  int resultx = 800;
+  int resultx = cratex+246;
   int resulty = 650;
   int inputstep = 2;
 
   if (value1picked == false or resultdisplayed == true)
        {
-        inputstep = 2;
+        inputstep = 3;
       }
   else
       {
-        inputstep = 5;
+        inputstep = 6;
       }
 
   int arrowsx = cratex+76; // start of arrow system
@@ -1137,7 +1140,7 @@ void drawarrowsandinput()
   int arrows2x = 0, arrows2y = 0;
   int arrowsdownx = 0;
   int arrowsdowny = arrowsy-6;
-  arrows2x = drawarrowchainright(arrowsx,arrowsy,2);
+  arrows2x = drawarrowchainright(arrowsx,arrowsy,1);
   arrows2y = arrowsy-6;
   arrowsy = drawarrowchaindown(arrows2x,arrows2y,gunindex);
   arrowsx = arrows2x-6;
@@ -1176,7 +1179,7 @@ void drawarrowsandinput()
 void drawgunvector() // draw selector
 {
   //drawCharfromArray(screenWidth/2-85, Crates[gunindex].y+9, 4,8, CharRightArrow); // selector
-  drawarrowchainright(screenWidth/2-106,Crates[gunindex].y+12,1);
+  drawarrowchainright(cratex-60,Crates[gunindex].y+12,1);
 }
 
 int main() {
@@ -1237,26 +1240,14 @@ int main() {
         DrawText(("Level: "+to_string(level)).c_str(),screenWidth*0.25,screenHeight-40,40, WHITE);
 
         drawCharfromArray(herox, heroy, 3,8, CharBall);
-        for (int i = 0; i< 10;i++)
-            draw2digits(herox+300, heroy+i*8*(3+i), 88, i, rblightgrey);
-        drawRetroChar(herox+300, heroy+200, 2,8, Char9);
+      
 
 
         for (int i = -1; i < 10; i++)
             drawRetroChar(herox, i*80+boby, 3,8, CharBob); 
-
-        for (int i = 1; i < 10; i++)
-        {
-            drawRetroChar(200, 10+i*80, i,8, CharY);
-            drawRetroChar(200+80, 10+i*80, i,8, CharZ); 
-        }
         if (boby++ > 79) boby = 0;
 
-        for (int i = 1; i < 10; i++)
-        {
-           drawCharfromArray(800+i*8, 750, 1,8, CharBall);
-           drawCharfromArray(800+i*4, 750+8, 1,8, CharBallSmall);
-        }
+       
         for (int i = 0; i< 10; i++)
         {
            drawfilledtablecell(2, i,i);
