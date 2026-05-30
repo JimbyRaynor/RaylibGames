@@ -384,7 +384,7 @@ int level = 1;
 int maxnumber = 2;
 int levels[] = {0,3,9,14,14,20,33,32,32,32}; // Extra enemies added in each level; 
 int Board[20][20];
-int boardx = 700, boardy = 10, cellwidth = 50;
+int boardx = 600, boardy = 10, cellwidth = 60;
 string operation = "+";
 vector <int> gunvector;
 vector <string> sumlog;
@@ -474,6 +474,25 @@ void drawCharOneColour(int previewx, int previewy, int psize, int bitwidth, int 
             }        
      }
 
+void drawChar3Colour(int previewx, int previewy, int psize, int bitwidth, int myarray[], Color Mycolour1, Color Mycolour2, Color Mycolour3)
+     {
+       int loc = 0;
+       for (int i=0;i < bitwidth; i++ )
+         for (int j=0; j < bitwidth; j++)
+            {
+              if (myarray[loc] != 0)
+              {
+               if (i<2) 
+                  DrawRectangle(previewx+j*psize,previewy+i*psize,psize,psize,Mycolour1);  
+               else if (i>3) 
+                  DrawRectangle(previewx+j*psize,previewy+i*psize,psize,psize,Mycolour3);
+               else 
+                  DrawRectangle(previewx+j*psize,previewy+i*psize,psize,psize,Mycolour2);     
+              }
+              loc++;
+            }        
+     }
+
 void drawRetroCharOneColour(int previewx, int previewy, int psize, int bitwidth, int myarray[], Color Mycolour)
      {
        int loc = 0;
@@ -515,6 +534,17 @@ void draw2digits(int locx, int locy, int mynum, int psize, Color Mycolour)
     drawRetroCharOneColour(locx, locy, psize, 8, digitarray[first], Mycolour);
    }
   drawRetroCharOneColour(locx+ 8*(psize+1), locy, psize, 8, digitarray[second], Mycolour);
+}
+
+void draw2digits3colour(int locx, int locy, int mynum, int psize, Color Mycolour1, Color Mycolour2, Color Mycolour3)
+{
+  int first = mynum / 10;
+  int second = mynum % 10;
+  if (first > 0) 
+   { 
+    drawChar3Colour(locx, locy, psize, 8, digitarray[first], Mycolour1, Mycolour2, Mycolour3 );
+   }
+  drawChar3Colour(locx+ 8*(psize), locy, psize, 8, digitarray[second], Mycolour1, Mycolour2, Mycolour3);
 }
 
 void draw2digitsSolid(int locx, int locy, int mynum, int psize, Color Mycolour)
@@ -870,7 +900,7 @@ for (int i = 0;i<10; i++)
    for (int j = 0; j <10; j++)
      if (Board[i][j] == number)
      {
-          Board[i][j] = -1;
+          Board[i][j] = -1*number;
           return 0;
      }
 return -1;
@@ -937,7 +967,7 @@ int removeenemyatgunindex()
             value2 = shotnumber;
             value1picked = false;     
             value2picked = true;   
-            if (removefromboard(value1+value2) != -1)
+            if (removefromboard(value1+value2) > -1)
             {
                sumlog.push_back(to_string(value1)+" + "+to_string(value2)+" = "+to_string(value1+value2));
                if (MAXstacksize <= 10) MAXstacksize++;
@@ -1033,13 +1063,20 @@ int ReadKeys()
 int drawboard()
 {
   //DrawText(to_string(100).c_str(),boardx+cellwidth*4,boardy+cellwidth*10,60, WHITE);
+  // draw 100
   drawRetroCharOneColour(boardx+cellwidth*2,boardy+cellwidth*10,10,8,Char1, rbwhite);
   drawRetroCharOneColour(boardx+cellwidth*2+100,boardy+cellwidth*10,10,8,Char0, rbwhite);
   drawRetroCharOneColour(boardx+cellwidth*2+200,boardy+cellwidth*10,10,8,Char0, rbwhite);
+  draw2digits3colour(200,200,10,3,rblightyellow,rbyellow,rbdarkyellow);
+   draw2digits3colour(200,240,11,3,rblightyellow,rbyellow,rbdarkyellow);
+
   for (int i = 0;i<10; i++)
    for (int j = 0; j <10; j++)
-     if (Board[i][j] != -1)
-                draw2digits(boardx+cellwidth*j,boardy+cellwidth*i,Board[i][j],1,rblightpink);
+     if (Board[i][j] > -1)
+          draw2digits(boardx+cellwidth*j,boardy+cellwidth*i,Board[i][j],1,rblightpink);
+     else
+          draw2digits3colour(boardx+cellwidth*j,boardy+cellwidth*i,-1*Board[i][j],3,rblightyellow,rbyellow,rbdarkyellow);
+  
   return 0;
 }
 
@@ -1241,17 +1278,20 @@ int main() {
 
         drawCharfromArray(herox, heroy, 3,8, CharBall);
       
-
+        drawChar3Colour(200,400,8,8,Char0,rblightyellow,rbyellow,rbdarkyellow);
+        drawChar3Colour(260,460,3,8,Char1,rblightyellow,rbyellow,rbdarkyellow);
+        drawChar3Colour(290,460,2,8,Char2,rblightyellow,rbyellow,rbdarkyellow);
+        drawChar3Colour(320,460,1,8,Char3,rblightyellow,rbyellow,rbdarkyellow);
+        drawChar3Colour(360,460,4,8,Char4,rblightyellow,rbyellow,rbdarkyellow);
 
         for (int i = -1; i < 10; i++)
             drawRetroChar(herox, i*80+boby, 3,8, CharBob); 
         if (boby++ > 79) boby = 0;
 
        
-        for (int i = 0; i< 10; i++)
+        for (int i = 0; i< 4; i++)
         {
-           drawfilledtablecell(2, i,i);
-           drawfilledtablecell(i, 2, 20-i); 
+           drawfilledtablecell(i,-8,i);
         }
         
         drawarrowsandinput();
