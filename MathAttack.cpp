@@ -137,6 +137,10 @@ namespace {
 // (h) think poker
 //    (1) straight 2,3,4,5,6
 //    (2) full house?
+
+// BINGO style
+// Complete row or column gives a bonus score
+
 // Char moves across numberline towards 100? Seems good
 // Make animation for removing number (frog jump??)
 
@@ -1075,7 +1079,7 @@ int drawboard()
      if (Board[i][j] > -1)
           draw2digits(boardx+cellwidth*j,boardy+cellwidth*i,Board[i][j],1,rblightpink);
      else
-          draw2digits3colour(boardx+cellwidth*j,boardy+cellwidth*i,-1*Board[i][j],3,rblightyellow,rbyellow,rbdarkyellow);
+          draw2digits3colour(boardx+cellwidth*j-12,boardy+cellwidth*i-3,-1*Board[i][j],3,rblightyellow,rbyellow,rbdarkyellow);
   
   return 0;
 }
