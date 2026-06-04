@@ -18,6 +18,10 @@
 // comments namespace. Expand to view
 namespace {
 
+// Tutorial level needs to be very fast and painless. Just add to 10.
+
+// Long animation at end of each level (like Peggle)
+
 // Give each level a name like "clear the board", "even numbers", "even numbers 2", etc
 // look at number theory book for ideas 
 
@@ -446,6 +450,32 @@ int fillboard()
      }
    }
   return 0;
+}
+
+void drawLine3Colour(float fromx, float fromy, float tox, float toy, int psize, int xstep, int ystep, Color Mycolour1, Color Mycolour2, Color Mycolour3)
+{
+  Vector2 vstart = { fromx, fromy};
+  Vector2 vend = { tox, toy};
+  DrawLineEx(vstart, vend, psize, Mycolour1);
+  vstart.x = vstart.x + xstep;
+  vstart.y = vstart.y + ystep;
+  vend.x = vend.x + xstep;
+  vend.y = vend.y + ystep;
+  DrawLineEx(vstart, vend, psize, Mycolour2);
+  vstart.x = vstart.x + xstep;
+  vstart.y = vstart.y + ystep;
+  vend.x = vend.x + xstep;
+  vend.y = vend.y + ystep;
+  DrawLineEx(vstart, vend, psize, Mycolour3);
+}
+
+void drawRect3Colour(float fromx, float fromy, float tox, float toy, int psize, Color Mycolour1, Color Mycolour2, Color Mycolour3)
+{
+  
+  drawLine3Colour(fromx, fromy, fromx, toy,psize,psize,0, Mycolour1, Mycolour2, Mycolour3);
+  drawLine3Colour(fromx, toy-psize*2, tox, toy-psize*2,psize,0,psize, Mycolour1, Mycolour2, Mycolour3);
+  drawLine3Colour(tox, fromy, tox, toy,psize,psize,0, Mycolour1, Mycolour2, Mycolour3);
+  drawLine3Colour(fromx+psize*2, fromy, tox, fromy,psize,0,psize, Mycolour1, Mycolour2, Mycolour3);
 }
 
 void drawCharfromArray(int previewx, int previewy, int psize, int width, int myarray[])
@@ -1287,6 +1317,10 @@ int main() {
         drawChar3Colour(290,460,2,8,Char2,rblightyellow,rbyellow,rbdarkyellow);
         drawChar3Colour(320,460,1,8,Char3,rblightyellow,rbyellow,rbdarkyellow);
         drawChar3Colour(360,460,4,8,Char4,rblightyellow,rbyellow,rbdarkyellow);
+
+        drawLine3Colour(0,0, 1000, 1000, 3 ,6,0, rblightyellow,rbyellow,rbdarkyellow);
+
+        drawRect3Colour(300,440, 800, 600, 3, rblightyellow,rbyellow,rbdarkyellow);
 
         for (int i = -1; i < 10; i++)
             drawRetroChar(herox, i*80+boby, 3,8, CharBob); 
