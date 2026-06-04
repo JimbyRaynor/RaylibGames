@@ -392,7 +392,7 @@ int level = 1;
 int maxnumber = 2;
 int levels[] = {0,3,9,14,14,20,33,32,32,32}; // Extra enemies added in each level; 
 int Board[20][20];
-int boardx = 600, boardy = 10, cellwidth = 60;
+int boardx = 300, boardy = 60, cellwidth = 60, cellheight = 40;
 string operation = "+";
 vector <int> gunvector;
 vector <string> sumlog;
@@ -472,10 +472,15 @@ void drawLine3Colour(float fromx, float fromy, float tox, float toy, int psize, 
 void drawRect3Colour(float fromx, float fromy, float tox, float toy, int psize, Color Mycolour1, Color Mycolour2, Color Mycolour3)
 {
   
-  drawLine3Colour(fromx, fromy, fromx, toy,psize,psize,0, Mycolour1, Mycolour2, Mycolour3);
-  drawLine3Colour(fromx, toy-psize*2, tox, toy-psize*2,psize,0,psize, Mycolour1, Mycolour2, Mycolour3);
-  drawLine3Colour(tox, fromy, tox, toy,psize,psize,0, Mycolour1, Mycolour2, Mycolour3);
-  drawLine3Colour(fromx+psize*2, fromy, tox, fromy,psize,0,psize, Mycolour1, Mycolour2, Mycolour3);
+  //drawLine3Colour(fromx, fromy, fromx, toy,psize,psize,0, Mycolour1, Mycolour2, Mycolour3);
+  //drawLine3Colour(fromx, toy-psize*2, tox, toy-psize*2,psize,0,psize, Mycolour1, Mycolour2, Mycolour3);
+  //drawLine3Colour(tox, fromy, tox, toy,psize,psize,0, Mycolour1, Mycolour2, Mycolour3);
+  //;drawLine3Colour(fromx+psize*2, fromy, tox, fromy,psize,0,psize, Mycolour1, Mycolour2, Mycolour3);
+
+  Rectangle rect1={fromx,fromy,tox-fromx,toy-fromy};
+  DrawRectangleLinesEx(rect1,psize*3,Mycolour3);
+  DrawRectangleLinesEx(rect1,psize*2,Mycolour2);
+  DrawRectangleLinesEx(rect1,psize*1,Mycolour1);
 }
 
 void drawCharfromArray(int previewx, int previewy, int psize, int width, int myarray[])
@@ -1107,9 +1112,9 @@ int drawboard()
   for (int i = 0;i<10; i++)
    for (int j = 0; j <10; j++)
      if (Board[i][j] > -1)
-          draw2digits(boardx+cellwidth*j,boardy+cellwidth*i,Board[i][j],1,rblightpink);
+          draw2digits(boardx+cellwidth*j,boardy+cellheight*i,Board[i][j],1,rblightpink);
      else
-          draw2digits3colour(boardx+cellwidth*j-12,boardy+cellwidth*i-3,-1*Board[i][j],3,rblightyellow,rbyellow,rbdarkyellow);
+          draw2digits3colour(boardx+cellwidth*j-12,boardy+cellheight*i-3,-1*Board[i][j],3,rblightyellow,rbyellow,rbdarkyellow);
   
   return 0;
 }
@@ -1303,12 +1308,12 @@ int main() {
         
        
 
-        ShowColourText(100, 10, "Score:", 3, YELLOW);
-        ShowColourScore2(300, 10, score, 3, YELLOW, 9);
+        ShowColourText(940, 20, "Score", 3, YELLOW);
+        ShowColourScore2(900, 60, score, 3, YELLOW, 9);
 
       
         DrawText(("EnterCount: "+to_string(EnterCount)).c_str(),screenWidth*0.75,screenHeight-40,40, WHITE);
-        DrawText(("Level: "+to_string(level)).c_str(),screenWidth*0.25,screenHeight-40,40, WHITE);
+        DrawText(("Level: "+to_string(level)).c_str(),900,screenHeight-140,40, WHITE);
 
         drawCharfromArray(herox, heroy, 3,8, CharBall);
       
@@ -1317,8 +1322,6 @@ int main() {
         drawChar3Colour(290,460,2,8,Char2,rblightyellow,rbyellow,rbdarkyellow);
         drawChar3Colour(320,460,1,8,Char3,rblightyellow,rbyellow,rbdarkyellow);
         drawChar3Colour(360,460,4,8,Char4,rblightyellow,rbyellow,rbdarkyellow);
-
-        drawLine3Colour(0,0, 1000, 1000, 3 ,6,0, rblightyellow,rbyellow,rbdarkyellow);
 
         drawRect3Colour(300,440, 800, 600, 3, rblightyellow,rbyellow,rbdarkyellow);
 
