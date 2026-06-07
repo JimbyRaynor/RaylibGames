@@ -18,6 +18,10 @@
 // comments namespace. Expand to view
 namespace {
 
+// New name: 8-bit Math Game
+
+// Draw animated selection box around selected number (moving dashes??), draw with LED, make 3 frames
+
 // Tutorial level needs to be very fast and painless. Just add to 10.
 
 // Long animation at end of each level (like Peggle)
@@ -392,7 +396,7 @@ int level = 1;
 int maxnumber = 2;
 int levels[] = {0,3,9,14,14,20,33,32,32,32}; // Extra enemies added in each level; 
 int Board[20][20];
-int boardx = 300, boardy = 60, cellwidth = 60, cellheight = 40;
+int boardx = 300, boardy = 60, cellwidth = 70, cellheight = 40;
 string operation = "+";
 vector <int> gunvector;
 vector <string> sumlog;
@@ -1114,7 +1118,12 @@ int drawboard()
      if (Board[i][j] > -1)
           draw2digits(boardx+cellwidth*j,boardy+cellheight*i,Board[i][j],1,rblightpink);
      else
-          draw2digits3colour(boardx+cellwidth*j-12,boardy+cellheight*i-3,-1*Board[i][j],3,rblightyellow,rbyellow,rbdarkyellow);
+     {
+       if (-1*Board[i][j] < 10)
+          draw2digits3colour(boardx+cellwidth*j-26,boardy+cellheight*i-9,-1*Board[i][j],4,rblightyellow,rbyellow,rbdarkyellow);
+       else
+          draw2digits3colour(boardx+cellwidth*j-16,boardy+cellheight*i-9,-1*Board[i][j],4,rblightyellow,rbyellow,rbdarkyellow);
+     }
   
   return 0;
 }
