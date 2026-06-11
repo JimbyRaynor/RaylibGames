@@ -19,6 +19,18 @@
 namespace {
 
 // New name: 8-bit Math Game
+// Creat new universe of Math characters and scenes. Base on famous mathematicians/diagrams. Graph Theory. Four colour Theorem, etc.
+
+// Big bonus for hitting a board number since 
+// (a) this is fun
+// (b) helps to have 3 or more big numbers in crates
+// (c) encourages adding in head since a mistakes leads to the big number being removed from drops
+
+// Name things:
+  // Dropping number - 
+  // Big (orange) numbers - 
+  // Green numbers - Atoms?
+  // Crates - Crates?
 
 // Draw animated selection box around selected number (moving dashes??), draw with LED, make 3 frames
 
@@ -372,7 +384,7 @@ int deciseconds = 0; // 1/60 of a second timer for animations
 int targetarrow = 0; 
 int herox = 20;
 int heroy = 20;
-int cratex =  120;
+int cratex =  20;
 int cratey = screenHeight-96;
 int numcrates = 7;
 int numberfallx = cratex+8;
@@ -396,7 +408,7 @@ int level = 1;
 int maxnumber = 2;
 int levels[] = {0,3,9,14,14,20,33,32,32,32}; // Extra enemies added in each level; 
 int Board[20][20];
-int boardx = 300, boardy = 60, cellwidth = 70, cellheight = 40;
+int boardx = 200, boardy = 60, cellwidth = 70, cellheight = 40;
 string operation = "+";
 vector <int> gunvector;
 vector <string> sumlog;
@@ -1107,11 +1119,11 @@ int drawboard()
 {
   //DrawText(to_string(100).c_str(),boardx+cellwidth*4,boardy+cellwidth*10,60, WHITE);
   // draw 100
-  drawRetroCharOneColour(boardx+cellwidth*2,boardy+cellwidth*10,10,8,Char1, rbwhite);
-  drawRetroCharOneColour(boardx+cellwidth*2+100,boardy+cellwidth*10,10,8,Char0, rbwhite);
-  drawRetroCharOneColour(boardx+cellwidth*2+200,boardy+cellwidth*10,10,8,Char0, rbwhite);
-  draw2digits3colour(200,200,10,3,rblightyellow,rbyellow,rbdarkyellow);
-   draw2digits3colour(200,240,11,3,rblightyellow,rbyellow,rbdarkyellow);
+  drawRetroCharOneColour(boardx+cellwidth*2.7,boardy+cellheight*10,10,8,Char1, rbwhite);
+  drawRetroCharOneColour(boardx+cellwidth*2.7+100,boardy+cellheight*10,10,8,Char0, rbwhite);
+  drawRetroCharOneColour(boardx+cellwidth*2.7+200,boardy+cellheight*10,10,8,Char0, rbwhite);
+ // draw2digits3colour(200,200,10,3,rblightyellow,rbyellow,rbdarkyellow);
+ //  draw2digits3colour(200,240,11,3,rblightyellow,rbyellow,rbdarkyellow);
 
   for (int i = 0;i<10; i++)
    for (int j = 0; j <10; j++)
@@ -1125,6 +1137,8 @@ int drawboard()
           draw2digits3colour(boardx+cellwidth*j-16,boardy+cellheight*i-9,-1*Board[i][j],4,rblightyellow,rbyellow,rbdarkyellow);
      }
   
+   drawRect3Colour(boardx-50,boardy-50, boardx+cellwidth*9+100, boardy+cellheight*9+50+100, 3, rblightyellow,rbyellow,rbdarkyellow);
+
   return 0;
 }
 
@@ -1264,7 +1278,7 @@ void drawarrowsandinput()
 void drawgunvector() // draw selector
 {
   //drawCharfromArray(screenWidth/2-85, Crates[gunindex].y+9, 4,8, CharRightArrow); // selector
-  drawarrowchainright(cratex-60,Crates[gunindex].y+12,1);
+  //drawarrowchainright(cratex-60,Crates[gunindex].y+12,1);
 }
 
 int main() {
@@ -1317,31 +1331,26 @@ int main() {
         
        
 
-        ShowColourText(940, 20, "Score", 3, YELLOW);
-        ShowColourScore2(900, 60, score, 3, YELLOW, 9);
+        ShowColourText(990, 20, "Score", 3, YELLOW);
+        ShowColourScore2(960, 60, score, 3, YELLOW, 7);
 
       
         DrawText(("EnterCount: "+to_string(EnterCount)).c_str(),screenWidth*0.75,screenHeight-40,40, WHITE);
         DrawText(("Level: "+to_string(level)).c_str(),900,screenHeight-140,40, WHITE);
 
-        drawCharfromArray(herox, heroy, 3,8, CharBall);
+        //drawCharfromArray(herox, heroy, 3,8, CharBall);
       
-        drawChar3Colour(200,400,8,8,Char0,rblightyellow,rbyellow,rbdarkyellow);
-        drawChar3Colour(260,460,3,8,Char1,rblightyellow,rbyellow,rbdarkyellow);
-        drawChar3Colour(290,460,2,8,Char2,rblightyellow,rbyellow,rbdarkyellow);
-        drawChar3Colour(320,460,1,8,Char3,rblightyellow,rbyellow,rbdarkyellow);
-        drawChar3Colour(360,460,4,8,Char4,rblightyellow,rbyellow,rbdarkyellow);
+        //drawChar3Colour(360,460,4,8,Char4,rblightyellow,rbyellow,rbdarkyellow);
 
-        drawRect3Colour(300,440, 800, 600, 3, rblightyellow,rbyellow,rbdarkyellow);
 
-        for (int i = -1; i < 10; i++)
-            drawRetroChar(herox, i*80+boby, 3,8, CharBob); 
-        if (boby++ > 79) boby = 0;
+        //for (int i = -1; i < 10; i++)
+        //    drawRetroChar(herox, i*80+boby, 3,8, CharBob); 
+        //if (boby++ > 79) boby = 0;
 
        
         for (int i = 0; i< 4; i++)
         {
-           drawfilledtablecell(i,-8,i);
+           drawfilledtablecell(i+2,11,i);
         }
         
         drawarrowsandinput();
