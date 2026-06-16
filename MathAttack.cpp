@@ -24,6 +24,9 @@ namespace {
 // Bright math colours: Yellow, Green, Blue, Red
 // Kangaroo jimby?
 
+// Can do ternary operations as well !!!
+// Simulate 6502 CPU??
+
 // Big bonus for hitting a board number since 
 // (a) this is fun
 // (b) helps to have 3 or more big numbers in crates
@@ -417,7 +420,7 @@ int level = 1;
 int maxnumber = 2;
 int levels[] = {0,3,9,14,14,20,33,32,32,32}; // Extra enemies added in each level; 
 int Board[20][20];
-int boardx = 200, boardy = 60, cellwidth = 70, cellheight = 40;
+int boardx = 238, boardy = 60, cellwidth = 70, cellheight = 40;
 string operation = "+";
 vector <int> gunvector;
 vector <string> sumlog;
@@ -1233,8 +1236,8 @@ int drawarrowchainup(int x, int y, int count)
 
 void drawarrowsandinput()
 {
-  int resultx = cratex+246;
-  int resulty = 650;
+  float resultx = cratex+246+3*14-1;
+  float resulty = 650-15;
   int inputstep = 2;
 
   if (value1picked == false or resultdisplayed == true)
@@ -1246,18 +1249,22 @@ void drawarrowsandinput()
         inputstep = 7;
       }
 
-  int arrowsx = cratex+87; // start of arrow system
-  int arrowsy = Crates[gunindex].y+12; // start of arrow system
-  int arrows2x = 0, arrows2y = 0;
+  float arrowsx = cratex+96+6+9; // start of arrow system
+  float arrowsy = Crates[gunindex].y+12; // start of arrow system
+  float arrows2x = 0, arrows2y = 0;
   //int arrowsdownx = 0;
   //int arrowsdowny = arrowsy-6;
   //arrows2x = drawarrowchainright(arrowsx,arrowsy,1);
   //arrows2y = arrowsy-6;
+  
   arrows2y = drawarrowchaindown(arrowsx,arrowsy,gunindex);
-  arrows2x = arrowsx-6;
-  arrowsx = drawarrowchainright(arrows2x,arrows2y,inputstep);
-  arrowsy = arrows2y+6;
+  arrows2x = arrowsx-6+18;
+  DrawLineEx({arrowsx+11,arrowsy}, {arrowsx+11,arrows2y+12}, 4, GREEN);
+  arrowsx = drawarrowchainright(arrows2x,arrows2y,inputstep)-3;
+  arrowsy = arrows2y-15;
+  DrawLineEx({arrows2x-3,arrowsy+5+3*7}, {arrowsx+11,arrowsy+5+3*7}, 4, GREEN);
   drawarrowchainup(arrowsx,arrowsy,1);
+  DrawLineEx({arrowsx+11,arrowsy+5+3*7}, {arrowsx+11,arrowsy+5+3*7-60}, 4, GREEN);
   if (deciseconds % 40 == 0)
   {
     targetarrow++;
@@ -1293,7 +1300,7 @@ void drawgunvector() // draw selector
   //drawCharfromArray(screenWidth/2-85, Crates[gunindex].y+9, 4,8, CharRightArrow); // selector
   //drawarrowchainright(cratex-60,Crates[gunindex].y+12,1);
   //drawCharfromArray(cratex, Crates[gunindex].y-3, 3,32, CharLEDSelector);
-  DrawTextureEx(diamondpng,{cratex+87,Crates[gunindex].y+9},0.0f,3.0f,WHITE);
+  DrawTextureEx(diamondpng,{cratex+96+6+9,Crates[gunindex].y+9},0.0f,3.0f,WHITE);
   DrawTextureEx(selectorpng,{cratex,Crates[gunindex].y-3},0.0f,3.0f,WHITE);
 }
 
