@@ -227,7 +227,10 @@ Color HexToColour(int hexValue) {
 
 
 // colours and graphics characters namespace. Expand to view
+
 namespace {
+  Texture2D diamondpng;
+  Texture2D selectorpng;
  // DO NOT CHANGE
  // needed for LEDColour pixel editor
 Color rbblack = HexToColour(0x000000);
@@ -390,8 +393,8 @@ int deciseconds = 0; // 1/60 of a second timer for animations
 int targetarrow = 0; 
 int herox = 20;
 int heroy = 20;
-int cratex =  20;
-int cratey = screenHeight-96;
+float cratex =  20;
+float cratey = screenHeight-96;
 int numcrates = 7;
 int numberfallx = cratex+8;
 int numberfallbottom = cratey-(numcrates)*(16*3+6)+20;
@@ -421,6 +424,9 @@ vector <string> sumlog;
 int gunindex = 1;
 int MAXstacksize = 4;
 int score = 0;
+
+
+
 
 bool TestPrime(int n)
 {
@@ -812,14 +818,14 @@ int Arrow::draw()
 class Crate
 {
   public:
-    Crate(int startx, int starty); // constructor *must* be named the same as the class
+    Crate(float startx, float starty); // constructor *must* be named the same as the class
     int draw();
-    int x,y;
+    float x,y;
     int number;
   private:
 };
 
-Crate::Crate(int startx, int starty) // constructor code
+Crate::Crate(float startx, float starty) // constructor code
 {
   x = startx;
   y = starty;
@@ -1233,25 +1239,25 @@ void drawarrowsandinput()
 
   if (value1picked == false or resultdisplayed == true)
        {
-        inputstep = 3;
+        inputstep = 4;
       }
   else
       {
-        inputstep = 6;
+        inputstep = 7;
       }
 
-  int arrowsx = cratex+76; // start of arrow system
+  int arrowsx = cratex+87; // start of arrow system
   int arrowsy = Crates[gunindex].y+12; // start of arrow system
   int arrows2x = 0, arrows2y = 0;
-  int arrowsdownx = 0;
-  int arrowsdowny = arrowsy-6;
-  arrows2x = drawarrowchainright(arrowsx,arrowsy,1);
-  arrows2y = arrowsy-6;
-  arrowsy = drawarrowchaindown(arrows2x,arrows2y,gunindex);
-  arrowsx = arrows2x-6;
-  arrows2x = drawarrowchainright(arrowsx,arrowsy,inputstep);
-  arrows2y = arrowsy+6;
-  drawarrowchainup(arrows2x,arrows2y,1);
+  //int arrowsdownx = 0;
+  //int arrowsdowny = arrowsy-6;
+  //arrows2x = drawarrowchainright(arrowsx,arrowsy,1);
+  //arrows2y = arrowsy-6;
+  arrows2y = drawarrowchaindown(arrowsx,arrowsy,gunindex);
+  arrows2x = arrowsx-6;
+  arrowsx = drawarrowchainright(arrows2x,arrows2y,inputstep);
+  arrowsy = arrows2y+6;
+  drawarrowchainup(arrowsx,arrowsy,1);
   if (deciseconds % 40 == 0)
   {
     targetarrow++;
@@ -1283,14 +1289,26 @@ void drawarrowsandinput()
 
 void drawgunvector() // draw selector
 {
+
   //drawCharfromArray(screenWidth/2-85, Crates[gunindex].y+9, 4,8, CharRightArrow); // selector
   //drawarrowchainright(cratex-60,Crates[gunindex].y+12,1);
-  drawCharfromArray(cratex, Crates[gunindex].y-3, 3,32, CharLEDSelector);
+  //drawCharfromArray(cratex, Crates[gunindex].y-3, 3,32, CharLEDSelector);
+  DrawTextureEx(diamondpng,{cratex+87,Crates[gunindex].y+9},0.0f,3.0f,WHITE);
+  DrawTextureEx(selectorpng,{cratex,Crates[gunindex].y-3},0.0f,3.0f,WHITE);
+}
+
+void rbloadtextures()
+{
+ diamondpng = LoadTexture("png/diamond.png"); // LoadTexture() MUST be called AFTER InitWindow
+ SetTextureFilter(diamondpng, TEXTURE_FILTER_POINT); // pixel perfect scaling
+ selectorpng = LoadTexture("png/selector.png"); // LoadTexture() MUST be called AFTER InitWindow
+ SetTextureFilter(selectorpng, TEXTURE_FILTER_POINT); // pixel perfect scaling
 }
 
 int main() {
     settheme();
     InitWindow(screenWidth, screenHeight, "Math Addition Game"); // RNG seed is set randomly in InitWindow !!
+    rbloadtextures();
     float moveInterval = 0.01f; // 10ms b/w move
     float moveTimer = 0.0f;
     int boby = 0;
@@ -1363,7 +1381,7 @@ int main() {
         drawarrowsandinput();
         drawnemies();
         Ball1.draw();
-        for (int i =0;i < Crates.size(); i++)
+        for (int i = 1;i < Crates.size(); i++)
           Crates[i].draw();
         drawgunvector(); // this is draw selector now!
         EndDrawing();
