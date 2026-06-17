@@ -1389,20 +1389,14 @@ void rbcreatetexture(Texture2D &mytexture, string filename)
 
 void rbloadtextures()
 {
- rbcreatetexture(diamondgreenpng,"png/diamond1.png");
+ rbcreatetexture(diamondgreenpng,"png/diamond1.png"); // make object?
  rbcreatetexture(diamondwhitepng,"png/diamond2.png");
- selectorgreenpng = LoadTexture("png/selector1.png"); // LoadTexture() MUST be called AFTER InitWindow
- SetTextureFilter(selectorgreenpng, TEXTURE_FILTER_POINT); // pixel perfect scaling
- selectorwhitepng = LoadTexture("png/selector2.png"); // LoadTexture() MUST be called AFTER InitWindow
- SetTextureFilter(selectorwhitepng, TEXTURE_FILTER_POINT); // pixel perfect scaling
- downarrowgreenpng = LoadTexture("png/downarrowgreen1.png"); // LoadTexture() MUST be called AFTER InitWindow
- SetTextureFilter(downarrowgreenpng, TEXTURE_FILTER_POINT); // pixel perfect scaling
- downarrowyellowpng = LoadTexture("png/downarrowgreen2.png"); // LoadTexture() MUST be called AFTER InitWindow
- SetTextureFilter(downarrowyellowpng, TEXTURE_FILTER_POINT); // pixel perfect scaling
- connectorgreenpng = LoadTexture("png/connector1.png"); // LoadTexture() MUST be called AFTER InitWindow
- SetTextureFilter(connectorgreenpng, TEXTURE_FILTER_POINT); // pixel perfect scaling
- connectoryellowpng = LoadTexture("png/connector2.png"); // LoadTexture() MUST be called AFTER InitWindow
- SetTextureFilter(connectoryellowpng, TEXTURE_FILTER_POINT); // pixel perfect scaling
+ rbcreatetexture(selectorgreenpng,"png/selector1.png");
+ rbcreatetexture(selectorwhitepng,"png/selector2.png");
+ rbcreatetexture(downarrowgreenpng,"png/downarrowgreen1.png");
+ rbcreatetexture(downarrowyellowpng,"png/downarrowgreen2.png");
+ rbcreatetexture(connectorgreenpng,"png/connector1.png");
+ rbcreatetexture(connectoryellowpng,"png/connector2.png");
 }
 
 int main() {
