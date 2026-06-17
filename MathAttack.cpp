@@ -18,6 +18,10 @@
 // comments namespace. Expand to view
 namespace {
 
+// teleport numbers into add box. Erase from top, and draw from top.
+// Can change selector arrows to balls, or even small numbers
+// Flowers for level progress?
+
 // New name: 8-bit Math Game
 // Creat new universe of Math characters and scenes. Base on famous mathematicians/diagrams. Graph Theory. Four colour Theorem, etc.
 
@@ -232,8 +236,9 @@ Color HexToColour(int hexValue) {
 // colours and graphics characters namespace. Expand to view
 
 namespace {
-  Texture2D diamondpng;
-  Texture2D selectorpng;
+  Texture2D diamondgreenpng, diamondwhitepng;
+  Texture2D selectorgreenpng, selectorwhitepng;
+  Texture2D downarrowgreenpng, downarrowyellowpng, connectorgreenpng, connectoryellowpng;
  // DO NOT CHANGE
  // needed for LEDColour pixel editor
 Color rbblack = HexToColour(0x000000);
@@ -1190,6 +1195,38 @@ int* arrowdownanimate(int loc)
     return CharLEDGreenDownArrow;
 }
 
+Texture2D arrowdownanimatepng(int loc)
+{
+  if (loc == targetarrow)
+    return downarrowyellowpng;
+  else
+    return downarrowgreenpng;
+}
+
+Texture2D connectoranimatepng(int loc)
+{
+  if (loc == targetarrow)
+    return connectoryellowpng;
+  else
+    return connectorgreenpng;
+}
+
+Texture2D selectoranimatepng(int loc)
+{
+  if (loc == targetarrow)
+    return selectorwhitepng;
+  else
+    return selectorgreenpng;
+}
+
+Texture2D diamondanimatepng(int loc)
+{
+  if (loc == targetarrow)
+    return diamondwhitepng;
+  else
+    return diamondgreenpng;
+}
+
 int* arrowupanimate(int loc)
 {
   if (loc == targetarrow)
@@ -1210,6 +1247,18 @@ int drawarrowchainright(int x, int y, int count)
   return x+(count-1)*24*2+36+22; // use this for x value of downarrows that start at end of this arrow system 
 } 
 
+int drawarrowchainrightpng(float x, float y, int count)
+{
+  for (int i = 0; i < count; i++)
+   {
+      DrawTextureEx(arrowdownanimatepng(1),{x+i*24*2,   y+3*7},   270.0f,3.0f,WHITE);
+      DrawTextureEx(arrowdownanimatepng(2),{x+i*24*2+12,y+3*7},270.0f,3.0f,WHITE);
+      DrawTextureEx(arrowdownanimatepng(3),{x+i*24*2+24,y+3*7},270.0f,3.0f,WHITE);
+      DrawTextureEx(arrowdownanimatepng(4),{x+i*24*2+36,y+3*7},270.0f,3.0f,WHITE);
+   }
+  return x+(count-1)*24*2+36+22; // use this for x value of downarrows that start at end of this arrow system 
+} 
+
 int drawarrowchaindown(int x, int y, int count)
 {
   for (int i = 0; i < count; i++)
@@ -1222,14 +1271,39 @@ int drawarrowchaindown(int x, int y, int count)
   return y+(count-1)*24*2+36+22; // use this for y value of rightarrows that start at end of this arrow system 
 } 
 
+
+int drawarrowchaindownpng(float x, float y, int count)
+{
+  for (int i = 0; i < count; i++)
+   {
+      DrawTextureEx(arrowdownanimatepng(1),{x,y+i*24*2},0.0f,3.0f,WHITE);
+      DrawTextureEx(arrowdownanimatepng(2),{x,y+i*24*2+12},0.0f,3.0f,WHITE);
+      DrawTextureEx(arrowdownanimatepng(3),{x,y+i*24*2+24},0.0f,3.0f,WHITE);
+      DrawTextureEx(arrowdownanimatepng(4),{x,y+i*24*2+36},0.0f,3.0f,WHITE);
+   }
+  return y+(count-1)*24*2+36+22; // use this for y value of rightarrows that start at end of this arrow system 
+} 
+
 int drawarrowchainup(int x, int y, int count)
 {
   for (int i = 0; i < count; i++)
    {
-      drawCharfromArray(x, y-i*24*2,3,8,arrowupanimate(1));
+      drawCharfromArray(x, y-i*24*2   ,3,8,arrowupanimate(1));
       drawCharfromArray(x, y-i*24*2-12,3,8,arrowupanimate(2));
       drawCharfromArray(x, y-i*24*2-24,3,8,arrowupanimate(3));
       drawCharfromArray(x, y-i*24*2-36,3,8,arrowupanimate(4));
+   }
+  return y-(count-1)*24*2-36-22; // use this for y value of rightarrows that start at end of this arrow system 
+} 
+
+int drawarrowchainuppng(float x, float y, int count)
+{
+  for (int i = 0; i < count; i++)
+   {
+      DrawTextureEx(arrowdownanimatepng(1),{x+3*7,y-i*24*2   +3*7 },   180.0f,3.0f,WHITE);
+      DrawTextureEx(arrowdownanimatepng(2),{x+3*7,y-i*24*2-12+3*7},180.0f,3.0f,WHITE);
+      DrawTextureEx(arrowdownanimatepng(3),{x+3*7,y-i*24*2-24+3*7},180.0f,3.0f,WHITE);
+      DrawTextureEx(arrowdownanimatepng(4),{x+3*7,y-i*24*2-36+3*7},180.0f,3.0f,WHITE);
    }
   return y-(count-1)*24*2-36-22; // use this for y value of rightarrows that start at end of this arrow system 
 } 
@@ -1257,14 +1331,17 @@ void drawarrowsandinput()
   //arrows2x = drawarrowchainright(arrowsx,arrowsy,1);
   //arrows2y = arrowsy-6;
   
-  arrows2y = drawarrowchaindown(arrowsx,arrowsy,gunindex);
+  //arrows2y = drawarrowchaindown(arrowsx,arrowsy,gunindex);
+  arrows2y = drawarrowchaindownpng(arrowsx,arrowsy,gunindex)-1;
   arrows2x = arrowsx-6+18;
-  DrawLineEx({arrowsx+11,arrowsy}, {arrowsx+11,arrows2y+12}, 4, GREEN);
-  arrowsx = drawarrowchainright(arrows2x,arrows2y,inputstep)-3;
+  //DrawLineEx({arrowsx+11,arrowsy}, {arrowsx+11,arrows2y+12}, 4, GREEN);
+  DrawTextureEx(connectoranimatepng(1),{arrows2x-2*7+2,arrows2y},0.0f,3.0f,WHITE);
+  arrowsx = drawarrowchainrightpng(arrows2x,arrows2y,inputstep)-3;
   arrowsy = arrows2y-15;
-  DrawLineEx({arrows2x-3,arrowsy+5+3*7}, {arrowsx+11,arrowsy+5+3*7}, 4, GREEN);
-  drawarrowchainup(arrowsx,arrowsy,1);
-  DrawLineEx({arrowsx+11,arrowsy+5+3*7}, {arrowsx+11,arrowsy+5+3*7-60}, 4, GREEN);
+  //DrawLineEx({arrows2x-3,arrowsy+5+3*7}, {arrowsx+11,arrowsy+5+3*7}, 4, GREEN);
+  DrawTextureEx(connectoranimatepng(1),{arrowsx,arrowsy+5*7+1},270.0f,3.0f,WHITE);
+  drawarrowchainuppng(arrowsx,arrowsy,1);
+  //DrawLineEx({arrowsx+11,arrowsy+5+3*7}, {arrowsx+11,arrowsy+5+3*7-60}, 4, GREEN);
   if (deciseconds % 40 == 0)
   {
     targetarrow++;
@@ -1300,16 +1377,32 @@ void drawgunvector() // draw selector
   //drawCharfromArray(screenWidth/2-85, Crates[gunindex].y+9, 4,8, CharRightArrow); // selector
   //drawarrowchainright(cratex-60,Crates[gunindex].y+12,1);
   //drawCharfromArray(cratex, Crates[gunindex].y-3, 3,32, CharLEDSelector);
-  DrawTextureEx(diamondpng,{cratex+96+6+9,Crates[gunindex].y+9},0.0f,3.0f,WHITE);
-  DrawTextureEx(selectorpng,{cratex,Crates[gunindex].y-3},0.0f,3.0f,WHITE);
+  DrawTextureEx(diamondanimatepng(1),{cratex+96+6+9,Crates[gunindex].y+9},0.0f,3.0f,WHITE);
+  DrawTextureEx(selectoranimatepng(1),{cratex,Crates[gunindex].y-3},0.0f,3.0f,WHITE);
+}
+
+void rbcreatetexture(Texture2D &mytexture, string filename)
+{
+ mytexture = LoadTexture(filename.c_str()); // LoadTexture() MUST be called AFTER InitWindow
+ SetTextureFilter(mytexture, TEXTURE_FILTER_POINT); // pixel perfect scaling
 }
 
 void rbloadtextures()
 {
- diamondpng = LoadTexture("png/diamond.png"); // LoadTexture() MUST be called AFTER InitWindow
- SetTextureFilter(diamondpng, TEXTURE_FILTER_POINT); // pixel perfect scaling
- selectorpng = LoadTexture("png/selector.png"); // LoadTexture() MUST be called AFTER InitWindow
- SetTextureFilter(selectorpng, TEXTURE_FILTER_POINT); // pixel perfect scaling
+ rbcreatetexture(diamondgreenpng,"png/diamond1.png");
+ rbcreatetexture(diamondwhitepng,"png/diamond2.png");
+ selectorgreenpng = LoadTexture("png/selector1.png"); // LoadTexture() MUST be called AFTER InitWindow
+ SetTextureFilter(selectorgreenpng, TEXTURE_FILTER_POINT); // pixel perfect scaling
+ selectorwhitepng = LoadTexture("png/selector2.png"); // LoadTexture() MUST be called AFTER InitWindow
+ SetTextureFilter(selectorwhitepng, TEXTURE_FILTER_POINT); // pixel perfect scaling
+ downarrowgreenpng = LoadTexture("png/downarrowgreen1.png"); // LoadTexture() MUST be called AFTER InitWindow
+ SetTextureFilter(downarrowgreenpng, TEXTURE_FILTER_POINT); // pixel perfect scaling
+ downarrowyellowpng = LoadTexture("png/downarrowgreen2.png"); // LoadTexture() MUST be called AFTER InitWindow
+ SetTextureFilter(downarrowyellowpng, TEXTURE_FILTER_POINT); // pixel perfect scaling
+ connectorgreenpng = LoadTexture("png/connector1.png"); // LoadTexture() MUST be called AFTER InitWindow
+ SetTextureFilter(connectorgreenpng, TEXTURE_FILTER_POINT); // pixel perfect scaling
+ connectoryellowpng = LoadTexture("png/connector2.png"); // LoadTexture() MUST be called AFTER InitWindow
+ SetTextureFilter(connectoryellowpng, TEXTURE_FILTER_POINT); // pixel perfect scaling
 }
 
 int main() {
