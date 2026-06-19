@@ -239,6 +239,9 @@ namespace {
   Texture2D diamondgreenpng, diamondwhitepng;
   Texture2D selectorgreenpng, selectorwhitepng;
   Texture2D downarrowgreenpng, downarrowyellowpng, connectorgreenpng, connectoryellowpng;
+  Rectangle selectorrect;
+  float selectorheight, selectorwidth;
+  Texture2D gunshippng;
  // DO NOT CHANGE
  // needed for LEDColour pixel editor
 Color rbblack = HexToColour(0x000000);
@@ -399,6 +402,8 @@ int* alphaarray[26] = {CharA, CharB, CharC, CharD, CharE, CharF, CharG, CharH, C
 
 int deciseconds = 0; // 1/60 of a second timer for animations
 int targetarrow = 0; 
+int selectorframes = 32;
+int selectorcount = 20;
 int herox = 20;
 int heroy = 20;
 float cratex =  20;
@@ -426,6 +431,8 @@ int maxnumber = 2;
 int levels[] = {0,3,9,14,14,20,33,32,32,32}; // Extra enemies added in each level; 
 int Board[20][20];
 int boardx = 238, boardy = 60, cellwidth = 70, cellheight = 40;
+float gunship1x = boardx, gunship1y = boardy+cellheight*5;
+float gunship2x = boardx+cellwidth*5, gunship2y = boardy;
 string operation = "+";
 vector <int> gunvector;
 vector <string> sumlog;
@@ -1023,6 +1030,15 @@ int createnewlevel()
      return 0;
   }
 
+Vector2 boardnumbertopoint(int boardnumber)
+{
+  Vector2 mypoint;
+  int row, col;
+  col = boardnumber % 10;
+  row = boardnumber / 10;
+  return {(float) boardx+(col+0.5f)*cellwidth, (float) boardy+(row-1+0.7f)*cellheight};
+}
+
 int removeenemyatgunindex()
 {
   int hitvalue;
@@ -1042,8 +1058,10 @@ int removeenemyatgunindex()
             value2 = shotnumber;
             value1picked = false;     
             value2picked = true;   
-            if (removefromboard(value1+value2) > -1)
+            if (removefromboard(value1+value2) > -1) // found in board
             {
+               gunship1y = boardnumbertopoint(value1+value2).y;
+               gunship2x = boardnumbertopoint(value1+value2).x;
                sumlog.push_back(to_string(value1)+" + "+to_string(value2)+" = "+to_string(value1+value2));
                if (MAXstacksize <= 10) MAXstacksize++;
                if (value1+value2 < 90)
@@ -1089,7 +1107,7 @@ int ReadKeys()
               resultdisplayed = false;
               value2picked = false;
               EnterCount = 1;
-              }           
+              }          
              }
         }
    if (IsKeyPressed(KEY_SPACE))
@@ -1137,14 +1155,12 @@ int ReadKeys()
 
 int drawboard()
 {
-  //DrawText(to_string(100).c_str(),boardx+cellwidth*4,boardy+cellwidth*10,60, WHITE);
   // draw 100
   drawRetroCharOneColour(boardx+cellwidth*2.7,boardy+cellheight*10,10,8,Char1, rbwhite);
   drawRetroCharOneColour(boardx+cellwidth*2.7+100,boardy+cellheight*10,10,8,Char0, rbwhite);
   drawRetroCharOneColour(boardx+cellwidth*2.7+200,boardy+cellheight*10,10,8,Char0, rbwhite);
- // draw2digits3colour(200,200,10,3,rblightyellow,rbyellow,rbdarkyellow);
- //  draw2digits3colour(200,240,11,3,rblightyellow,rbyellow,rbdarkyellow);
 
+  //cells
   for (int i = 0;i<10; i++)
    for (int j = 0; j <10; j++)
      if (Board[i][j] > -1)
@@ -1157,10 +1173,18 @@ int drawboard()
           draw2digits3colour(boardx+cellwidth*j-16,boardy+cellheight*i-9,-1*Board[i][j],4,rblightyellow,rbyellow,rbdarkyellow);
      }
   
+   //border  
    drawRect3Colour(boardx-50,boardy-50, boardx+cellwidth*9+100, boardy+cellheight*9+50+100, 3, rblightyellow,rbyellow,rbdarkyellow);
+
+   // draw gunships here 
+   // fire on timer (shottime)
+   DrawTextureEx(gunshippng,{gunship1x+14,gunship1y},90.0f,1.0f,WHITE);
+   DrawTextureEx(gunshippng,{gunship2x,gunship2y+14},180.0f,1.0f,WHITE);
 
   return 0;
 }
+
+
 
 void drawfilledtablecell(int i, int j, int num)
 {
@@ -1342,12 +1366,6 @@ void drawarrowsandinput()
   DrawTextureEx(connectoranimatepng(1),{arrowsx,arrowsy+5*7+1},270.0f,3.0f,WHITE);
   drawarrowchainuppng(arrowsx,arrowsy,1);
   //DrawLineEx({arrowsx+11,arrowsy+5+3*7}, {arrowsx+11,arrowsy+5+3*7-60}, 4, GREEN);
-  if (deciseconds % 40 == 0)
-  {
-    targetarrow++;
-    if (targetarrow > 4) targetarrow = 1;
-  }
-
   drawRetroCharOneColour(resultx, resulty+4,3,8,CharUnderline,rbgray00);
   drawRetroCharOneColour(resultx+5*8-8, resulty+4,3,8,CharUnderline,rbgray00);
   drawRetroCharOneColour(resultx+2*5*8+6, resulty,4,8,CharPlus2,rblightgreen);
@@ -1373,12 +1391,10 @@ void drawarrowsandinput()
 
 void drawgunvector() // draw selector
 {
-
-  //drawCharfromArray(screenWidth/2-85, Crates[gunindex].y+9, 4,8, CharRightArrow); // selector
-  //drawarrowchainright(cratex-60,Crates[gunindex].y+12,1);
-  //drawCharfromArray(cratex, Crates[gunindex].y-3, 3,32, CharLEDSelector);
   DrawTextureEx(diamondanimatepng(1),{cratex+96+6+9,Crates[gunindex].y+9},0.0f,3.0f,WHITE);
-  DrawTextureEx(selectoranimatepng(1),{cratex,Crates[gunindex].y-3},0.0f,3.0f,WHITE);
+  selectorrect.x = selectorcount*selectorwidth;
+  DrawTexturePro(selectorgreenpng, selectorrect,{cratex,Crates[gunindex].y-3,selectorwidth*3, // scale by 3
+                                                                            selectorheight*3},{0,0},0.0f, WHITE);
 }
 
 void rbcreatetexture(Texture2D &mytexture, string filename)
@@ -1391,7 +1407,11 @@ void rbloadtextures()
 {
  rbcreatetexture(diamondgreenpng,"png/diamond1.png"); // make object?
  rbcreatetexture(diamondwhitepng,"png/diamond2.png");
- rbcreatetexture(selectorgreenpng,"png/selector1.png");
+ rbcreatetexture(selectorgreenpng,"png/selector.png");
+ selectorwidth = selectorgreenpng.width/selectorframes;
+ selectorheight = selectorgreenpng.height;
+ selectorrect = {0.0f, 0.0f, selectorwidth, selectorheight}; 
+ rbcreatetexture(gunshippng,"png/gunship.png");
  rbcreatetexture(selectorwhitepng,"png/selector2.png");
  rbcreatetexture(downarrowgreenpng,"png/downarrowgreen1.png");
  rbcreatetexture(downarrowyellowpng,"png/downarrowgreen2.png");
@@ -1416,6 +1436,16 @@ int main() {
     {
         ReadKeys();
         deciseconds++;
+        if ( deciseconds % 4 == 0)
+        {
+          selectorcount++;
+          if (selectorcount >= selectorframes) selectorcount = 0;
+        }
+         if (deciseconds % 32 == 0)
+         {
+           targetarrow++;
+           if (targetarrow > 4) targetarrow = 1;
+         }
         float dt = GetFrameTime(); // seconds since last frame 
         moveTimer += dt; 
         Ball1.move();  
