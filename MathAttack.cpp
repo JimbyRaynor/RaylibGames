@@ -241,7 +241,7 @@ namespace {
   Texture2D downarrowgreenpng, downarrowyellowpng, connectorgreenpng, connectoryellowpng;
   Rectangle selectorrect;
   float selectorheight, selectorwidth;
-  Texture2D gunshippng;
+
  // DO NOT CHANGE
  // needed for LEDColour pixel editor
 Color rbblack = HexToColour(0x000000);
@@ -431,8 +431,6 @@ int maxnumber = 2;
 int levels[] = {0,3,9,14,14,20,33,32,32,32}; // Extra enemies added in each level; 
 int Board[20][20];
 int boardx = 238, boardy = 60, cellwidth = 70, cellheight = 40;
-float gunship1x = boardx, gunship1y = boardy+cellheight*5;
-float gunship2x = boardx+cellwidth*5, gunship2y = boardy;
 string operation = "+";
 vector <int> gunvector;
 vector <string> sumlog;
@@ -854,8 +852,8 @@ int SpriteObj::move()
 
 // create objects *after* defining them!
 SpriteObj bullet(200,200,3,0); 
-SpriteObj gunship1(boardx+14, boardy+cellheight*5, 1.3, 90);
-SpriteObj gunship2(boardx+cellwidth*5, boardy+14, 1.3, 180); 
+SpriteObj gunship1(boardx+50, boardy+cellheight*5, 2.0, 90);
+SpriteObj gunship2(boardx+cellwidth*5, boardy+50, 2.0, 180); 
 
 
 class Arrow
@@ -1115,8 +1113,8 @@ int removeenemyatgunindex()
             value2picked = true;   
             if (removefromboard(value1+value2) > -1) // found in board
             {
-               gunship1.y = boardnumbertopoint(value1+value2).y;
-               gunship2.x = boardnumbertopoint(value1+value2).x;
+               gunship1.y = boardnumbertopoint(value1+value2).y-14;
+               gunship2.x = boardnumbertopoint(value1+value2).x+14;
                sumlog.push_back(to_string(value1)+" + "+to_string(value2)+" = "+to_string(value1+value2));
                if (MAXstacksize <= 10) MAXstacksize++;
                if (value1+value2 < 90)
@@ -1230,12 +1228,6 @@ int drawboard()
   
    //border  
    drawRect3Colour(boardx-50,boardy-50, boardx+cellwidth*9+100, boardy+cellheight*9+50+100, 3, rblightyellow,rbyellow,rbdarkyellow);
-
-   // draw gunships here 
-   // fire on timer (shottime)
-   //DrawTextureEx(gunshippng,{gunship1x+14,gunship1y},90.0f,1.0f,WHITE);
-   //DrawTextureEx(gunshippng,{gunship2x,gunship2y+14},180.0f,1.0f,WHITE);
-
   return 0;
 }
 
@@ -1466,7 +1458,6 @@ void rbloadtextures()
  selectorwidth = selectorgreenpng.width/selectorframes;
  selectorheight = selectorgreenpng.height;
  selectorrect = {0.0f, 0.0f, selectorwidth, selectorheight}; 
- rbcreatetexture(gunshippng,"png/gunship.png");
  rbcreatetexture(selectorwhitepng,"png/selector2.png");
  rbcreatetexture(downarrowgreenpng,"png/downarrowgreen1.png");
  rbcreatetexture(downarrowyellowpng,"png/downarrowgreen2.png");
