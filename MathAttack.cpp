@@ -439,6 +439,7 @@ vector <string> sumlog;
 int gunindex = 1;
 int MAXstacksize = 4;
 int score = 0;
+// create objects after defining them
 
 
 
@@ -802,6 +803,60 @@ int Ball::move()
 }
 
 
+class SpriteObj
+{
+    public:
+    SpriteObj(float startx, float starty, float myscale, float myrotation);  // constructor, *must* be named the same as the class
+    int draw();
+    int move();
+    int loadtexture(string filename);
+    bool textureloaded = false;
+    float x = 0,y = 0;
+    float dx = 1;
+    float dy = 0;
+    Texture2D pngtexture; // actually a bitmap (Raylib calls it a texture)
+      // cannot create texture until after initwindow ...
+      // so load manually after initwindow 
+    float scale = 1;
+    float angle = 0;
+   private:
+};
+SpriteObj::SpriteObj(float startx, float starty, float myscale, float myrotation) // constructor code
+{
+  x = startx;
+  y = starty;
+  scale = myscale;
+  angle = myrotation;
+}
+
+int SpriteObj::loadtexture(string filename)
+{
+  if (textureloaded == false)
+  {
+    pngtexture = LoadTexture(filename.c_str()); // LoadTexture() MUST be called AFTER InitWindow
+    SetTextureFilter(pngtexture, TEXTURE_FILTER_POINT); // pixel perfect scaling
+    textureloaded = true;
+  }
+  return 0;
+}
+
+int SpriteObj::draw()
+{
+  if (textureloaded) DrawTextureEx(pngtexture,{x,y},angle,scale,WHITE);
+  return 0;
+}
+int SpriteObj::move()
+{
+    y = y + dy;
+    x = x + dx;
+    return 0;
+}
+
+// create objects *after* defining them!
+SpriteObj bullet(200,200,3,0); 
+SpriteObj gunship1(boardx+14, boardy+cellheight*5, 1.3, 90);
+SpriteObj gunship2(boardx+cellwidth*5, boardy+14, 1.3, 180); 
+
 
 class Arrow
 {
@@ -1060,8 +1115,8 @@ int removeenemyatgunindex()
             value2picked = true;   
             if (removefromboard(value1+value2) > -1) // found in board
             {
-               gunship1y = boardnumbertopoint(value1+value2).y;
-               gunship2x = boardnumbertopoint(value1+value2).x;
+               gunship1.y = boardnumbertopoint(value1+value2).y;
+               gunship2.x = boardnumbertopoint(value1+value2).x;
                sumlog.push_back(to_string(value1)+" + "+to_string(value2)+" = "+to_string(value1+value2));
                if (MAXstacksize <= 10) MAXstacksize++;
                if (value1+value2 < 90)
@@ -1178,8 +1233,8 @@ int drawboard()
 
    // draw gunships here 
    // fire on timer (shottime)
-   DrawTextureEx(gunshippng,{gunship1x+14,gunship1y},90.0f,1.0f,WHITE);
-   DrawTextureEx(gunshippng,{gunship2x,gunship2y+14},180.0f,1.0f,WHITE);
+   //DrawTextureEx(gunshippng,{gunship1x+14,gunship1y},90.0f,1.0f,WHITE);
+   //DrawTextureEx(gunshippng,{gunship2x,gunship2y+14},180.0f,1.0f,WHITE);
 
   return 0;
 }
@@ -1417,12 +1472,20 @@ void rbloadtextures()
  rbcreatetexture(downarrowyellowpng,"png/downarrowgreen2.png");
  rbcreatetexture(connectorgreenpng,"png/connector1.png");
  rbcreatetexture(connectoryellowpng,"png/connector2.png");
+
+ bullet.loadtexture("png/diamond2.png"); // call After initwindow ...  
+ gunship1.loadtexture("png/gunship.png");
+ gunship2.loadtexture("png/gunship.png");  
 }
+
 
 int main() {
     settheme();
     InitWindow(screenWidth, screenHeight, "Math Addition Game"); // RNG seed is set randomly in InitWindow !!
-    rbloadtextures();
+    rbloadtextures(); // Must load textures after InitWindow
+                      // Same for SpriteObj !!!
+    //createsprites();     
+    Ball Ball1(700,700,200,200); 
     float moveInterval = 0.01f; // 10ms b/w move
     float moveTimer = 0.0f;
     int boby = 0;
@@ -1430,7 +1493,8 @@ int main() {
     SetTargetFPS(60);
     fillboard();
     sumlog.clear();
-    Ball Ball1(700,700,200,200);
+
+
     makecrates();
     while (!WindowShouldClose()) 
     {
@@ -1451,6 +1515,7 @@ int main() {
         Ball1.move();  
         if (moveTimer >= moveInterval) 
           { 
+            bullet.move();
             moveenemies();                     
             if (enemymovement >= 40)
             {      
@@ -1505,6 +1570,9 @@ int main() {
         drawarrowsandinput();
         drawnemies();
         Ball1.draw();
+        bullet.draw();
+        gunship1.draw();
+        gunship2.draw();
         for (int i = 1;i < Crates.size(); i++)
           Crates[i].draw();
         drawgunvector(); // this is draw selector now!
