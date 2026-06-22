@@ -23,7 +23,7 @@ namespace {
 // Flowers for level progress?
 
 // New name: 8-bit Math Game
-// Creat new universe of Math characters and scenes. Base on famous mathematicians/diagrams. Graph Theory. Four colour Theorem, etc.
+// Create new universe of Math characters and scenes. Base on famous mathematicians/diagrams. Graph Theory. Four colour Theorem, etc.
 
 // Bright math colours: Yellow, Green, Blue, Red
 // Kangaroo jimby?
@@ -234,7 +234,6 @@ Color HexToColour(int hexValue) {
 
 
 // colours and graphics characters namespace. Expand to view
-
 namespace {
   Texture2D diamondgreenpng, diamondwhitepng;
   Texture2D selectorgreenpng, selectorwhitepng;
@@ -856,6 +855,20 @@ SpriteObj gunship1(boardx+50, boardy+cellheight*5, 2.0, 90);
 SpriteObj gunship2(boardx+cellwidth*5, boardy+50, 2.0, 180); 
 
 
+vector <SpriteObj> Bullets;
+int makebullets()
+{
+  for (int i=0; i < 10; i++)
+   {
+    SpriteObj bullettmp(gunship1.x,gunship1.y,1,0);
+    bullettmp.loadtexture("png/diamond2.png");
+    bullettmp.dx = 1;
+    bullettmp.dy = 0;
+    Bullets.push_back(bullettmp);
+   }
+  return 0;
+}
+
 class Arrow
 {
   public:
@@ -913,6 +926,8 @@ int Crate::draw()
     }
   return 0;
 }
+
+
 
 vector <Crate> Crates;
 int makecrates()
@@ -1231,8 +1246,6 @@ int drawboard()
   return 0;
 }
 
-
-
 void drawfilledtablecell(int i, int j, int num)
 {
   drawCharfromArray(boardx+j*cellwidth, boardy+i*cellwidth, 2,24, CharBlock); 
@@ -1475,7 +1488,8 @@ int main() {
     InitWindow(screenWidth, screenHeight, "Math Addition Game"); // RNG seed is set randomly in InitWindow !!
     rbloadtextures(); // Must load textures after InitWindow
                       // Same for SpriteObj !!!
-    //createsprites();     
+    //createsprites(); 
+    makebullets();    
     Ball Ball1(700,700,200,200); 
     float moveInterval = 0.01f; // 10ms b/w move
     float moveTimer = 0.0f;
@@ -1507,7 +1521,9 @@ int main() {
         if (moveTimer >= moveInterval) 
           { 
             bullet.move();
-            moveenemies();                     
+            moveenemies();  
+            for (int i = 0;i < Bullets.size(); i++)
+                Bullets[i].move();                   
             if (enemymovement >= 40)
             {      
                 enemymovement = 0;
@@ -1566,6 +1582,8 @@ int main() {
         gunship2.draw();
         for (int i = 1;i < Crates.size(); i++)
           Crates[i].draw();
+        for (int i = 0;i < Bullets.size(); i++)
+           Bullets[i].draw();
         drawgunvector(); // this is draw selector now!
         EndDrawing();
     }
