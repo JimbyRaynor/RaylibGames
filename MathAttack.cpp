@@ -715,6 +715,32 @@ void ShowColourText(int locx, int locy, string mytext, int psize, Color Mycolour
    }
 }
 
+
+int removefromboard(int number)
+{
+if (number == 100) return 0;
+for (int i = 0;i<10; i++)
+   for (int j = 0; j <10; j++)
+     if (Board[i][j] == number)
+     {
+          Board[i][j] = -1*number;
+          return 0;
+     }
+return -1;
+}
+
+int findonboard(int number)
+{
+if (number == 100) return 0;
+for (int i = 0;i<10; i++)
+   for (int j = 0; j <10; j++)
+     if (Board[i][j] == number)
+     {
+          return 0;
+     }
+return -1;
+}
+
 // paths (from CoPilot)
 namespace {
 
@@ -820,6 +846,8 @@ class SpriteObj
     int movetotarget(float myspeed);
     int loadtexture(string filename);
     bool textureloaded = false;
+    bool alive = false;
+    int targetnumber = 0;
     float x = 0,y = 0;
     float targetx = 0, targety = 0;
     float dx = 1;
@@ -852,7 +880,7 @@ int SpriteObj::loadtexture(string filename)
 
 int SpriteObj::draw()
 {
-  if (textureloaded) DrawTextureEx(pngtexture,{x,y},angle,scale,WHITE);
+  if (textureloaded and alive) DrawTextureEx(pngtexture,{x,y},angle,scale,WHITE);
   return 0;
 }
 int SpriteObj::move()
@@ -870,6 +898,11 @@ int SpriteObj::movetotarget(float myspeed)
     dx = mdx/length*myspeed;
     dy = mdy/length*myspeed;
     move();
+    if ( sqrtf((x-targetx)*(x-targetx) + (y-targety)*(y-targety)) < 12 )
+    {
+       alive = false;
+       removefromboard(targetnumber);
+    }
     return 0;
 }
 
@@ -1069,18 +1102,7 @@ int resetenemyloc()
   return 0;
 }
 
-int removefromboard(int number)
-{
-if (number == 100) return 0;
-for (int i = 0;i<10; i++)
-   for (int j = 0; j <10; j++)
-     if (Board[i][j] == number)
-     {
-          Board[i][j] = -1*number;
-          return 0;
-     }
-return -1;
-}
+
 
 int findminboard()
 {
@@ -1152,12 +1174,15 @@ int removeenemyatgunindex()
             value2 = shotnumber;
             value1picked = false;     
             value2picked = true;   
-            if (removefromboard(value1+value2) > -1) // found in board
+            if (findonboard(value1+value2) > -1) // found in board
             {
+               if (goldcard.alive) removefromboard(goldcard.targetnumber);
                gunship1.y = boardnumbertopoint(value1+value2).y-14;
                gunship2.x = boardnumbertopoint(value1+value2).x+14;
                goldcard.targetx = boardnumbertopoint(value1+value2).x-16*2;
                goldcard.targety = boardnumbertopoint(value1+value2).y;
+               goldcard.alive = true;
+               goldcard.targetnumber = value1+value2;
                sumlog.push_back(to_string(value1)+" + "+to_string(value2)+" = "+to_string(value1+value2));
                if (MAXstacksize <= 10) MAXstacksize++;
                if (value1+value2 < 90)
@@ -1471,7 +1496,7 @@ void drawarrowsandinput()
           if (sumisonboard == true)
           {
              draw2digits(resultx+6*5*8+8*2+24+12,resulty,value1+value2,3,rblightgreen);
-             goldcard.x = resultx+6*5*8+8*2+24+12;
+             goldcard.x = resultx+6*5*8+8*2+24+12+24;
              goldcard.y = resulty; 
              sumisonboard = false;
            }
@@ -1553,7 +1578,7 @@ int main() {
         if (moveTimer >= moveInterval) 
           { 
             bullet.move();
-            goldcard.movetotarget(8);
+            goldcard.movetotarget(16);
             moveenemies();  
             for (int i = 0;i < Bullets.size(); i++)
                 Bullets[i].move();                   
