@@ -18,7 +18,16 @@
 // comments namespace. Expand to view
 namespace {
 
-// teleport numbers into add box. Erase from top, and draw from top.
+// make like a card game
+// Look at minesweeper/Majong for tile ideas
+// Mayby only show blanks tile on board without numbers (until hit)
+// and leave gaps for non-available (e.g odd) numbers
+// Bonus (blue) tiles give extra random tiles (and other options like peggle, double score etc)
+
+// Put border around each number, remove big border
+// create goldcard on result if number available
+// move goldcard diagonally to target number, play sprite animation when it reaches target. Then destroy goldcard instance.
+
 // Can change selector arrows to balls, or even small numbers
 // Flowers for level progress?
 
@@ -407,6 +416,8 @@ int herox = 20;
 int heroy = 20;
 float cratex =  20;
 float cratey = screenHeight-96;
+float resultx = cratex+246+3*14-1+96;
+float resulty = 650-15;
 int numcrates = 7;
 int numberfallx = cratex+8;
 int numberfallbottom = cratey-(numcrates)*(16*3+6)+20;
@@ -806,9 +817,11 @@ class SpriteObj
     SpriteObj(float startx, float starty, float myscale, float myrotation);  // constructor, *must* be named the same as the class
     int draw();
     int move();
+    int movetotarget(float myspeed);
     int loadtexture(string filename);
     bool textureloaded = false;
     float x = 0,y = 0;
+    float targetx = 0, targety = 0;
     float dx = 1;
     float dy = 0;
     Texture2D pngtexture; // actually a bitmap (Raylib calls it a texture)
@@ -848,12 +861,25 @@ int SpriteObj::move()
     x = x + dx;
     return 0;
 }
+int SpriteObj::movetotarget(float myspeed)
+{
+    
+    float mdx = targetx-x;
+    float mdy = targety-y;
+    float length = sqrtf(mdx*mdx+mdy*mdy);
+    dx = mdx/length*myspeed;
+    dy = mdy/length*myspeed;
+    move();
+    return 0;
+}
+
 
 // create objects *after* defining them!
 SpriteObj bullet(200,200,3,0); 
 SpriteObj gunship1(boardx+50, boardy+cellheight*5, 2.0, 90);
 SpriteObj gunship2(boardx+cellwidth*5, boardy+50, 2.0, 180); 
 
+SpriteObj goldcard(resultx+6*5*8+8*2+24+12, resulty, 2.0, 0); 
 
 vector <SpriteObj> Bullets;
 int makebullets()
@@ -1130,6 +1156,8 @@ int removeenemyatgunindex()
             {
                gunship1.y = boardnumbertopoint(value1+value2).y-14;
                gunship2.x = boardnumbertopoint(value1+value2).x+14;
+               goldcard.targetx = boardnumbertopoint(value1+value2).x-16*2;
+               goldcard.targety = boardnumbertopoint(value1+value2).y;
                sumlog.push_back(to_string(value1)+" + "+to_string(value2)+" = "+to_string(value1+value2));
                if (MAXstacksize <= 10) MAXstacksize++;
                if (value1+value2 < 90)
@@ -1394,17 +1422,15 @@ int drawarrowchainuppng(float x, float y, int count)
 
 void drawarrowsandinput()
 {
-  float resultx = cratex+246+3*14-1;
-  float resulty = 650-15;
-  int inputstep = 2;
+  int inputstep = 0;
 
   if (value1picked == false or resultdisplayed == true)
        {
-        inputstep = 4;
+        inputstep = 6;
       }
   else
       {
-        inputstep = 7;
+        inputstep = 6+3;
       }
 
   float arrowsx = cratex+96+6+9; // start of arrow system
@@ -1443,7 +1469,12 @@ void drawarrowsandinput()
           draw2digits(resultx,resulty,value1,3,rblightgreen);
           draw2digits(resultx+3*5*8+24,resulty,value2,3,rblightgreen);
           if (sumisonboard == true)
+          {
              draw2digits(resultx+6*5*8+8*2+24+12,resulty,value1+value2,3,rblightgreen);
+             goldcard.x = resultx+6*5*8+8*2+24+12;
+             goldcard.y = resulty; 
+             sumisonboard = false;
+           }
           else 
              draw2digits(resultx+6*5*8+8*2+24+12,resulty,value1+value2,3,rbred);
         }
@@ -1480,6 +1511,7 @@ void rbloadtextures()
  bullet.loadtexture("png/diamond2.png"); // call After initwindow ...  
  gunship1.loadtexture("png/gunship.png");
  gunship2.loadtexture("png/gunship.png");  
+ goldcard.loadtexture("png/goldcard.png");
 }
 
 
@@ -1521,6 +1553,7 @@ int main() {
         if (moveTimer >= moveInterval) 
           { 
             bullet.move();
+            goldcard.movetotarget(8);
             moveenemies();  
             for (int i = 0;i < Bullets.size(); i++)
                 Bullets[i].move();                   
@@ -1580,6 +1613,7 @@ int main() {
         bullet.draw();
         gunship1.draw();
         gunship2.draw();
+        goldcard.draw();
         for (int i = 1;i < Crates.size(); i++)
           Crates[i].draw();
         for (int i = 0;i < Bullets.size(); i++)
