@@ -321,6 +321,18 @@ Color ColourCASIOArray[10] = { rbgraytext,rbgraytext,rbgraytext,rbgraytext,rbgra
 
 Color EnemyColourArray[10];
 
+Color resultcolour = rblightgreen;
+
+
+bool ColorsEqual(Color a, Color b) {
+    return a.r == b.r &&
+           a.g == b.g &&
+           a.b == b.b &&
+           a.a == b.a;
+}
+
+
+
 
 void settheme()
 {
@@ -1176,7 +1188,17 @@ int removeenemyatgunindex()
             value2picked = true;   
             if (findonboard(value1+value2) > -1) // found in board
             {
-               if (goldcard.alive) removefromboard(goldcard.targetnumber);
+               resultcolour = rblightgreen; // hit board number
+               if (goldcard.alive) // goldcard already flying
+                {
+                  if (goldcard.targetnumber == value1+value2) resultcolour = rbred; // board number already gold, so a miss!
+                }    
+               if (ColorsEqual(resultcolour,rblightgreen))
+               {        
+                  removefromboard(goldcard.targetnumber); // set board number to gold
+                  goldcard.x = resultx+6*5*8+8*2+24+12+24;
+                  goldcard.y = resulty;
+               } 
                gunship1.y = boardnumbertopoint(value1+value2).y-14;
                gunship2.x = boardnumbertopoint(value1+value2).x+14;
                goldcard.targetx = boardnumbertopoint(value1+value2).x-16*2;
@@ -1199,6 +1221,7 @@ int removeenemyatgunindex()
             }
             else 
             {
+              resultcolour = rbred;
               sumlog.push_back(to_string(value1)+" + "+to_string(value2)+" = "+to_string(value1+value2)+" *not on board* ");
               createnewenemyinqueue(GetRandomValue(1,maxnumber));
               if (MAXstacksize >= 3) MAXstacksize--;
@@ -1493,15 +1516,7 @@ void drawarrowsandinput()
         {
           draw2digits(resultx,resulty,value1,3,rblightgreen);
           draw2digits(resultx+3*5*8+24,resulty,value2,3,rblightgreen);
-          if (sumisonboard == true)
-          {
-             draw2digits(resultx+6*5*8+8*2+24+12,resulty,value1+value2,3,rblightgreen);
-             goldcard.x = resultx+6*5*8+8*2+24+12+24;
-             goldcard.y = resulty; 
-             sumisonboard = false;
-           }
-          else 
-             draw2digits(resultx+6*5*8+8*2+24+12,resulty,value1+value2,3,rbred);
+          draw2digits(resultx+6*5*8+8*2+24+12,resulty,value1+value2,3,resultcolour);             
         }
 }
 
@@ -1578,7 +1593,7 @@ int main() {
         if (moveTimer >= moveInterval) 
           { 
             bullet.move();
-            goldcard.movetotarget(16);
+            goldcard.movetotarget(1);
             moveenemies();  
             for (int i = 0;i < Bullets.size(); i++)
                 Bullets[i].move();                   
