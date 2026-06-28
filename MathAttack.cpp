@@ -892,7 +892,14 @@ int SpriteObj::loadtexture(string filename)
 
 int SpriteObj::draw()
 {
-  if (textureloaded and alive) DrawTextureEx(pngtexture,{x,y},angle,scale,WHITE);
+  if (textureloaded and alive)
+   { 
+     DrawTextureEx(pngtexture,{x,y},angle,scale,WHITE);
+    if (targetnumber < 10)
+          draw2digits3colour(x-10,y+6,targetnumber,4,rblightyellow,rbyellow,rbdarkyellow);
+       else
+          draw2digits3colour(x+5,y+6,targetnumber,4,rblightyellow,rbyellow,rbdarkyellow); 
+   }
   return 0;
 }
 int SpriteObj::move()
@@ -910,7 +917,7 @@ int SpriteObj::movetotarget(float myspeed)
     dx = mdx/length*myspeed;
     dy = mdy/length*myspeed;
     move();
-    if ( sqrtf((x-targetx)*(x-targetx) + (y-targety)*(y-targety)) < 12 )
+    if ( sqrtf((x-targetx)*(x-targetx) + (y-targety)*(y-targety)) < myspeed )
     {
        alive = false;
        removefromboard(targetnumber);
@@ -924,7 +931,7 @@ SpriteObj bullet(200,200,3,0);
 SpriteObj gunship1(boardx+50, boardy+cellheight*5, 2.0, 90);
 SpriteObj gunship2(boardx+cellwidth*5, boardy+50, 2.0, 180); 
 
-SpriteObj goldcard(resultx+6*5*8+8*2+24+12, resulty, 2.0, 0); 
+SpriteObj goldcard(resultx+6*5*8+8*2+24+12, resulty, 1.0, 0); 
 
 vector <SpriteObj> Bullets;
 int makebullets()
@@ -1169,10 +1176,10 @@ Vector2 boardnumbertopoint(int boardnumber)
 
 int removeenemyatgunindex()
 {
-  int hitvalue;
+  int hitscore;
   int shotnumber;
-  hitvalue = 10;
-  score = score + hitvalue;
+  hitscore = 10;
+  score = score + hitscore;
   shotnumber = Crates[gunindex].number;
   if (shotnumber == 0) return -1;
   Crates[gunindex].number = 0;
@@ -1201,7 +1208,7 @@ int removeenemyatgunindex()
                } 
                gunship1.y = boardnumbertopoint(value1+value2).y-14;
                gunship2.x = boardnumbertopoint(value1+value2).x+14;
-               goldcard.targetx = boardnumbertopoint(value1+value2).x-16*2;
+               goldcard.targetx = boardnumbertopoint(value1+value2).x-50;
                goldcard.targety = boardnumbertopoint(value1+value2).y;
                goldcard.alive = true;
                goldcard.targetnumber = value1+value2;
@@ -1311,10 +1318,11 @@ int drawboard()
           draw2digits(boardx+cellwidth*j,boardy+cellheight*i,Board[i][j],1,rblightpink);
      else
      {
+       DrawTextureEx(goldcard.pngtexture,{(float) boardx+cellwidth*j-16,(float) boardy+cellheight*i-15},0,1,WHITE);
        if (-1*Board[i][j] < 10)
           draw2digits3colour(boardx+cellwidth*j-26,boardy+cellheight*i-9,-1*Board[i][j],4,rblightyellow,rbyellow,rbdarkyellow);
        else
-          draw2digits3colour(boardx+cellwidth*j-16,boardy+cellheight*i-9,-1*Board[i][j],4,rblightyellow,rbyellow,rbdarkyellow);
+          draw2digits3colour(boardx+cellwidth*j-12,boardy+cellheight*i-9,-1*Board[i][j],4,rblightyellow,rbyellow,rbdarkyellow);
      }
   
    //border  
@@ -1593,7 +1601,7 @@ int main() {
         if (moveTimer >= moveInterval) 
           { 
             bullet.move();
-            goldcard.movetotarget(1);
+            goldcard.movetotarget(4);
             moveenemies();  
             for (int i = 0;i < Bullets.size(); i++)
                 Bullets[i].move();                   
