@@ -1326,7 +1326,7 @@ int drawboard()
      }
   
    //border  
-   drawRect3Colour(boardx-50,boardy-50, boardx+cellwidth*9+100, boardy+cellheight*9+50+100, 3, rblightyellow,rbyellow,rbdarkyellow);
+   //drawRect3Colour(boardx-50,boardy-50, boardx+cellwidth*9+100, boardy+cellheight*9+50+100, 3, rblightyellow,rbyellow,rbdarkyellow);
   return 0;
 }
 
@@ -1601,7 +1601,7 @@ int main() {
         if (moveTimer >= moveInterval) 
           { 
             bullet.move();
-            goldcard.movetotarget(4);
+            goldcard.movetotarget(8);
             moveenemies();  
             for (int i = 0;i < Bullets.size(); i++)
                 Bullets[i].move();                   
@@ -1650,10 +1650,10 @@ int main() {
         //if (boby++ > 79) boby = 0;
 
        
-        for (int i = 0; i< 4; i++)
-        {
-           drawfilledtablecell(i+2,11,i);
-        }
+        //for (int i = 0; i< 4; i++)
+        //{
+        //   drawfilledtablecell(i+2,11,i);
+       // }
         
         drawarrowsandinput();
         drawnemies();
