@@ -17,16 +17,14 @@
 
 // comments namespace. Expand to view
 namespace {
+// refactor
+// design levels
+// like peggle. Blue numbers optional. All orange numbers must be hit. Similar bonuses?
+
 
 // make like a card game
 // Look at minesweeper/Majong for tile ideas
-// Mayby only show blanks tile on board without numbers (until hit)
-// and leave gaps for non-available (e.g odd) numbers
 // Bonus (blue) tiles give extra random tiles (and other options like peggle, double score etc)
-
-// Put border around each number, remove big border
-// create goldcard on result if number available
-// move goldcard diagonally to target number, play sprite animation when it reaches target. Then destroy goldcard instance.
 
 // Can change selector arrows to balls, or even small numbers
 // Flowers for level progress?
@@ -51,21 +49,12 @@ namespace {
   // Green numbers - Atoms?
   // Crates - Crates?
 
-// Draw animated selection box around selected number (moving dashes??), draw with LED, make 3 frames
-
 // Tutorial level needs to be very fast and painless. Just add to 10.
 
 // Long animation at end of each level (like Peggle)
 
 // Give each level a name like "clear the board", "even numbers", "even numbers 2", etc
 // look at number theory book for ideas 
-
-// Better? Put table in centre, numbers slide in horizontally from the right bottom side of the screen.
-
-// build table, do not remove numbers!!! 
-// pearls accumulate over game and then get converted into gold coins (100p - 1 gc, remove remainder) at end of game.
-// Use coins to buy powerups. Powerups get randomly assigned to table where each number gets "gift wrapped" - double score, free number, etc
-// just like in peggle. Pearls are only awarded for numbers added to board (table)
 
 // +,-,*,/  can also drop from sky. If selected, the operation changes!!!  risky????
 
@@ -79,31 +68,18 @@ namespace {
 // draw peggle balls/pegs. a + b = c: a spawns a balls, b spawns b balls and all move into c. If there is a match in the table, then all move into table
 // spot
 
-// Side panel of Bob, graphics, 3s, 1+2=3 current sum, etc, just like arcade games
-// 1+2=3 should appear in a box somewhere
-// call the game 100, or One Hundred ???
-
 // Scrolling message telling what to do ...
-// after a+b=c, display in scrolling message all in one line 1+1=2, 2+2=4, etc??? this is educational
-// Score + fully build levels
-// Need to draw alpanumeric font !!
-// Then make functions for drawing text. Copy full text to sprites for GameMaker. Then only need numbers 0...9 in sprite array
+
 // Think freecell for random type games
 
-// draw round japanese style characters with little arms and legs, and flowy hair
-// released number should be displayed on LHS 
-// Tidy up code!
 
 // Make the screen come alive even if not playing the game
 // lots of animations 
 
 // hires Battery meter progress bar?
-// make it feel like you are building -- Number height?
-// Peggle bonus meter style? yes ... 100 on top
-// make points for each shot float UP in side column
 
+// make points for each shot float UP
 
-// draw boxes with animated dots moving around
 // Look at Tetris for game design and music
 // Avoid over-tall stack by only adding from queue when size <= 10 ?? needed ?? how to increase stack size while playing game?
 // mistakes decrease bonus by 1000
@@ -116,14 +92,10 @@ namespace {
 // Look at CASIO 8-attack and invaders videos for level progression
 
 // small Chars running on top of big "Math Addition Game" sign is fun (look at jumpman, gunner)
-// draw graphics while balancing
 
 // Draw controls  AIM  : <spacebar>
 //                FIRE : <Enter>
-// Removing a tile should be satisfying. Candy Crush?
 
-// Fill every spot of screen, don't leave gaps
-// Trailing headlights (particles) on moving numbers
 // Just remove bonus for mistakes
 
 // Attractor screen (like in arcades) shows demo game how to play AIM + FIRE
@@ -162,7 +134,8 @@ namespace {
 // Bonus hit repairs a removed tile
 // Bonus for shorter path to 100
 
-// BUGS:
+// BUGS
+// dropping numbers overlap on fast game 
 
 // Bonus mission board like casino roulette table
 // Give me 
@@ -179,9 +152,6 @@ namespace {
 
 // BINGO style
 // Complete row or column gives a bonus score
-
-// Char moves across numberline towards 100? Seems good
-// Make animation for removing number (frog jump??)
 
 // "Orange Peg" numbers give bonus multipliers, but also give an extra 10-18 number
 // Casino style board?
@@ -448,7 +418,7 @@ bool sumisonboard = false;
 int EnterCount = 0;
 int shootnumber = 1;
 int shield = 3;
-int level = 1;
+int level = 2;
 int maxnumber = 2;
 int levels[] = {0,3,9,14,14,20,33,32,32,32}; // Extra enemies added in each level; 
 int Board[20][20];
@@ -927,25 +897,7 @@ int SpriteObj::movetotarget(float myspeed)
 
 
 // create objects *after* defining them!
-SpriteObj bullet(200,200,3,0); 
-SpriteObj gunship1(boardx+50, boardy+cellheight*5, 2.0, 90);
-SpriteObj gunship2(boardx+cellwidth*5, boardy+50, 2.0, 180); 
-
 SpriteObj goldcard(resultx+6*5*8+8*2+24+12, resulty, 1.0, 0); 
-
-vector <SpriteObj> Bullets;
-int makebullets()
-{
-  for (int i=0; i < 10; i++)
-   {
-    SpriteObj bullettmp(gunship1.x,gunship1.y,1,0);
-    bullettmp.loadtexture("png/diamond2.png");
-    bullettmp.dx = 1;
-    bullettmp.dy = 0;
-    Bullets.push_back(bullettmp);
-   }
-  return 0;
-}
 
 class Arrow
 {
@@ -1206,8 +1158,6 @@ int removeenemyatgunindex()
                   goldcard.x = resultx+6*5*8+8*2+24+12+24;
                   goldcard.y = resulty;
                } 
-               gunship1.y = boardnumbertopoint(value1+value2).y-14;
-               gunship2.x = boardnumbertopoint(value1+value2).x+14;
                goldcard.targetx = boardnumbertopoint(value1+value2).x-50;
                goldcard.targety = boardnumbertopoint(value1+value2).y;
                goldcard.alive = true;
@@ -1556,10 +1506,7 @@ void rbloadtextures()
  rbcreatetexture(connectorgreenpng,"png/connector1.png");
  rbcreatetexture(connectoryellowpng,"png/connector2.png");
 
- bullet.loadtexture("png/diamond2.png"); // call After initwindow ...  
- gunship1.loadtexture("png/gunship.png");
- gunship2.loadtexture("png/gunship.png");  
- goldcard.loadtexture("png/goldcard.png");
+ goldcard.loadtexture("png/goldcard.png"); // call After initwindow ... 
 }
 
 
@@ -1569,8 +1516,6 @@ int main() {
     rbloadtextures(); // Must load textures after InitWindow
                       // Same for SpriteObj !!!
     //createsprites(); 
-    makebullets();    
-    Ball Ball1(700,700,200,200); 
     float moveInterval = 0.01f; // 10ms b/w move
     float moveTimer = 0.0f;
     int boby = 0;
@@ -1597,14 +1542,10 @@ int main() {
          }
         float dt = GetFrameTime(); // seconds since last frame 
         moveTimer += dt; 
-        Ball1.move();  
         if (moveTimer >= moveInterval) 
           { 
-            bullet.move();
             goldcard.movetotarget(8);
-            moveenemies();  
-            for (int i = 0;i < Bullets.size(); i++)
-                Bullets[i].move();                   
+            moveenemies();                   
             if (enemymovement >= 40)
             {      
                 enemymovement = 0;
@@ -1637,35 +1578,15 @@ int main() {
         ShowColourScore2(960, 60, score, 3, YELLOW, 7);
 
       
-        DrawText(("EnterCount: "+to_string(EnterCount)).c_str(),screenWidth*0.75,screenHeight-40,40, WHITE);
-        DrawText(("Level: "+to_string(level)).c_str(),900,screenHeight-140,40, WHITE);
+        ShowColourText(990, 200, "Level", 3, YELLOW);
+        ShowColourScore2(1026, 240, level, 3, YELLOW, 3);
 
-        //drawCharfromArray(herox, heroy, 3,8, CharBall);
-      
-        //drawChar3Colour(360,460,4,8,Char4,rblightyellow,rbyellow,rbdarkyellow);
-
-
-        //for (int i = -1; i < 10; i++)
-        //    drawRetroChar(herox, i*80+boby, 3,8, CharBob); 
-        //if (boby++ > 79) boby = 0;
-
-       
-        //for (int i = 0; i< 4; i++)
-        //{
-        //   drawfilledtablecell(i+2,11,i);
-       // }
         
         drawarrowsandinput();
         drawnemies();
-        Ball1.draw();
-        bullet.draw();
-        gunship1.draw();
-        gunship2.draw();
         goldcard.draw();
         for (int i = 1;i < Crates.size(); i++)
           Crates[i].draw();
-        for (int i = 0;i < Bullets.size(); i++)
-           Bullets[i].draw();
         drawgunvector(); // this is draw selector now!
         EndDrawing();
     }
