@@ -18,12 +18,12 @@
 // comments namespace. Expand to view
 namespace {
 // refactor
-// design levels
+// design levels . . . can actually make pictures with goldcard binary patterns, just like peggle
 // like peggle. Blue numbers optional. All orange numbers must be hit. Similar bonuses?
-
+// make bool testlevelend() function
 
 // make like a card game
-// Look at minesweeper/Majong for tile ideas
+// Look at minesweeper/Majong/card games for tile ideas
 // Bonus (blue) tiles give extra random tiles (and other options like peggle, double score etc)
 
 // Can change selector arrows to balls, or even small numbers
@@ -1172,7 +1172,11 @@ int removeenemyatgunindex()
                   {
                    createnewenemyinqueue(GetRandomValue(10,19));
                    createnewenemyinqueue(value1+value2);
-                  }                
+                  }  
+                  
+               // insert testlevelend() here
+               // Board[10][10] == 100
+               // examine Board[][] for level completion
                if (value1+value2 == 100)  createnewlevel();
                sumisonboard = true;
             }
@@ -1264,15 +1268,19 @@ int drawboard()
   //cells
   for (int i = 0;i<10; i++)
    for (int j = 0; j <10; j++)
-     if (Board[i][j] > -1)
+     if (Board[i][j] > 1)
           draw2digits(boardx+cellwidth*j,boardy+cellheight*i,Board[i][j],1,rblightpink);
      else
-     {
-       DrawTextureEx(goldcard.pngtexture,{(float) boardx+cellwidth*j-16,(float) boardy+cellheight*i-15},0,1,WHITE);
-       if (-1*Board[i][j] < 10)
+     {  
+       if (-1*Board[i][j] > 1)
+       {
+        DrawTextureEx(goldcard.pngtexture,{(float) boardx+cellwidth*j-16,(float) boardy+cellheight*i-15},0,1,WHITE);
+        if (-1*Board[i][j] < 10)
           draw2digits3colour(boardx+cellwidth*j-26,boardy+cellheight*i-9,-1*Board[i][j],4,rblightyellow,rbyellow,rbdarkyellow);
-       else
+        else
           draw2digits3colour(boardx+cellwidth*j-12,boardy+cellheight*i-9,-1*Board[i][j],4,rblightyellow,rbyellow,rbdarkyellow);
+     
+       } 
      }
   
    //border  
