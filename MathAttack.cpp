@@ -21,6 +21,7 @@ namespace {
 // design levels . . . can actually make pictures with goldcard binary patterns, just like peggle
 // like peggle. Blue numbers optional. All orange numbers must be hit. Similar bonuses?
 // make bool testlevelend() function
+// consequtive hits of orange numbers gets a chain bonus
 
 // make like a card game
 // Look at minesweeper/Majong/card games for tile ideas
@@ -1154,7 +1155,8 @@ int removeenemyatgunindex()
                 }    
                if (ColorsEqual(resultcolour,rblightgreen))
                {        
-                  removefromboard(goldcard.targetnumber); // set board number to gold
+                    //removefromboard(goldcard.targetnumber); // set board number to gold
+                    // will remove when goldcard reaches target
                   goldcard.x = resultx+6*5*8+8*2+24+12+24;
                   goldcard.y = resulty;
                } 
@@ -1177,6 +1179,12 @@ int removeenemyatgunindex()
                // insert testlevelend() here
                // Board[10][10] == 100
                // examine Board[][] for level completion
+               // Board numbers now need multiple states
+                    // white (unhit)  flag - boolean not needed anymore just blue or orange
+                    // orange (unhit)  flag - boolean
+                    // blue (unhit) flag - boolean
+                    // hit
+                    // use a struct
                if (value1+value2 == 100)  createnewlevel();
                sumisonboard = true;
             }
@@ -1552,7 +1560,7 @@ int main() {
         moveTimer += dt; 
         if (moveTimer >= moveInterval) 
           { 
-            goldcard.movetotarget(8);
+            if (goldcard.alive) goldcard.movetotarget(8);
             moveenemies();                   
             if (enemymovement >= 40)
             {      
