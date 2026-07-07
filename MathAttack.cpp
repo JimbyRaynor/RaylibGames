@@ -422,7 +422,16 @@ int shield = 3;
 int level = 2;
 int maxnumber = 2;
 int levels[] = {0,3,9,14,14,20,33,32,32,32}; // Extra enemies added in each level; 
-int Board[20][20];
+struct Tboarditem
+{
+  int number; // number = 0 if not available
+  Color colour; // rbblue or rborange or rbyellow
+                // rbblue is optional
+                // rborange is required
+                // rbyellow is "hit" and goldcard is displayed
+};
+
+Tboarditem Board[20][20];
 int boardx = 238, boardy = 60, cellwidth = 70, cellheight = 40;
 string operation = "+";
 vector <int> gunvector;
@@ -451,37 +460,44 @@ int fillboard()
   for (int i = 0;i<10; i++)
    for (int j = 0; j <10; j++)
    {
+     Board[i][j].colour = rbblue;
+     Board[i][j].number = 0; // not available, do not draw
      if (level == 9)
      {
         if (GetRandomValue(0,9) >= 7)   // hardest level 7 (random)
-           Board[i][j] = i*10+j;
-           else
-           Board[i][j] = -1;
+        {
+           Board[i][j].number = i*10+j;
+           Board[i][j].colour = rborange;
+        }
      }
      if (level == 1) // all numbers
      {
-          Board[i][j] = i*10+j;
+          Board[i][j].number = i*10+j;
+          Board[i][j].colour = rborange;
      }
      if (level == 2) // evens
      {
        if ((i*10+j) % 2 == 0) 
-          Board[i][j] = i*10+j;
-           else
-           Board[i][j] = -1;
+       {
+          Board[i][j].number = i*10+j;
+          Board[i][j].colour = rborange;
+       }
      }
      if (level == 3)  // odds
      {
        if ((i*10+j) % 2 == 1) 
-          Board[i][j] = i*10+j;
-           else
-           Board[i][j] = -1;
+       {
+          Board[i][j].number = i*10+j;
+          Board[i][j].colour = rborange;
+       }
      }
     if (level == 4)  // primes
      {
           if ( TestPrime(i*10+j) == true )
-          Board[i][j] = i*10+j;
-           else
-           Board[i][j] = -1; 
+          {
+           Board[i][j].number = i*10+j;
+           Board[i][j].colour = rborange;
+          }
      }
    }
   return 0;
@@ -704,9 +720,9 @@ int removefromboard(int number)
 if (number == 100) return 0;
 for (int i = 0;i<10; i++)
    for (int j = 0; j <10; j++)
-     if (Board[i][j] == number)
+     if (Board[i][j].number == number)
      {
-          Board[i][j] = -1*number;
+          Board[i][j].colour = rbyellow;
           return 0;
      }
 return -1;
@@ -717,7 +733,7 @@ int findonboard(int number)
 if (number == 100) return 0;
 for (int i = 0;i<10; i++)
    for (int j = 0; j <10; j++)
-     if (Board[i][j] == number)
+     if (Board[i][j].number == number)
      {
           return 0;
      }
@@ -1081,7 +1097,7 @@ int findminboard()
   int min = 99;
   for (int i = 0;i<10; i++)
    for (int j = 0; j <10; j++)
-       if (Board[i][j] < min and Board[i][j] != -1) min = Board[i][j];
+       if (Board[i][j].number < min and Board[i][j].number != 0) min = Board[i][j].number;
   return min;
 }
 
@@ -1179,12 +1195,6 @@ int removeenemyatgunindex()
                // insert testlevelend() here
                // Board[10][10] == 100
                // examine Board[][] for level completion
-               // Board numbers now need multiple states
-                    // white (unhit)  flag - boolean not needed anymore just blue or orange
-                    // orange (unhit)  flag - boolean
-                    // blue (unhit) flag - boolean
-                    // hit
-                    // use a struct
                if (value1+value2 == 100)  createnewlevel();
                sumisonboard = true;
             }
@@ -1276,20 +1286,20 @@ int drawboard()
   //cells
   for (int i = 0;i<10; i++)
    for (int j = 0; j <10; j++)
-     if (Board[i][j] > 1)
-          draw2digits(boardx+cellwidth*j,boardy+cellheight*i,Board[i][j],1,rblightpink);
-     else
-     {  
-       if (-1*Board[i][j] > 1)
+   {
+     
+    if ( ColorsEqual(Board[i][j].colour, rbyellow) ) // goldcard
        {
         DrawTextureEx(goldcard.pngtexture,{(float) boardx+cellwidth*j-16,(float) boardy+cellheight*i-15},0,1,WHITE);
-        if (-1*Board[i][j] < 10)
-          draw2digits3colour(boardx+cellwidth*j-26,boardy+cellheight*i-9,-1*Board[i][j],4,rblightyellow,rbyellow,rbdarkyellow);
+        if (Board[i][j].number < 10)
+          draw2digits3colour(boardx+cellwidth*j-26,boardy+cellheight*i-9,Board[i][j].number,4,rblightyellow,rbyellow,rbdarkyellow);
         else
-          draw2digits3colour(boardx+cellwidth*j-12,boardy+cellheight*i-9,-1*Board[i][j],4,rblightyellow,rbyellow,rbdarkyellow);
-     
-       } 
-     }
+          draw2digits3colour(boardx+cellwidth*j-12,boardy+cellheight*i-9,Board[i][j].number,4,rblightyellow,rbyellow,rbdarkyellow);
+       }
+    else if (Board[i][j].number > 1)
+          draw2digits(boardx+cellwidth*j,boardy+cellheight*i,Board[i][j].number,1,Board[i][j].colour);
+
+  } 
   
    //border  
    //drawRect3Colour(boardx-50,boardy-50, boardx+cellwidth*9+100, boardy+cellheight*9+50+100, 3, rblightyellow,rbyellow,rbdarkyellow);
