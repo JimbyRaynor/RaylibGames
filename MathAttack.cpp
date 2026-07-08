@@ -20,7 +20,6 @@ namespace {
 // refactor
 // design levels . . . can actually make pictures with goldcard binary patterns, just like peggle
 // like peggle. Blue numbers optional. All orange numbers must be hit. Similar bonuses?
-// make bool testlevelend() function
 // consequtive hits of orange numbers gets a chain bonus
 
 // make like a card game
@@ -295,6 +294,8 @@ Color EnemyColourArray[10];
 Color resultcolour = rblightgreen;
 
 
+
+// There is a Raylib native version: ColorIsEqual
 bool ColorsEqual(Color a, Color b) {
     return a.r == b.r &&
            a.g == b.g &&
@@ -455,8 +456,10 @@ bool TestPrime(int n)
 
 }
 
-int fillboard()
+int fillboard() // all orange numbers must be removed, so make 100 an orange number (if 100 is a valid target)
 {
+  Board[10][10].number = 0;
+  Board[10][10].colour = rbblue;
   for (int i = 0;i<10; i++)
    for (int j = 0; j <10; j++)
    {
@@ -477,7 +480,7 @@ int fillboard()
      }
      if (level == 2) // evens
      {
-       if ((i*10+j) % 2 == 0) 
+       if ((i*10+j) % 2 == 0 and i<=0 and j<= 2) 
        {
           Board[i][j].number = i*10+j;
           Board[i][j].colour = rborange;
@@ -715,18 +718,6 @@ void ShowColourText(int locx, int locy, string mytext, int psize, Color Mycolour
 }
 
 
-int removefromboard(int number)
-{
-if (number == 100) return 0;
-for (int i = 0;i<10; i++)
-   for (int j = 0; j <10; j++)
-     if (Board[i][j].number == number)
-     {
-          Board[i][j].colour = rbyellow;
-          return 0;
-     }
-return -1;
-}
 
 int findonboard(int number)
 {
@@ -910,6 +901,39 @@ int SpriteObj::movetotarget(float myspeed)
        removefromboard(targetnumber);
     }
     return 0;
+}
+
+bool testlevelend()
+{
+  bool result = true;
+  for (int i = 0;i<10; i++)
+   for (int j = 0; j <10; j++)
+       if ( ColorIsEqual(Board[i][j].colour, rborange) ) 
+       {
+        result = false;
+        cout << i<< j;
+       }
+  return result;
+} 
+
+
+int removefromboard(int number)
+{
+if (number == 100) 
+{
+  Board[100][100].colour = rbyellow; 
+  return 0;
+}
+for (int i = 0;i<10; i++)
+   for (int j = 0; j <10; j++)
+     if (Board[i][j].number == number)
+     {
+          Board[i][j].colour = rbyellow;
+          // examine Board[][] for level completion
+          if (testlevelend() == true)  createnewlevel();
+          return 0;
+     }
+return -1;
 }
 
 
@@ -1134,6 +1158,8 @@ int createnewlevel()
      return 0;
   }
 
+
+
 Vector2 boardnumbertopoint(int boardnumber)
 {
   Vector2 mypoint;
@@ -1142,6 +1168,9 @@ Vector2 boardnumbertopoint(int boardnumber)
   row = boardnumber / 10;
   return {(float) boardx+(col+0.5f)*cellwidth, (float) boardy+(row-1+0.7f)*cellheight};
 }
+
+
+
 
 int removeenemyatgunindex()
 {
@@ -1191,11 +1220,6 @@ int removeenemyatgunindex()
                    createnewenemyinqueue(GetRandomValue(10,19));
                    createnewenemyinqueue(value1+value2);
                   }  
-                  
-               // insert testlevelend() here
-               // Board[10][10] == 100
-               // examine Board[][] for level completion
-               if (value1+value2 == 100)  createnewlevel();
                sumisonboard = true;
             }
             else 
