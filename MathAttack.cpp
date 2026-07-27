@@ -15,8 +15,7 @@
 // Only use GameMaker for final animations and sound. Make full game (o/w animations) with raylib
 
 
-// comments namespace. Expand to view
-namespace {
+#pragma region TODO
 // refactor
 // design levels . . . can actually make pictures with goldcard binary patterns, just like peggle
 // like peggle. Blue numbers optional. All orange numbers must be hit. Similar bonuses?
@@ -188,16 +187,13 @@ namespace {
 
 // chars walking across screen to show progress ?
 // Look at Donut Dodo for ideas of background animations
-}
-
+#pragma endregion
 using namespace std;
 
 int screenWidth = 1200; 
 int screenHeight = 800;
 string theme = "dark";    // dark, CASIO
-string themearray[2] = {"dark", "CASIO"}; // uparrow to change
-int themearrayindex = 0;
-Color rbbackgroundcolour = BLACK;
+
 
 //string mystring;
 // note that mystring.c_str() converts the C++ string mystring to the C array of characters
@@ -212,14 +208,18 @@ Color HexToColour(int hexValue) {
 }
 
 
-// colours and graphics characters namespace. Expand to view
-namespace {
+#pragma region png sprite textures
   Texture2D diamondgreenpng, diamondwhitepng;
   Texture2D selectorgreenpng, selectorwhitepng;
   Texture2D downarrowgreenpng, downarrowyellowpng, connectorgreenpng, connectoryellowpng;
   Rectangle selectorrect;
   float selectorheight, selectorwidth;
+#pragma endregion
 
+
+
+
+#pragma region fixed LED Colours
  // DO NOT CHANGE
  // needed for LEDColour pixel editor
 Color rbblack = HexToColour(0x000000);
@@ -292,7 +292,7 @@ Color ColourCASIOArray[10] = { rbgraytext,rbgraytext,rbgraytext,rbgraytext,rbgra
 Color EnemyColourArray[10];
 
 Color resultcolour = rblightgreen;
-
+#pragma endregion
 
 
 // There is a Raylib native version: ColorIsEqual
@@ -305,6 +305,10 @@ bool ColorsEqual(Color a, Color b) {
 
 
 
+#pragma region Themes
+string themearray[2] = {"dark", "CASIO"}; // uparrow to change
+int themearrayindex = 0;
+Color rbbackgroundcolour = BLACK;
 
 void settheme()
 {
@@ -319,7 +323,12 @@ void settheme()
        memcpy(EnemyColourArray, ColourCASIOArray, sizeof(ColourCASIOArray));
     }
 }
+#pragma endregion
 
+
+
+
+#pragma region LED graphics arrays
 int CharBob[64] = {1,18,23,23,23,23,18,18,1,18,18,23,23,23,18,18,14,16,16,16,16,16,16,16,17,16,0,0,16,0,0,16,0,16,0,0,16,0,0,16,0,16,16,16,16,16,16,16,0,18,1,1,1,1,17,17,23,23,23,18,18,18,23,23};
 int CharEnemy1[64] = {5,0,0,17,0,0,0,5,0,5,0,0,17,0,5,0,5,0,11,17,0,11,0,5,0,5,5,5,5,5,5,0,5,5,5,5,5,5,5,5,5,5,24,33,24,33,5,5,5,5,5,5,5,5,5,5,0,5,5,5,5,5,5,0};
 int CharBall[64] = {0,0,0,21,21,0,0,0,0,0,19,19,19,19,0,0,0,19,16,16,16,16,19,0,21,19,16,33,33,16,19,21,21,19,16,33,33,16,19,21,0,19,16,16,16,16,19,0,0,0,19,19,19,19,0,0,0,0,0,21,21,0,0,0};
@@ -390,8 +399,12 @@ int* digitarray[10] = {Char0, Char1, Char2, Char3,  // array of pointers to char
 
 int* alphaarray[26] = {CharA, CharB, CharC, CharD, CharE, CharF, CharG, CharH, CharI, CharJ, CharK, CharL, CharM, CharN, CharO, CharP, CharQ, 
                        CharR, CharS, CharT, CharU, CharV, CharW, CharX, CharY, CharZ}; 
-}
+#pragma endregion
 
+
+
+
+#pragma region GLOBALS
 int deciseconds = 0; // 1/60 of a second timer for animations
 int targetarrow = 0; 
 int selectorframes = 32;
@@ -440,7 +453,8 @@ vector <string> sumlog;
 int gunindex = 1;
 int MAXstacksize = 4;
 int score = 0;
-// create objects after defining them
+#pragma endregion
+// create objects **after** defining them
 
 
 
@@ -506,6 +520,8 @@ int fillboard() // all orange numbers must be removed, so make 100 an orange num
   return 0;
 }
 
+
+#pragma region Draw Functions
 void drawLine3Colour(float fromx, float fromy, float tox, float toy, int psize, int xstep, int ystep, Color Mycolour1, Color Mycolour2, Color Mycolour3)
 {
   Vector2 vstart = { fromx, fromy};
@@ -716,7 +732,7 @@ void ShowColourText(int locx, int locy, string mytext, int psize, Color Mycolour
      drawRetroCharOneColour(locx+ i*8*(psize+1), locy, psize, 8, value, Mycolour);
    }
 }
-
+#pragma endregion
 
 
 int findonboard(int number)
@@ -731,8 +747,7 @@ for (int i = 0;i<10; i++)
 return -1;
 }
 
-// paths (from CoPilot)
-namespace {
+#pragma region paths (from CoPilot)
 
 double lerp(double a, double b, double t) {
     return a + (b - a) * t;
@@ -788,7 +803,8 @@ std::vector<std::pair<double, double>> PATHPARADE = {
 };
 
 auto fullPath = interpolatePath(PATHPARADE, 200);
-}
+#pragma endregion
+
 
 class Ball
 {
