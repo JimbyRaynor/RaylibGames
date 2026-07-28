@@ -212,6 +212,7 @@ Color HexToColour(int hexValue) {
   Texture2D diamondgreenpng, diamondwhitepng;
   Texture2D selectorgreenpng, selectorwhitepng;
   Texture2D downarrowgreenpng, downarrowyellowpng, connectorgreenpng, connectoryellowpng;
+  Texture2D goldcardpng;
   Rectangle selectorrect;
   float selectorheight, selectorwidth;
 #pragma endregion
@@ -425,11 +426,12 @@ int enemymovement = 0;
 int movementstep = 1;
 int hits = 0;
 int value1 = 0;
-bool value1picked = false;
 int value2 = 0;
+bool value1picked = false;
 bool value2picked = false;
 bool resultdisplayed = false;
 bool sumisonboard = false;
+bool levelcomplete = false;
 int EnterCount = 0;
 int shootnumber = 1;
 int shield = 3;
@@ -470,55 +472,7 @@ bool TestPrime(int n)
 
 }
 
-int fillboard() // all orange numbers must be removed, so make 100 an orange number (if 100 is a valid target)
-{
-  Board[10][10].number = 0;
-  Board[10][10].colour = rbblue;
-  for (int i = 0;i<10; i++)
-   for (int j = 0; j <10; j++)
-   {
-     Board[i][j].colour = rbblue;
-     Board[i][j].number = 0; // not available, do not draw
-     if (level == 9)
-     {
-        if (GetRandomValue(0,9) >= 7)   // hardest level 7 (random)
-        {
-           Board[i][j].number = i*10+j;
-           Board[i][j].colour = rborange;
-        }
-     }
-     if (level == 1) // all numbers
-     {
-          Board[i][j].number = i*10+j;
-          Board[i][j].colour = rborange;
-     }
-     if (level == 2) // evens
-     {
-       if ((i*10+j) % 2 == 0 and i<=0 and j<= 2) 
-       {
-          Board[i][j].number = i*10+j;
-          Board[i][j].colour = rborange;
-       }
-     }
-     if (level == 3)  // odds
-     {
-       if ((i*10+j) % 2 == 1) 
-       {
-          Board[i][j].number = i*10+j;
-          Board[i][j].colour = rborange;
-       }
-     }
-    if (level == 4)  // primes
-     {
-          if ( TestPrime(i*10+j) == true )
-          {
-           Board[i][j].number = i*10+j;
-           Board[i][j].colour = rborange;
-          }
-     }
-   }
-  return 0;
-}
+
 
 
 #pragma region Draw Functions
@@ -735,17 +689,7 @@ void ShowColourText(int locx, int locy, string mytext, int psize, Color Mycolour
 #pragma endregion
 
 
-int findonboard(int number)
-{
-if (number == 100) return 0;
-for (int i = 0;i<10; i++)
-   for (int j = 0; j <10; j++)
-     if (Board[i][j].number == number)
-     {
-          return 0;
-     }
-return -1;
-}
+
 
 #pragma region paths (from CoPilot)
 
@@ -806,6 +750,165 @@ auto fullPath = interpolatePath(PATHPARADE, 200);
 #pragma endregion
 
 
+
+
+#pragma region board functions
+int fillboard() // all orange numbers must be removed, so make 100 an orange number (if 100 is a valid target)
+{
+  Board[10][10].number = 0;
+  Board[10][10].colour = rbblue;
+  for (int i = 0;i<10; i++)
+   for (int j = 0; j <10; j++)
+   {
+     Board[i][j].colour = rbblue;
+     Board[i][j].number = 0; // not available, do not draw
+     if (level == 9)
+     {
+        if (GetRandomValue(0,9) >= 7)   // hardest level 7 (random)
+        {
+           Board[i][j].number = i*10+j;
+           Board[i][j].colour = rborange;
+        }
+     }
+     if (level == 1) // all numbers
+     {
+          Board[i][j].number = i*10+j;
+          Board[i][j].colour = rborange;
+     }
+     if (level == 2) // evens
+     {
+       if ((i*10+j) % 2 == 0 and i<=0 and j<= 2) 
+       {
+          Board[i][j].number = i*10+j;
+          Board[i][j].colour = rborange;
+       }
+     }
+     if (level == 3)  // odds
+     {
+       if ((i*10+j) % 2 == 1) 
+       {
+          Board[i][j].number = i*10+j;
+          Board[i][j].colour = rborange;
+       }
+     }
+    if (level == 4)  // primes
+     {
+          if ( TestPrime(i*10+j) == true )
+          {
+           Board[i][j].number = i*10+j;
+           Board[i][j].colour = rborange;
+          }
+     }
+   }
+  return 0;
+}
+
+void drawfilledtablecell(int i, int j, int num)
+{
+  drawCharfromArray(boardx+j*cellwidth, boardy+i*cellwidth, 2,24, CharBlock); 
+  draw2digitsSolid2(boardx+j*cellwidth+5, boardy+i*cellwidth+12, num, 3, BLACK);
+}
+
+
+int drawboard()
+{
+  // draw 100
+  drawRetroCharOneColour(boardx+cellwidth*2.7,boardy+cellheight*10,10,8,Char1, rbwhite);
+  drawRetroCharOneColour(boardx+cellwidth*2.7+100,boardy+cellheight*10,10,8,Char0, rbwhite);
+  drawRetroCharOneColour(boardx+cellwidth*2.7+200,boardy+cellheight*10,10,8,Char0, rbwhite);
+
+  //cells
+  for (int i = 0;i<10; i++)
+   for (int j = 0; j <10; j++)
+   {
+     
+    if ( ColorsEqual(Board[i][j].colour, rbyellow) ) // goldcard
+       {
+        DrawTextureEx(goldcardpng,{(float) boardx+cellwidth*j-16,(float) boardy+cellheight*i-15},0,1,WHITE);
+        if (Board[i][j].number < 10)
+          draw2digits3colour(boardx+cellwidth*j-26,boardy+cellheight*i-9,Board[i][j].number,4,rblightyellow,rbyellow,rbdarkyellow);
+        else
+          draw2digits3colour(boardx+cellwidth*j-12,boardy+cellheight*i-9,Board[i][j].number,4,rblightyellow,rbyellow,rbdarkyellow);
+       }
+    else if (Board[i][j].number > 1)
+          draw2digits(boardx+cellwidth*j,boardy+cellheight*i,Board[i][j].number,1,Board[i][j].colour);
+
+  } 
+  
+   //border  
+   //drawRect3Colour(boardx-50,boardy-50, boardx+cellwidth*9+100, boardy+cellheight*9+50+100, 3, rblightyellow,rbyellow,rbdarkyellow);
+  return 0;
+}
+
+int findonboard(int number)
+{
+if (number == 100) return 0;
+for (int i = 0;i<10; i++)
+   for (int j = 0; j <10; j++)
+     if (Board[i][j].number == number)
+     {
+          return 0;
+     }
+return -1;
+}
+
+bool testlevelend()
+{
+  bool result = true;
+  for (int i = 0;i<10; i++)
+   for (int j = 0; j <10; j++)
+       if ( ColorIsEqual(Board[i][j].colour, rborange) ) 
+       {
+        result = false;
+        cout << i<< j;
+       }
+  return result;
+} 
+
+
+int removefromboard(int number)
+{
+if (number == 100) 
+{
+  Board[100][100].colour = rbyellow; 
+  return 0;
+}
+for (int i = 0;i<10; i++)
+   for (int j = 0; j <10; j++)
+     if (Board[i][j].number == number)
+     {
+          Board[i][j].colour = rbyellow;
+          // examine Board[][] for level completion
+          if (testlevelend() == true)  levelcomplete = true;
+          return 0;
+     }
+return -1;
+}
+
+int findminboard()
+{
+  int min = 99;
+  for (int i = 0;i<10; i++)
+   for (int j = 0; j <10; j++)
+       if (Board[i][j].number < min and Board[i][j].number != 0) min = Board[i][j].number;
+  return min;
+}
+
+Vector2 boardnumbertopoint(int boardnumber)
+{
+  Vector2 mypoint;
+  int row, col;
+  col = boardnumber % 10;
+  row = boardnumber / 10;
+  return {(float) boardx+(col+0.5f)*cellwidth, (float) boardy+(row-1+0.7f)*cellheight};
+}
+#pragma endregion
+
+
+
+
+
+#pragma region Classes and Objects
 class Ball
 {
    public:
@@ -842,7 +945,7 @@ int Ball::move()
     return 0;
 }
 
-
+// SpriteObj is for loading and displaying pngs
 class SpriteObj
 {
     public:
@@ -917,39 +1020,6 @@ int SpriteObj::movetotarget(float myspeed)
        removefromboard(targetnumber);
     }
     return 0;
-}
-
-bool testlevelend()
-{
-  bool result = true;
-  for (int i = 0;i<10; i++)
-   for (int j = 0; j <10; j++)
-       if ( ColorIsEqual(Board[i][j].colour, rborange) ) 
-       {
-        result = false;
-        cout << i<< j;
-       }
-  return result;
-} 
-
-
-int removefromboard(int number)
-{
-if (number == 100) 
-{
-  Board[100][100].colour = rbyellow; 
-  return 0;
-}
-for (int i = 0;i<10; i++)
-   for (int j = 0; j <10; j++)
-     if (Board[i][j].number == number)
-     {
-          Board[i][j].colour = rbyellow;
-          // examine Board[][] for level completion
-          if (testlevelend() == true)  createnewlevel();
-          return 0;
-     }
-return -1;
 }
 
 
@@ -1129,17 +1199,9 @@ int resetenemyloc()
   enemymovement = 0;
   return 0;
 }
+#pragma endregion
 
 
-
-int findminboard()
-{
-  int min = 99;
-  for (int i = 0;i<10; i++)
-   for (int j = 0; j <10; j++)
-       if (Board[i][j].number < min and Board[i][j].number != 0) min = Board[i][j].number;
-  return min;
-}
 
 int createnewenemyinqueue(int value)
 {
@@ -1173,20 +1235,6 @@ int createnewlevel()
      fillboard();
      return 0;
   }
-
-
-
-Vector2 boardnumbertopoint(int boardnumber)
-{
-  Vector2 mypoint;
-  int row, col;
-  col = boardnumber % 10;
-  row = boardnumber / 10;
-  return {(float) boardx+(col+0.5f)*cellwidth, (float) boardy+(row-1+0.7f)*cellheight};
-}
-
-
-
 
 int removeenemyatgunindex()
 {
@@ -1314,42 +1362,6 @@ int ReadKeys()
          c++;
         }
     return 0;
-}
-
-int drawboard()
-{
-  // draw 100
-  drawRetroCharOneColour(boardx+cellwidth*2.7,boardy+cellheight*10,10,8,Char1, rbwhite);
-  drawRetroCharOneColour(boardx+cellwidth*2.7+100,boardy+cellheight*10,10,8,Char0, rbwhite);
-  drawRetroCharOneColour(boardx+cellwidth*2.7+200,boardy+cellheight*10,10,8,Char0, rbwhite);
-
-  //cells
-  for (int i = 0;i<10; i++)
-   for (int j = 0; j <10; j++)
-   {
-     
-    if ( ColorsEqual(Board[i][j].colour, rbyellow) ) // goldcard
-       {
-        DrawTextureEx(goldcard.pngtexture,{(float) boardx+cellwidth*j-16,(float) boardy+cellheight*i-15},0,1,WHITE);
-        if (Board[i][j].number < 10)
-          draw2digits3colour(boardx+cellwidth*j-26,boardy+cellheight*i-9,Board[i][j].number,4,rblightyellow,rbyellow,rbdarkyellow);
-        else
-          draw2digits3colour(boardx+cellwidth*j-12,boardy+cellheight*i-9,Board[i][j].number,4,rblightyellow,rbyellow,rbdarkyellow);
-       }
-    else if (Board[i][j].number > 1)
-          draw2digits(boardx+cellwidth*j,boardy+cellheight*i,Board[i][j].number,1,Board[i][j].colour);
-
-  } 
-  
-   //border  
-   //drawRect3Colour(boardx-50,boardy-50, boardx+cellwidth*9+100, boardy+cellheight*9+50+100, 3, rblightyellow,rbyellow,rbdarkyellow);
-  return 0;
-}
-
-void drawfilledtablecell(int i, int j, int num)
-{
-  drawCharfromArray(boardx+j*cellwidth, boardy+i*cellwidth, 2,24, CharBlock); 
-  draw2digitsSolid2(boardx+j*cellwidth+5, boardy+i*cellwidth+12, num, 3, BLACK);
 }
 
 int drawsumlog()
@@ -1552,6 +1564,7 @@ void drawgunvector() // draw selector
                                                                             selectorheight*3},{0,0},0.0f, WHITE);
 }
 
+#pragma region load textures
 void rbcreatetexture(Texture2D &mytexture, string filename)
 {
  mytexture = LoadTexture(filename.c_str()); // LoadTexture() MUST be called AFTER InitWindow
@@ -1571,9 +1584,10 @@ void rbloadtextures()
  rbcreatetexture(downarrowyellowpng,"png/downarrowgreen2.png");
  rbcreatetexture(connectorgreenpng,"png/connector1.png");
  rbcreatetexture(connectoryellowpng,"png/connector2.png");
-
+ rbcreatetexture(goldcardpng,"png/goldcard.png");
  goldcard.loadtexture("png/goldcard.png"); // call After initwindow ... 
 }
+#pragma endregion
 
 
 int main() {
