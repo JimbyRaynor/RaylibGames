@@ -21,6 +21,8 @@
 // like peggle. Blue numbers optional. All orange numbers must be hit. Similar bonuses?
 // consequtive hits of orange numbers gets a chain bonus
 
+// store game state in enum
+
 // make like a card game
 // Look at minesweeper/Majong/card games for tile ideas
 // Bonus (blue) tiles give extra random tiles (and other options like peggle, double score etc)
@@ -302,6 +304,45 @@ bool ColorsEqual(Color a, Color b) {
            a.g == b.g &&
            a.b == b.b &&
            a.a == b.a;
+}
+
+// from CoPilot
+bool ShowMessageBox(const char* title, const char* message)
+{
+    const int boxW = 300;
+    const int boxH = 150;
+
+    while (true)
+    {
+        BeginDrawing();
+        //ClearBackground(BLACK);
+
+        // Dim background
+        DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), Color{0,0,0,150});
+
+        // Box
+        int x = GetScreenWidth()/2 - boxW/2;
+        int y = GetScreenHeight()/2 - boxH/2;
+        DrawRectangleRounded({(float)x, (float)y, (float)boxW, (float)boxH}, 0.2f, 8, RAYWHITE);
+
+        DrawText(title, x + 20, y + 10, 20, DARKGRAY);
+        DrawText(message, x + 20, y + 50, 18, GRAY);
+
+        // OK button
+        Rectangle btn = { (float)x + boxW/2 - 40, (float)y + boxH - 40, 80, 30 };
+        DrawRectangleRounded(btn, 0.3f, 8, LIGHTGRAY);
+        DrawText("OK", btn.x + 25, btn.y + 7, 20, DARKGRAY);
+
+        // Click detection
+        if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) &&
+            CheckCollisionPointRec(GetMousePosition(), btn))
+        {
+            EndDrawing();
+            return true;
+        }
+
+        EndDrawing();
+    }
 }
 
 
@@ -860,7 +901,7 @@ bool testlevelend()
        if ( ColorIsEqual(Board[i][j].colour, rborange) ) 
        {
         result = false;
-        cout << i<< j;
+        ShowMessageBox("Orange found",(to_string(i)+","+to_string(j)).c_str());
        }
   return result;
 } 
@@ -868,6 +909,8 @@ bool testlevelend()
 
 int removefromboard(int number)
 {
+ShowMessageBox("removefromboard()", "Got here :)");
+
 if (number == 100) 
 {
   Board[100][100].colour = rbyellow; 
@@ -879,7 +922,11 @@ for (int i = 0;i<10; i++)
      {
           Board[i][j].colour = rbyellow;
           // examine Board[][] for level completion
-          if (testlevelend() == true)  levelcomplete = true;
+          if (testlevelend() == true)  
+          {
+            levelcomplete = true;
+            cout << "level completed";
+          }
           return 0;
      }
 return -1;
@@ -1225,7 +1272,6 @@ int drawnemies()
 
 int createnewlevel()
 {
-     level++;
      hits = 0;
      EnterCount = 0;
      resultdisplayed = false;
@@ -1304,6 +1350,7 @@ int ReadKeys()
    int c = 0;
    if (IsKeyPressed(KEY_ENTER))
         {
+          //ShowMessageBox("Note:", "Enter Pressed");
              //Enemies[gunindex].attacknumber
             // if (removeenemy(gunvector[gunindex]) >= 0) // enemy number found in descending list
             if (removeenemyatgunindex() >= 0)
@@ -1364,17 +1411,8 @@ int ReadKeys()
     return 0;
 }
 
-int drawsumlog()
-{
-  int j = 0;
-  for (int i=sumlog.size()-1; i >= 0 and j <= 10 ; i--)
-    {  
-       DrawText(sumlog[i].c_str(),40,j*30,30, WHITE);
-       j++;
-    }
-  return 0;
-}
 
+#pragma region Arrow functions
 int* arrowrightanimate(int loc)
 {
   if (loc == targetarrow)
@@ -1467,7 +1505,6 @@ int drawarrowchaindown(int x, int y, int count)
   return y+(count-1)*24*2+36+22; // use this for y value of rightarrows that start at end of this arrow system 
 } 
 
-
 int drawarrowchaindownpng(float x, float y, int count)
 {
   for (int i = 0; i < count; i++)
@@ -1503,6 +1540,7 @@ int drawarrowchainuppng(float x, float y, int count)
    }
   return y-(count-1)*24*2-36-22; // use this for y value of rightarrows that start at end of this arrow system 
 } 
+#pragma endregion
 
 void drawarrowsandinput()
 {
@@ -1642,7 +1680,12 @@ int main() {
             }
             moveTimer = 0.0f; // reset timer 
           }
-
+        if (levelcomplete == true)
+        {
+          levelcomplete = false;
+          level++;
+          createnewlevel();
+        }
         BeginDrawing();         // these two lines MUST go first when drawing
         ClearBackground(rbbackgroundcolour); // these two lines MUST go first when drawing
 
