@@ -801,27 +801,27 @@ int fillboard() // all orange numbers must be removed, so make 100 an orange num
   for (int i = 0;i<10; i++)
    for (int j = 0; j <10; j++)
    {
-     Board[i][j].colour = rbblue;
+     Board[i][j].colour = rbblue; // not required for level completion
      Board[i][j].number = 0; // not available, do not draw
      if (level == 9)
      {
         if (GetRandomValue(0,9) >= 7)   // hardest level 7 (random)
         {
            Board[i][j].number = i*10+j;
-           Board[i][j].colour = rborange;
+           Board[i][j].colour = rborange; // required number for level completion
         }
      }
      if (level == 1) // all numbers
      {
           Board[i][j].number = i*10+j;
-          Board[i][j].colour = rborange;
+          Board[i][j].colour = rborange; // required number for level completion
      }
      if (level == 2) // evens
      {
-       if ((i*10+j) % 2 == 0 and i<=0 and j<= 2) 
+       if ((i*10+j) % 2 == 0 and i<=0 and j<= 4) 
        {
           Board[i][j].number = i*10+j;
-          Board[i][j].colour = rborange;
+          Board[i][j].colour = rborange; // required number for level completion
        }
      }
      if (level == 3)  // odds
@@ -829,7 +829,7 @@ int fillboard() // all orange numbers must be removed, so make 100 an orange num
        if ((i*10+j) % 2 == 1) 
        {
           Board[i][j].number = i*10+j;
-          Board[i][j].colour = rborange;
+          Board[i][j].colour = rborange; // required number for level completion
        }
      }
     if (level == 4)  // primes
@@ -837,10 +837,14 @@ int fillboard() // all orange numbers must be removed, so make 100 an orange num
           if ( TestPrime(i*10+j) == true )
           {
            Board[i][j].number = i*10+j;
-           Board[i][j].colour = rborange;
+           Board[i][j].colour = rborange; // required number for level completion
           }
      }
    }
+  Board[0][0].colour = rbblue; // (0,0) is not a valid target (number 0)
+  Board[0][0].number = 0; 
+  Board[0][1].colour = rbblue; // (0,1) is not a valid target (number 1)
+  Board[0][1].number = 0; 
   return 0;
 }
 
@@ -901,31 +905,29 @@ bool testlevelend()
        if ( ColorIsEqual(Board[i][j].colour, rborange) ) 
        {
         result = false;
-        ShowMessageBox("Orange found",(to_string(i)+","+to_string(j)).c_str());
+        //ShowMessageBox("testlevelend()", ("Found number at "+to_string(i)+","+to_string(j)).c_str());
        }
   return result;
 } 
 
-
 int removefromboard(int number)
 {
-ShowMessageBox("removefromboard()", "Got here :)");
-
 if (number == 100) 
 {
-  Board[100][100].colour = rbyellow; 
+  Board[100][100].colour = rbyellow; // gold card
   return 0;
 }
 for (int i = 0;i<10; i++)
    for (int j = 0; j <10; j++)
      if (Board[i][j].number == number)
      {
-          Board[i][j].colour = rbyellow;
+          // ShowMessageBox("removefromboard()", ("Found number at "+to_string(i)+","+to_string(j)).c_str());
+          Board[i][j].colour = rbyellow; // gold card
           // examine Board[][] for level completion
           if (testlevelend() == true)  
           {
             levelcomplete = true;
-            cout << "level completed";
+            // ShowMessageBox("removefromboard()", "Level Completed");
           }
           return 0;
      }
@@ -1691,7 +1693,6 @@ int main() {
 
         DrawRectangleLines(0,0,screenWidth,screenHeight,YELLOW);
         drawboard();
-        //drawsumlog();
         
         MousePos = GetMousePosition();
         
