@@ -22,6 +22,7 @@
 // consequtive hits of orange numbers gets a chain bonus
 
 // store game state in enum
+// stop falling numbers from overlapping 
 
 // make like a card game
 // Look at minesweeper/Majong/card games for tile ideas
@@ -447,6 +448,9 @@ int* alphaarray[26] = {CharA, CharB, CharC, CharD, CharE, CharF, CharG, CharH, C
 
 
 #pragma region GLOBALS
+const int StarsWidth = 1200;
+const int StarsHeight = 800;
+int StarsArray[StarsWidth+2][StarsHeight+2] = {};  // all zeros
 int deciseconds = 0; // 1/60 of a second timer for animations
 int targetarrow = 0; 
 int selectorframes = 32;
@@ -476,7 +480,7 @@ bool levelcomplete = false;
 int EnterCount = 0;
 int shootnumber = 1;
 int shield = 3;
-int level = 2;
+int level = 1;
 int maxnumber = 2;
 int levels[] = {0,3,9,14,14,20,33,32,32,32}; // Extra enemies added in each level; 
 struct Tboarditem
@@ -726,6 +730,40 @@ void ShowColourText(int locx, int locy, string mytext, int psize, Color Mycolour
      if (c == ':') value = CharColon;
      drawRetroCharOneColour(locx+ i*8*(psize+1), locy, psize, 8, value, Mycolour);
    }
+}
+
+void createstars()
+{
+  int x,y;
+  for (int i = 0; i < 300;i++)
+  {
+    x = GetRandomValue(0,StarsWidth);
+    y = GetRandomValue(0,StarsWidth);
+    StarsArray[x][y] = GetRandomValue(1,3);
+  }
+}
+
+void drawstars()
+{
+  static Color starcolors[] = { BLACK, RED, YELLOW, PURPLE };  // static means "create the array once for the entire program". This saves CPU time at 60 FPS
+  for (int i = 0; i < StarsWidth; i++)
+    for (int j = 0; j < StarsHeight; j++)
+      {
+        if (StarsArray[i][j] != 0) DrawRectangle(i, j, 1, 1, starcolors[StarsArray[i][j]]);
+      }
+}
+
+void twinklestars()
+{
+   for (int i = 0; i < StarsWidth; i++)
+    for (int j = 0; j < StarsHeight; j++)
+      {
+        if (StarsArray[i][j] > 0) 
+        {
+          StarsArray[i][j]++;
+          if (StarsArray[i][j] > 3) StarsArray[i][j] = 1;
+        }
+      }
 }
 #pragma endregion
 
@@ -1643,7 +1681,7 @@ int main() {
     SetTargetFPS(60);
     fillboard();
     sumlog.clear();
-
+    createstars();
 
     makecrates();
     while (!WindowShouldClose()) 
@@ -1658,6 +1696,7 @@ int main() {
          if (deciseconds % 32 == 0)
          {
            targetarrow++;
+           twinklestars();
            if (targetarrow > 4) targetarrow = 1;
          }
         float dt = GetFrameTime(); // seconds since last frame 
@@ -1690,7 +1729,7 @@ int main() {
         }
         BeginDrawing();         // these two lines MUST go first when drawing
         ClearBackground(rbbackgroundcolour); // these two lines MUST go first when drawing
-
+        drawstars();
         DrawRectangleLines(0,0,screenWidth,screenHeight,YELLOW);
         drawboard();
         
