@@ -17,11 +17,12 @@
 
 #pragma region TODO
 // refactor
+// Why do textures keep loading in console?
 // design levels . . . can actually make pictures with goldcard binary patterns, just like peggle
 // like peggle. Blue numbers optional. All orange numbers must be hit. Similar bonuses?
 // consequtive hits of orange numbers gets a chain bonus
 
-// store game state in enum
+// store game state in enum ... good example in Raylib book
 // stop falling numbers from overlapping 
 
 // make like a card game
@@ -481,7 +482,7 @@ bool levelcomplete = false;
 int EnterCount = 0;
 int shootnumber = 1;
 int shield = 3;
-int level = 1;
+int level = 2;
 int maxnumber = 2;
 int levels[] = {0,3,9,14,14,20,33,32,32,32}; // Extra enemies added in each level; 
 struct Tboarditem
@@ -501,6 +502,7 @@ vector <string> sumlog;
 int gunindex = 1;
 int MAXstacksize = 4;
 int score = 0;
+Font myfont; // used in showdebug()
 #pragma endregion
 // create objects **after** defining them
 
@@ -527,7 +529,7 @@ void showdebug()
   // To list all fonts installed:
   // find /usr/share/fonts -type f -name "*.ttf"
   // find ~/.local/share/fonts -type f -name "*.ttf"
-  Font myfont = LoadFontEx("/usr/share/fonts/truetype/ubuntu/Ubuntu[wdth,wght].ttf",20,nullptr,0);
+  // Only load fonts once!!! Do not create fonts here ;)
   DrawText(("deciseconds="+to_string(deciseconds)).c_str(),screenWidth-300,10,20,RAYWHITE);
   DrawText(("cratex="+to_string(cratex)).c_str(),screenWidth-300,10+20,20,RAYWHITE);
   DrawTextEx(myfont, "Custom Font",{float(screenWidth-300),10+20*2},20,1,RAYWHITE);
@@ -1686,6 +1688,7 @@ void rbloadtextures()
 
 int main() {
     if (DEBUG == true) screenWidth=screenWidth+300;
+    myfont = LoadFontEx("/usr/share/fonts/truetype/ubuntu/Ubuntu[wdth,wght].ttf",20,nullptr,0);
     settheme();
     InitWindow(screenWidth, screenHeight, "Math Addition Game"); // RNG seed is set randomly in InitWindow !!
     rbloadtextures(); // Must load textures after InitWindow
