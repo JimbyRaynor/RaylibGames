@@ -192,9 +192,10 @@
 // Look at Donut Dodo for ideas of background animations
 #pragma endregion
 using namespace std;
-
+bool DEBUG = true;
 int screenWidth = 1200; 
 int screenHeight = 800;
+
 string theme = "dark";    // dark, CASIO
 
 
@@ -521,6 +522,21 @@ bool TestPrime(int n)
 
 
 #pragma region Draw Functions
+void showdebug()
+{
+  // To list all fonts installed:
+  // find /usr/share/fonts -type f -name "*.ttf"
+  // find ~/.local/share/fonts -type f -name "*.ttf"
+  Font myfont = LoadFontEx("/usr/share/fonts/truetype/ubuntu/Ubuntu[wdth,wght].ttf",20,nullptr,0);
+  DrawText(("deciseconds="+to_string(deciseconds)).c_str(),screenWidth-300,10,20,RAYWHITE);
+  DrawText(("cratex="+to_string(cratex)).c_str(),screenWidth-300,10+20,20,RAYWHITE);
+  DrawTextEx(myfont, "Custom Font",{float(screenWidth-300),10+20*2},20,1,RAYWHITE);
+  DrawText(("resultx="+to_string(resultx)).c_str(),screenWidth-300,10+20*3,20,RAYWHITE);
+  DrawText(("numberfallbottom="+to_string(numberfallbottom)).c_str(),screenWidth-300,10+20*4,20,RAYWHITE);
+  DrawText(("sumisonboard="+to_string(sumisonboard)).c_str(),screenWidth-300,10+20*5,20,RAYWHITE);
+  DrawText(("gunindex="+to_string(gunindex)).c_str(),screenWidth-300,10+20*6,20,RAYWHITE);
+  
+}
 void drawLine3Colour(float fromx, float fromy, float tox, float toy, int psize, int xstep, int ystep, Color Mycolour1, Color Mycolour2, Color Mycolour3)
 {
   Vector2 vstart = { fromx, fromy};
@@ -1669,6 +1685,7 @@ void rbloadtextures()
 
 
 int main() {
+    if (DEBUG == true) screenWidth=screenWidth+300;
     settheme();
     InitWindow(screenWidth, screenHeight, "Math Addition Game"); // RNG seed is set randomly in InitWindow !!
     rbloadtextures(); // Must load textures after InitWindow
@@ -1751,6 +1768,7 @@ int main() {
         for (int i = 1;i < Crates.size(); i++)
           Crates[i].draw();
         drawgunvector(); // this is draw selector now!
+        if (DEBUG == true) showdebug();
         EndDrawing();
     }
 
