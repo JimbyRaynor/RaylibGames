@@ -17,8 +17,8 @@
 
 #pragma region TODO
 // refactor
-// Why do textures keep loading in console?
 // design levels . . . can actually make pictures with goldcard binary patterns, just like peggle
+// Level text : "Tutorial", "Evens", "Odds"
 // like peggle. Blue numbers optional. All orange numbers must be hit. Similar bonuses?
 // consequtive hits of orange numbers gets a chain bonus
 
@@ -117,7 +117,8 @@
 // Levels are chosen like in peggle, with intro etc.
 // Draw a picture of each level on Kindle Scribe
 //        Make puzzle levels where there is only one solution.
-// 0. Training: numbers do not get removed from board, and ONLY need to get to a sum of 30
+// 0. Training: numbers do not get removed from board, and ONLY need to get to a sum of 10
+// 1. sum of 20
 // 4. What other types? Look for other famous theorems of number theory
 // 4. Big gaps no 20s, 40s, 60s, 80,s
 // 4.       no 30,40,50,60s, etc.
@@ -125,9 +126,7 @@
 // 6. LHS only
 // 7. RHS only
 // bonus level: every natural number > 3 is a sum of two primes
-// Level completed when sum = 100. Then 100 explodes into fireworks like peggle
 // FireWorks Clock type of rockets/fireworks - find code :)
-// Orange numbers give bonus?
 
 // POINTS:
 //  Score = 100-y for dropping number ** cannot so this** since then just let numbers accumulate at top!!!
@@ -450,6 +449,7 @@ int* alphaarray[26] = {CharA, CharB, CharC, CharD, CharE, CharF, CharG, CharH, C
 
 
 #pragma region GLOBALS
+int level = 0;
 const int StarsWidth = 1200;
 const int StarsHeight = 800;
 int StarsArray[StarsWidth+2][StarsHeight+2] = {};  // all zeros
@@ -482,7 +482,6 @@ bool levelcomplete = false;
 int EnterCount = 0;
 int shootnumber = 1;
 int shield = 3;
-int level = 2;
 int maxnumber = 2;
 int levels[] = {0,3,9,14,14,20,33,32,32,32}; // Extra enemies added in each level; 
 struct Tboarditem
@@ -529,7 +528,7 @@ void showdebug()
   // To list all fonts installed:
   // find /usr/share/fonts -type f -name "*.ttf"
   // find ~/.local/share/fonts -type f -name "*.ttf"
-  // Only load fonts once!!! Do not create fonts here ;)
+  // Only load fonts once!!! Do not create fonts here ;) myfont is a global variable
   DrawText(("deciseconds="+to_string(deciseconds)).c_str(),screenWidth-300,10,20,RAYWHITE);
   DrawText(("cratex="+to_string(cratex)).c_str(),screenWidth-300,10+20,20,RAYWHITE);
   DrawTextEx(myfont, "Custom Font",{float(screenWidth-300),10+20*2},20,1,RAYWHITE);
@@ -867,6 +866,14 @@ int fillboard() // all orange numbers must be removed, so make 100 an orange num
            Board[i][j].colour = rborange; // required number for level completion
         }
      }
+     if (level == 0) // all numbers up to 9
+     {
+      if (i<=0 and j<= 9) 
+       {
+          Board[i][j].number = i*10+j;
+          Board[i][j].colour = rborange; // required number for level completion
+       }
+     }
      if (level == 1) // all numbers
      {
           Board[i][j].number = i*10+j;
@@ -914,9 +921,9 @@ void drawfilledtablecell(int i, int j, int num)
 int drawboard()
 {
   // draw 100
-  drawRetroCharOneColour(boardx+cellwidth*2.7,boardy+cellheight*10,10,8,Char1, rbwhite);
-  drawRetroCharOneColour(boardx+cellwidth*2.7+100,boardy+cellheight*10,10,8,Char0, rbwhite);
-  drawRetroCharOneColour(boardx+cellwidth*2.7+200,boardy+cellheight*10,10,8,Char0, rbwhite);
+ // drawRetroCharOneColour(boardx+cellwidth*2.7,boardy+cellheight*10,10,8,Char1, rbwhite);
+  //drawRetroCharOneColour(boardx+cellwidth*2.7+100,boardy+cellheight*10,10,8,Char0, rbwhite);
+ // drawRetroCharOneColour(boardx+cellwidth*2.7+200,boardy+cellheight*10,10,8,Char0, rbwhite);
 
   //cells
   for (int i = 0;i<10; i++)
