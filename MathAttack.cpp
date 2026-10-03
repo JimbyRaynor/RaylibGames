@@ -16,9 +16,10 @@
 
 
 #pragma region TODO
+// Make debug side window very wide so that it occupies second screen ;)
 // refactor
 // design levels . . . can actually make pictures with goldcard binary patterns, just like peggle
-// Level text : "Tutorial", "Evens", "Odds"
+// Level text : "Tutorial", "Evens", "Odds", "Hail Stone numbers"
 // like peggle. Blue numbers optional. All orange numbers must be hit. Similar bonuses?
 // consequtive hits of orange numbers gets a chain bonus
 
@@ -212,7 +213,7 @@ Color HexToColour(int hexValue) {
 }
 
 
-#pragma region png sprite textures
+#pragma region pngtextures
   Texture2D diamondgreenpng, diamondwhitepng;
   Texture2D selectorgreenpng, selectorwhitepng;
   Texture2D downarrowgreenpng, downarrowyellowpng, connectorgreenpng, connectoryellowpng;
@@ -224,7 +225,7 @@ Color HexToColour(int hexValue) {
 
 
 
-#pragma region fixed LED Colours
+#pragma region LEDColours
  // DO NOT CHANGE
  // needed for LEDColour pixel editor
 Color rbblack = HexToColour(0x000000);
@@ -372,7 +373,7 @@ void settheme()
 
 
 
-#pragma region LED graphics arrays
+#pragma region LEDarrays
 int CharBob[64] = {1,18,23,23,23,23,18,18,1,18,18,23,23,23,18,18,14,16,16,16,16,16,16,16,17,16,0,0,16,0,0,16,0,16,0,0,16,0,0,16,0,16,16,16,16,16,16,16,0,18,1,1,1,1,17,17,23,23,23,18,18,18,23,23};
 int CharEnemy1[64] = {5,0,0,17,0,0,0,5,0,5,0,0,17,0,5,0,5,0,11,17,0,11,0,5,0,5,5,5,5,5,5,0,5,5,5,5,5,5,5,5,5,5,24,33,24,33,5,5,5,5,5,5,5,5,5,5,0,5,5,5,5,5,5,0};
 int CharBall[64] = {0,0,0,21,21,0,0,0,0,0,19,19,19,19,0,0,0,19,16,16,16,16,19,0,21,19,16,33,33,16,19,21,21,19,16,33,33,16,19,21,0,19,16,16,16,16,19,0,0,0,19,19,19,19,0,0,0,0,0,21,21,0,0,0};
@@ -787,7 +788,7 @@ void twinklestars()
 
 
 
-#pragma region paths (from CoPilot)
+#pragma region paths
 
 double lerp(double a, double b, double t) {
     return a + (b - a) * t;
@@ -848,7 +849,7 @@ auto fullPath = interpolatePath(PATHPARADE, 200);
 
 
 
-#pragma region board functions
+#pragma region board
 int fillboard() // all orange numbers must be removed, so make 100 an orange number (if 100 is a valid target)
 {
   Board[10][10].number = 0;
@@ -1020,7 +1021,7 @@ Vector2 boardnumbertopoint(int boardnumber)
 
 
 
-#pragma region Classes and Objects
+#pragma region Classes
 class Ball
 {
    public:
